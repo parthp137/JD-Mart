@@ -1,0 +1,287 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: #f6f8f6;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ================= LEFT PANEL ================= */
+.left-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #1c8f4a, #2ecc71);
+  color: white;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 60px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  font-size: 24px;
+}
+
+.brand h3 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.brand span {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.left-panel h1 {
+  font-size: 44px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.left-panel p {
+  max-width: 450px;
+  opacity: 0.95;
+  margin-bottom: 30px;
+}
+
+.features {
+  list-style: none;
+}
+
+.features li {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+/* ================= RIGHT PANEL ================= */
+.right-panel {
+  flex: 1;
+  background: #fdfefe;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.right-panel h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #777;
+  margin-bottom: 30px;
+}
+
+/* ================= TABS ================= */
+/* .tabs {
+  display: flex;
+  background: #eef3ef;
+  border-radius: 14px;
+  padding: 6px;
+  margin-bottom: 30px;
+}
+
+.tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.tab.active {
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+} */
+
+.tabs {
+  display: flex;
+  background: #eef3ef;
+  border-radius: 14px;
+  padding: 6px;
+  margin-bottom: 30px;
+  gap: 6px; /* optional spacing between tabs */
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  text-decoration: none; /* remove underline */
+  background: transparent;
+  padding: 10px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+  transition: all 0.2s ease-in-out;
+  box-shadow: none;
+}
+
+.tab.active {
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  color: #000;
+}
+
+.tab:hover {
+  background: #f5f8f5;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+/* ================= INPUTS ================= */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.password-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.password-header a {
+  font-size: 13px;
+  color: #1c8f4a;
+  text-decoration: none;
+}
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: white;
+}
+
+.input-icon span {
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.input-icon input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+}
+
+.eye {
+  cursor: pointer;
+}
+
+/* ================= BUTTON ================= */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #1c8f4a;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: #15723a;
+}
+
+/* ================= DEMO BOX ================= */
+.demo-box {
+  margin-top: 25px;
+  padding: 16px;
+  background: #f2f6f3;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.demo-box strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* ================= REGISTER LINK ================= */
+.register-link {
+  margin-top: 25px;
+  text-align: center;
+}
+
+.register-link a {
+  color: #1c8f4a;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .left-panel {
+    display: none;
+  }
+}
+
+/* ================= VALIDATION ================= */
+.input-group input.is-invalid {
+  border-color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.input-group input.is-valid {
+  border-color: #16a34a;
+  background-color: #f0fdf4;
+}
+
+.input-group .invalid-feedback {
+  display: block;
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+}
