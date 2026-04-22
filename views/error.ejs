@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .error-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: #f8f9fa;
+    }
+    .error-card {
+      max-width: 560px;
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+    .error-card h1 {
+      margin-bottom: 0.75rem;
+    }
+    .error-card p {
+      color: #6c757d;
+      margin-bottom: 1.5rem;
+    }
+    .error-actions a {
+      display: inline-block;
+      margin: 0.25rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 999px;
+      text-decoration: none;
+    }
+    .primary-link {
+      background: #198754;
+      color: #fff;
+    }
+    .secondary-link {
+      background: #e9ecef;
+      color: #212529;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-wrap">
+    <div class="error-card">
+      <h1>Something went wrong</h1>
+      <p><%= message || "The server could not complete your request." %></p>
+      <div class="error-actions">
+        <a class="primary-link" href="/products">Go to Products</a>
+        <a class="secondary-link" href="/login">Go to Login</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Mart | Notifications</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .notifications-header {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            padding: 25px 0;
+            margin-bottom: 30px;
+        }
+        .notification-item {
+            border-left: 4px solid #e5e7eb;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            background: white;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .notification-item:hover {
+            background: #f9fafb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .notification-item.unread {
+            border-left-color: #16a34a;
+            background: #f0fdf4;
+        }
+        .notification-item.order {
+            border-left-color: #3b82f6;
+        }
+        .notification-item.payment {
+            border-left-color: #f59e0b;
+        }
+        .notification-item.delivery {
+            border-left-color: #10b981;
+        }
+        .notification-item.promotion {
+            border-left-color: #ec4899;
+        }
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .notification-item.order .notification-icon {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+        .notification-item.payment .notification-icon {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+        .notification-item.delivery .notification-icon {
+            background: #d1fae5;
+            color: #10b981;
+        }
+        .notification-item.promotion .notification-icon {
+            background: #fbcfe8;
+            color: #ec4899;
+        }
+        .notification-item.general .notification-icon {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        .notification-content {
+            flex: 1;
+        }
+        .notification-title {
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 4px;
+        }
+        .notification-message {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .notification-time {
+            font-size: 12px;
+            color: #999;
+        }
+        .unread-badge {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #16a34a;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+        .notification-header-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .notification-header-actions button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .mark-read-btn {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .mark-read-btn:hover {
+            background: #e5e7eb;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-state i {
+            font-size: 64px;
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+        .notification-wrapper {
+            display: flex;
+            align-items: flex-start;
+        }
+        .mark-all-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/images/image.png" alt="JD Mart Logo" height="40" style="border-radius: 8px;"/>
+      <span class="ms-2 fw-bold">JD Mart</span>
+    </a>
+  </div>
+</nav>
+
+<div class="notifications-header">
+    <div class="container">
+        <h2 class="mb-0"><i class="fa-solid fa-bell me-2"></i>Notifications</h2>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <% if (notifications && notifications.length > 0) { %>
+                <!-- Filters and Actions -->
+                <div class="mark-all-container" style="flex-wrap: wrap; gap: 15px;">
+                    <div class="d-flex gap-2">
+                        <a href="/notifications?filter=all" class="btn btn-sm <%= readFilter === 'all' ? 'btn-success' : 'btn-outline-secondary' %>">
+                            <i class="fa-solid fa-inbox me-1"></i>All (<%= totalNotifications %>)
+                        </a>
+                        <a href="/notifications?filter=unread" class="btn btn-sm <%= readFilter === 'unread' ? 'btn-warning' : 'btn-outline-secondary' %>">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Unread (<%= unreadCount %>)
+                        </a>
+                        <a href="/notifications?filter=read" class="btn btn-sm <%= readFilter === 'read' ? 'btn-info' : 'btn-outline-secondary' %>">
+                            <i class="fa-solid fa-check-circle me-1"></i>Read (<%= readCount %>)
+                        </a>
+                    </div>
+                    <div style="margin-left: auto; display: flex; gap: 10px;">
+                        <% if (unreadCount > 0) { %>
+                            <form action="/notifications/mark-all-read" method="POST" style="margin: 0;">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-envelope-open me-1"></i>Mark all as read
+                                </button>
+                            </form>
+                        <% } %>
+                        <form id="bulkDeleteForm" action="/notifications/bulk/delete" method="POST" style="margin: 0;">
+                            <button type="button" id="bulkDeleteBtn" class="btn btn-sm btn-outline-danger" disabled>
+                                <i class="fa-solid fa-trash me-1"></i>Delete Selected
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <form id="notificationsForm" method="POST" action="/notifications/bulk/delete" style="display: none;">
+                    <div class="notifications-list" style="margin-top: 20px;">
+                        <% notifications.forEach((notification, index) => { %>
+                            <div class="notification-item <%= notification.type %> <%= notification.read ? '' : 'unread' %>" style="display: flex; flex-direction: row; gap: 10px;">
+                                <div style="display: flex; align-items: flex-start; padding-top: 8px;">
+                                    <input type="checkbox" class="notification-checkbox" name="notificationIds" value="<%= notification._id %>" style="margin-right: 8px; cursor: pointer;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <div class="notification-wrapper" style="margin-bottom: 12px;">
+                                        <div class="notification-icon">
+                                            <i class="fa-solid <%= 
+                                                notification.type === 'order' ? 'fa-box' :
+                                                notification.type === 'payment' ? 'fa-credit-card' :
+                                                notification.type === 'delivery' ? 'fa-truck' :
+                                                notification.type === 'promotion' ? 'fa-tag' :
+                                                'fa-bell'
+                                            %>"></i>
+                                        </div>
+                                        <div class="notification-content" style="flex: 1;">
+                                            <div class="notification-title"><%= notification.title %></div>
+                                            <div class="notification-message"><%= notification.message %></div>
+                                            <div class="notification-time">
+                                                <i class="fa-solid fa-clock me-1"></i>
+                                                <% 
+                                                    const createdTime = new Date(notification.createdAt);
+                                                    const now = new Date();
+                                                    const diff = now - createdTime;
+                                                    const minutes = Math.floor(diff / 60000);
+                                                    const hours = Math.floor(diff / 3600000);
+                                                    const days = Math.floor(diff / 86400000);
+                                                    
+                                                    let timeStr;
+                                                    if (minutes < 1) timeStr = 'Just now';
+                                                    else if (minutes < 60) timeStr = minutes + ' minutes ago';
+                                                    else if (hours < 24) timeStr = hours + ' hours ago';
+                                                    else if (days < 7) timeStr = days + ' days ago';
+                                                    else timeStr = createdTime.toLocaleDateString();
+                                                %>
+                                                <%= timeStr %>
+                                            </div>
+                                        </div>
+                                        <% if (!notification.read) { %>
+                                            <div class="unread-badge"></div>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="notification-header-actions">
+                                        <% if (!notification.read) { %>
+                                            <form action="/notifications/<%= notification._id %>/mark-read" method="POST" style="width: 50%;">
+                                                <button type="submit" class="mark-read-btn w-100">
+                                                    <i class="fa-solid fa-check me-1"></i>Mark as read
+                                                </button>
+                                            </form>
+                                        <% } %>
+                                        <form action="/notifications/<%= notification._id %>/delete" method="POST" style="width: 50%; margin-left: auto;">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                                                <i class="fa-solid fa-trash me-1"></i>Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                </form>
+
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fa-solid fa-bell-slash"></i>
+                    <h3>No Notifications</h3>
+                    <p class="text-muted">You're all caught up! Check back later for new updates.</p>
+                    <a href="/" class="btn btn-primary mt-3">
+                        <i class="fa-solid fa-home me-2"></i>Go to Home
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<footer class="jd-footer-section mt-5">
+  <div class="container-fluid px-5 mt-3">
+    <div class="text-center pb-3">
+      <small>© <%= new Date().getFullYear() %> JD Mart. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Bulk delete functionality
+    const checkboxes = document.querySelectorAll('.notification-checkbox');
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+    const bulkDeleteForm = document.getElementById('bulkDeleteForm');
+
+    const updateBulkDeleteButton = () => {
+        const checkedCount = document.querySelectorAll('.notification-checkbox:checked').length;
+        bulkDeleteBtn.disabled = checkedCount === 0;
+        bulkDeleteBtn.innerHTML = `<i class="fa-solid fa-trash me-1"></i>Delete Selected ${checkedCount > 0 ? `(${checkedCount})` : ''}`;
+    };
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkDeleteButton);
+    });
+
+    bulkDeleteBtn?.addEventListener('click', () => {
+        const checked = document.querySelectorAll('.notification-checkbox:checked');
+        if (checked.length === 0) {
+            alert('Please select at least one notification');
+            return;
+        }
+        
+        if (confirm(`Delete ${checked.length} notification(s)?`)) {
+            // Clear the hidden inputs and add the selected ones
+            bulkDeleteForm.innerHTML = '';
+            checked.forEach(checkbox => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'notificationIds[]';
+                input.value = checkbox.value;
+                bulkDeleteForm.appendChild(input);
+            });
+            bulkDeleteForm.submit();
+        }
+    });
+</script>
+</body>
+</html>

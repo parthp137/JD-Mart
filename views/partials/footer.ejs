@@ -1,0 +1,115 @@
+<!-- JD Mart Shared Footer -->
+<footer class="jd-footer-section mt-5">
+  <div class="container-fluid px-5 mt-3">
+    <div class="row g-4 py-4">
+      <!-- About Section -->
+      <div class="col-md-3">
+        <h5 class="mb-3">
+          <img src="/images/image.png" alt="JD Mart" height="30" style="border-radius: 4px; margin-right: 8px;">
+          JD Mart
+        </h5>
+        <p class="text-muted small">
+          India's leading agricultural commodity marketplace connecting buyers and sellers directly.
+        </p>
+        <div class="social-links mt-3">
+          <a href="#" title="Facebook" class="me-2"><i class="fab fa-facebook"></i></a>
+          <a href="#" title="Twitter" class="me-2"><i class="fab fa-twitter"></i></a>
+          <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-md-3">
+        <h6 class="mb-3 fw-bold">Quick Links</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2"><a href="/products" class="text-muted">Browse Products</a></li>
+          <li class="mb-2"><a href="/profile" class="text-muted">My Profile</a></li>
+          <li class="mb-2"><a href="/orders" class="text-muted">My Orders</a></li>
+          <li class="mb-2"><a href="/notifications" class="text-muted">Notifications</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div class="col-md-3">
+        <h6 class="mb-3 fw-bold">Support</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-2"><i class="fa-solid fa-phone me-2"></i><a href="tel:+918800000000" class="text-muted">+91 8800 000 000</a></li>
+          <li class="mb-2"><i class="fa-solid fa-envelope me-2"></i><a href="mailto:support@jdmart.com" class="text-muted">support@jdmart.com</a></li>
+          <li class="mb-2"><i class="fa-solid fa-location-dot me-2"></i><span class="text-muted">Delhi, India</span></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="col-md-3">
+        <h6 class="mb-3 fw-bold">Stay Updated</h6>
+        <form class="d-flex" onsubmit="return false;">
+          <input type="email" placeholder="Enter email" class="form-control form-control-sm" required>
+          <button type="submit" class="btn btn-success btn-sm ms-2">Subscribe</button>
+        </form>
+        <p class="text-muted small mt-2">Get updates on new products and offers.</p>
+      </div>
+    </div>
+
+    <!-- Copyright Section -->
+    <div class="border-top pt-3 mt-3">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <p class="mb-0 small text-muted">
+            © <%= new Date().getFullYear() %> JD Mart. All rights reserved.
+          </p>
+        </div>
+        <div class="col-md-6 text-end">
+          <p class="mb-0 small">
+            <a href="#" class="text-muted me-3">Privacy Policy</a>
+            <a href="#" class="text-muted me-3">Terms of Service</a>
+            <a href="#" class="text-muted">Contact Us</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Footer Styles -->
+<style>
+  .jd-footer-section {
+    background: linear-gradient(to right, #f9fafb, #ffffff);
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+    font-size: 0.95rem;
+  }
+
+  .jd-footer-section a {
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .jd-footer-section a:hover {
+    color: #16a34a;
+  }
+
+  .social-links a {
+    font-size: 1.2rem;
+    color: #16a34a;
+    transition: opacity 0.2s;
+  }
+
+  .social-links a:hover {
+    opacity: 0.7;
+  }
+
+  @media (max-width: 768px) {
+    .jd-footer-section {
+      padding: 1.5rem 0;
+    }
+
+    .jd-footer-section .row {
+      --bs-gutter-x: 1rem;
+      --bs-gutter-y: 1.5rem;
+    }
+
+    .jd-footer-section .col-md-6 {
+      text-align: center !important;
+    }
+  }
+</style>

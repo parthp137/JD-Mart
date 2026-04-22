@@ -1,0 +1,75 @@
+<!-- JD Mart Shared Navigation Header -->
+<nav class="navbar navbar-expand-lg navbar-light bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand d-flex align-items-center" href="/products">
+      <img src="/images/image.png" alt="JD Mart Logo" height="40" style="border-radius: 8px;"/>
+      <span class="ms-2 fw-bold">JD Mart</span>
+    </a>
+
+    <!-- LOCATION (Hidden on mobile by default) -->
+    <div class="ms-auto me-4 d-none d-lg-flex align-items-center">
+      <i class="fa-solid fa-location-dot me-1" style="color: #16a34a;"></i>
+      <span id="locationText" style="font-size: 15px;">Getting location...</span>
+    </div>
+
+    <!-- MOBILE TOGGLE -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- NAVBAR CONTENT -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- SEARCH BAR -->
+      <div class="navbar-search ms-lg-3 my-2 my-lg-0">
+        <input type="text" id="productSearch" placeholder="Search for crops..." class="form-control" />
+      </div>
+
+      <!-- RIGHT ICONS -->
+      <div class="navbar-icons ms-lg-3">
+        <!-- NOTIFICATIONS -->
+        <a href="/notifications" class="notification-icon" title="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <% if (typeof notificationCount !== 'undefined' && notificationCount > 0) { %>
+            <span class="notification-badge"><%= notificationCount > 9 ? '9+' : notificationCount %></span>
+          <% } %>
+        </a>
+
+        <!-- CART -->
+        <a href="/cart" class="cart-icon-link" title="View Cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+            <span class="cart-badge"><%= cartCount %></span>
+          <% } %>
+        </a>
+
+        <!-- USER DROPDOWN -->
+        <div class="navbar-user" id="userDropdown">
+          <div class="avatar">
+            <%= user && user.fullName ? user.fullName.charAt(0).toUpperCase() : "U" %>
+          </div>
+          <span><%= user && user.fullName ? user.fullName.split(" ")[0] : "Guest" %></span>
+          <i class="fa-solid fa-chevron-down"></i>
+
+          <div class="jd-user-menu">
+            <div class="jd-user-info">
+              <strong><%= user && user.fullName ? user.fullName : "Guest User" %></strong>
+              <small><%= user && user.email ? user.email : "Not logged in" %></small>
+            </div>
+            <% if (user) { %>
+              <a href="/profile"><i class="fa-regular fa-user"></i> Profile</a>
+              <a href="/orders"><i class="fa-solid fa-box"></i> Orders</a>
+              <% if (user.role === 'admin') { %>
+                <a href="/admin"><i class="fa-solid fa-lock"></i> Admin Dashboard</a>
+              <% } %>
+              <div class="jd-divider"></div>
+              <a href="/logout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            <% } else { %>
+              <a href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

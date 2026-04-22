@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Mart | Edit Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="/products">
+      <img src="/images/image.png" alt="JD Mart Logo" height="40" style="border-radius: 8px;"/>
+      <span class="ms-2 fw-bold">JD Mart</span>
+    </a>
+  </div>
+</nav>
+
+<div class="container-fluid my-4 p-4 rounded shadow-sm bg-light">
+  <div class="profile-card mb-4">
+    <div class="d-flex align-items-center gap-4 flex-wrap">
+      <div class="avatar">
+        <%= user.fullName.charAt(0).toUpperCase() %>
+      </div>
+      <div>
+        <h4 class="mb-1">Edit Profile</h4>
+        <p class="mb-0 text-muted">Update your account, business, and delivery details.</p>
+      </div>
+    </div>
+    <a href="/profile" class="edit-btn">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+
+  <% if (typeof message !== 'undefined' && message) { %>
+    <div class="alert alert-success"><%= message %></div>
+  <% } %>
+
+  <form action="/profile/edit" method="POST" id="profileEditForm" novalidate>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="info-box h-100">
+          <h5><i class="fa-solid fa-user"></i> Personal Information</h5>
+          <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input type="text" id="fullName" name="fullName" class="form-control" value="<%= user.fullName %>" required>
+            <small class="invalid-feedback"></small>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control" value="<%= user.email %>" required>
+            <small class="invalid-feedback"></small>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="text" id="phone" name="phone" class="form-control" value="<%= user.phone %>" required>
+            <small class="invalid-feedback"></small>
+          </div>
+          <div class="mb-0">
+            <label for="password" class="form-label">New Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Leave blank to keep current password">
+            <small class="invalid-feedback"></small>
+          </div>
+          <div class="mb-0 mt-3">
+            <label for="passwordConfirm" class="form-label">Confirm Password</label>
+            <input type="password" id="passwordConfirm" name="passwordConfirm" class="form-control" placeholder="Re-enter password if changing">
+            <small class="invalid-feedback"></small>
+            <small class="d-block text-muted mt-2">
+              <i class="fa-solid fa-info-circle me-1"></i>Passwords must be at least 6 characters with uppercase and numbers.
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="info-box h-100">
+          <h5><i class="fa-solid fa-building"></i> Business Information</h5>
+          <div class="mb-3">
+            <label for="business" class="form-label">Business Name</label>
+            <input type="text" id="business" name="business" class="form-control" value="<%= user.business %>" required>
+          </div>
+          <div class="mb-3">
+            <label for="businessType" class="form-label">Business Type</label>
+            <select id="businessType" name="businessType" class="form-select" required>
+              <% ["Farmer", "Trader", "Wholesaler", "Retailer", "Exporter"].forEach(type => { %>
+                <option value="<%= type %>" <%= user.businessType === type ? 'selected' : '' %>><%= type %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="mb-0">
+            <label for="defaultAddress" class="form-label">Default Delivery Address</label>
+            <textarea id="defaultAddress" name="defaultAddress" class="form-control" rows="4" required><%= user.defaultAddress %></textarea>
+            <small class="invalid-feedback"></small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-end gap-2">
+      <a href="/profile" class="btn btn-outline-secondary">Cancel</a>
+      <button type="submit" class="btn btn-success">Save Changes</button>
+    </div>
+  </form>
+
+  <!-- Saved Addresses Section -->
+  <div class="mt-5 pt-5 border-top">
+    <h4 class="mb-4"><i class="fa-solid fa-map-location-dot me-2"></i>Saved Addresses</h4>
+    
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="info-box">
+          <h5><i class="fa-solid fa-plus-circle me-2"></i>Add New Address</h5>
+          <form action="/profile/address/add" method="POST">
+            <div class="mb-3">
+              <label for="addressLabel" class="form-label">Label</label>
+              <select id="addressLabel" name="label" class="form-select" required>
+                <option value="">Select label</option>
+                <option value="Home">Home</option>
+                <option value="Office">Office</option>
+                <option value="Farm">Farm</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="newAddress" class="form-label">Address</label>
+              <textarea id="newAddress" name="address" class="form-control" rows="3" placeholder="Enter full address" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-sm btn-success w-100">
+              <i class="fa-solid fa-plus me-1"></i>Add Address
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="info-box">
+          <h5><i class="fa-solid fa-bookmark me-2"></i>Address History</h5>
+          <% if (user.addresses && user.addresses.length > 0) { %>
+            <div style="max-height: 400px; overflow-y: auto;">
+              <% user.addresses.forEach(addr => { %>
+                <div style="padding: 12px; margin-bottom: 10px; border-left: 3px solid <%= addr.isDefault ? '#16a34a' : '#e5e7eb' %>; background: <%= addr.isDefault ? '#f0fdf4' : '#f9fafb' %>; border-radius: 4px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div>
+                      <span class="badge <%= addr.isDefault ? 'bg-success' : 'bg-secondary' %>" style="margin-right: 8px;">
+                        <%= addr.label %>
+                      </span>
+                      <% if (addr.isDefault) { %>
+                        <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Default</span>
+                      <% } %>
+                    </div>
+                  </div>
+                  <p style="margin: 0; font-size: 0.9rem; color: #666;">
+                    <%= addr.address %>
+                  </p>
+                  <small style="color: #999;">
+                    Added <%= new Date(addr.createdAt).toLocaleDateString('en-IN') %>
+                  </small>
+                  <div style="margin-top: 8px; display: flex; gap: 6px;">
+                    <% if (!addr.isDefault) { %>
+                      <form action="/profile/address/set-default/<%= addr._id %>" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-xs btn-outline-success" style="padding: 4px 8px; font-size: 0.75rem;">
+                          <i class="fa-solid fa-check-circle me-1"></i>Set Default
+                        </button>
+                      </form>
+                    <% } %>
+                    <form action="/profile/address/remove/<%= addr._id %>" method="POST" style="display: inline;" onsubmit="return confirm('Remove this address?');">
+                      <button type="submit" class="btn btn-xs btn-outline-danger" style="padding: 4px 8px; font-size: 0.75rem;">
+                        <i class="fa-solid fa-trash me-1"></i>Remove
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <p class="text-muted mb-0"><i class="fa-solid fa-info-circle me-2"></i>No saved addresses yet. Add one above!</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/script.js"></script>
+<script src="/js/validation.js"></script>
+<script>
+  // Password confirmation validation
+  const passwordField = document.getElementById('password');
+  const passwordConfirmField = document.getElementById('passwordConfirm');
+  
+  if (passwordField && passwordConfirmField) {
+    const validatePasswordMatch = () => {
+      if (passwordField.value && passwordField.value !== passwordConfirmField.value) {
+        passwordConfirmField.classList.add('is-invalid');
+        return false;
+      } else {
+        passwordConfirmField.classList.remove('is-invalid');
+        return true;
+      }
+    };
+
+    passwordField.addEventListener('change', validatePasswordMatch);
+    passwordConfirmField.addEventListener('change', validatePasswordMatch);
+
+    document.getElementById('profileEditForm')?.addEventListener('submit', (e) => {
+      if (!validatePasswordMatch()) {
+        e.preventDefault();
+        alert('Passwords do not match');
+      }
+    });
+  }
+</script>
+</body>
+</html>

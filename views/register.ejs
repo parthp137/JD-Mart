@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JD Mart | Create Account</title>
+  <link rel="stylesheet" href="/css/register.css" />
+  <link rel="stylesheet" href="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="logo">🍃</div>
+      <div>
+        <h3>JD Mart</h3>
+        <span>Buyer Portal</span>
+      </div>
+    </div>
+
+    <h1>Source Premium Crops<br>Directly from Farmers</h1>
+
+    <p>
+      Connect with verified farmers, get competitive prices, and grow your business.
+    </p>
+
+    <ul class="features">
+      <li>✔ 500+ verified suppliers</li>
+      <li>✔ Real-time market prices</li>
+      <li>✔ Secure payments</li>
+      <li>✔ Fast delivery</li>
+    </ul>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="top-bar">
+      <a href="/login">← Back</a>
+    </div>
+
+    <h2>Create Account</h2>
+    <p class="subtitle">Join JD Mart as a buyer</p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger" style="margin-bottom:16px;">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (typeof message !== 'undefined' && message) { %>
+      <div class="alert alert-success" style="margin-bottom:16px;">
+        <%= message %>
+      </div>
+    <% } %>
+
+    <form action="/register" method="POST" id="registerForm" novalidate>
+
+      <div class="row">
+        <div class="input-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" name="fullName" placeholder="Your name" required />
+          <small class="invalid-feedback"></small>
+        </div>
+
+        <div class="input-group">
+          <label for="phone">Phone</label>
+          <input type="text" id="phone" name="phone" placeholder="9876543210" required />
+          <small class="invalid-feedback"></small>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required />
+        <small class="invalid-feedback"></small>
+      </div>
+
+      <div class="row">
+        <div class="input-group">
+          <label for="business">Business Name</label>
+          <input type="text" id="business" name="business" placeholder="Your business" required />
+        </div>
+
+        <div class="input-group">
+          <label for="businessType">Business Type</label>
+          <select id="businessType" name="businessType" required>
+            <option value="Retailer">Retailer</option>
+            <option value="Trader">Trader</option>
+            <option value="Wholesaler">Wholesaler</option>
+            <option value="Exporter">Exporter</option>
+            <option value="Farmer">Farmer</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Min 6 chars" required />
+          <small class="invalid-feedback"></small>
+        </div>
+
+        <div class="input-group">
+          <label for="confirm">Confirm</label>
+          <input type="password" id="confirmPassword" name="confirm" placeholder="Repeat" required />
+          <small class="invalid-feedback"></small>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="defaultAddress">Delivery Address</label>
+        <input
+          type="text"
+          name="defaultAddress"
+          id="defaultAddress"
+          placeholder="House / street / area / city"
+          required
+        />
+        <small style="display:block;margin-top:6px;color:#6c757d;">
+          You can type it manually or let the browser autofill it if location access is allowed.
+        </small>
+        <small class="invalid-feedback"></small>
+      </div>
+
+      <button type="button" class="btn" id="useLocationBtn" style="margin-bottom:12px;">
+        Autofill from Current Location
+      </button>
+
+      <button type="submit" class="btn">
+        Create Account →
+      </button>
+
+    </form>
+
+    <p class="login-link">
+      Already have an account? <a href="/login">Sign In</a>
+    </p>
+
+  </div>
+
+</div>
+<script>
+async function getLocationAndSave() {
+  if (!navigator.geolocation) {
+    console.log("Geolocation not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      try {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+        );
+
+        const data = await res.json();
+
+        const area = data.address.suburb || data.address.village || "";
+        const city =
+          data.address.city ||
+          data.address.town ||
+          data.address.state ||
+          "";
+        const country = data.address.country || "";
+
+        const fullAddress = `${area ? area + ", " : ""}${city}, ${country}`;
+
+        document.getElementById("defaultAddress").value = fullAddress;
+
+        console.log("Saved address:", fullAddress);
+      } catch (err) {
+        console.log("Reverse geocode failed", err);
+      }
+    },
+    (err) => {
+      console.log("Location denied", err);
+    }
+  );
+}
+
+document.getElementById("useLocationBtn").addEventListener("click", function () {
+  getLocationAndSave();
+});
+
+// Run on page load
+getLocationAndSave();
+</script>
+
+<script src="/js/validation.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Mart | Order History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/orders.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+
+    <!-- LOGO -->
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/images/image.png" alt="JD Mart Logo" height="40" style="border-radius: 8px;"/>
+      <span class="ms-2 fw-bold">JD Mart</span>
+    </a>
+
+    <!-- LOCATION -->
+    <div class="ms-auto me-4 d-flex align-items-center">
+      <i class="fa-solid fa-location-dot me-1" style="color: #16a34a;"></i>
+      <span id="locationText" style="font-size: 15px;">Getting location...</span>
+    </div>
+
+    <!-- REST OF NAVBAR -->
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-search ms-3">
+        <input type="text" id="productSearch" placeholder="Search for crops, grains, vegetables..." class="form-control" />
+      </div>
+
+      <div class="navbar-icons ms-3">
+        <a href="/notifications" class="notification-icon" title="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <% if (typeof notificationCount !== 'undefined' && notificationCount > 0) { %>
+            <span class="notification-badge"><%= notificationCount > 9 ? '9+' : notificationCount %></span>
+          <% } %>
+        </a>
+        <a href="/cart" class="cart-icon-link" title="View Cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+
+        <!-- USER DROPDOWN -->
+        <div class="navbar-user" id="userDropdown">
+          <div class="avatar">
+            <%= user && user.fullName ? user.fullName.charAt(0).toUpperCase() : "U" %>
+          </div>
+          <span><%= user && user.fullName ? user.fullName.split(" ")[0] : "Guest" %></span>
+          <i class="fa-solid fa-chevron-down"></i>
+
+          <div class="jd-user-menu">
+            <div class="jd-user-info">
+              <strong><%= user && user.fullName ? user.fullName : "Guest User" %></strong>
+              <small><%= user && user.email ? user.email : "Not logged in" %></small>
+            </div>
+            <a href="/profile"><i class="fa-regular fa-user"></i> Profile</a>
+            <a href="/orders"><i class="fa-solid fa-box"></i> Orders</a>
+            <div class="jd-divider"></div>
+            <a href="/logout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+    
+
+<!-- PAGE -->
+<div class="container">
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+
+  <% if (typeof message !== 'undefined' && message) { %>
+    <div class="alert alert-success"><%= message %></div>
+  <% } %>
+
+  <div class="title-row">
+    <div>
+      <h1>Order History</h1>
+      <div class="subtitle">Track and manage your orders</div>
+    </div>
+
+    <select class="filter">
+      <option>All Orders</option>
+      <option>Delivered</option>
+      <option>In Transit</option>
+      <option>Pending</option>
+    </select>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="icon-box green"><i class="ri-box-3-line"></i></div>
+      <div>
+        <div class="stat-number"><%= stats.total %></div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="icon-box blue"><i class="ri-truck-line"></i></div>
+      <div>
+        <div class="stat-number"><%= stats.transit %></div>
+        <div class="stat-label">In Transit</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="icon-box green"><i class="ri-check-line"></i></div>
+      <div>
+        <div class="stat-number"><%= stats.delivered %></div>
+        <div class="stat-label">Delivered</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="icon-box yellow"><i class="ri-time-line"></i></div>
+      <div>
+        <div class="stat-number"><%= stats.pending %></div>
+        <div class="stat-label">Pending</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDERS -->
+  <% orders.forEach(order => { %>
+  <div class="order-card">
+
+    <div class="order-header" onclick="toggleOrder('<%= order._id %>')">
+      <div class="order-left">
+        <div class="product-icon">
+          <i class="ri-archive-line"></i>
+        </div>
+
+        <div>
+          <small><%= order.orderId %></small>
+          <span class="badge <%= order.status === 'Delivered' ? 'badge-green' : 'badge-blue' %>">
+            <%= order.status %>
+          </span>
+          <h3><%= order.items[0].product.name %></h3>
+          <small>
+            <%= order.items[0].quantity %> units • ₹<%= order.totalAmount.toLocaleString() %>
+          </small>
+        </div>
+      </div>
+
+      <div>
+        <i class="ri-arrow-down-s-line"></i>
+        <div>
+          <small><%= order.createdAt.toDateString() %></small><br>
+          <span style="color:#16a34a">
+            Delivery: <%= order.expectedDelivery?.toDateString() %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAILS -->
+    <div class="order-details" id="order-<%= order._id %>">
+
+      <!-- TIMELINE -->
+      <div>
+        <h3>Order Timeline</h3>
+        <div class="timeline">
+          <% order.timeline.forEach(t => { %>
+          <div class="timeline-item">
+            <div class="timeline-dot">
+              <i class="ri-check-line"></i>
+            </div>
+            <div>
+              <strong><%= t.status %></strong><br>
+              <small><%= new Date(t.date).toDateString() %></small>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <!-- DELIVERY INFO -->
+      <div class="delivery-box">
+        <h3>Delivery Information</h3>
+        <p><strong>Delivery Address</strong></p>
+        <p><%= order.deliveryAddress %></p>
+
+        <p><strong>Expected Delivery</strong></p>
+        <p><%= order.expectedDelivery?.toDateString() %></p>
+      </div>
+
+      <% if (user && user.role === 'admin') { %>
+      <div class="delivery-box mt-3">
+        <h3>Update Order Status</h3>
+        <form action="/orders/<%= order._id %>/status" method="POST" class="d-flex gap-2 align-items-center flex-wrap">
+          <select name="status" class="form-select" style="max-width: 220px;">
+            <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+            <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+            <option value="In Transit" <%= order.status === 'In Transit' ? 'selected' : '' %>>In Transit</option>
+            <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+          </select>
+          <button type="submit" class="btn btn-primary">Update Status</button>
+        </form>
+      </div>
+      <% } %>
+
+    </div>
+
+  </div>
+  <% }) %>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="jd-footer-section mt-5">
+  <div class="container-fluid px-5 mt-3">
+    <div class="row gy-4">
+
+      <!-- BRAND -->
+      <div class="col-lg-4 col-md-6">
+        <div class="d-flex align-items-center mb-3">
+          <img src="/images/image.png" height="40" style="border-radius:8px;">
+          <h5 class="ms-2 mb-0">JD Mart</h5>
+        </div>
+        <p class="text-muted">
+          JD Mart connects farmers directly with buyers, offering fresh crops, transparent pricing, and fast delivery across regions.
+        </p>
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="col-lg-2 col-md-6">
+        <h6 class="footer-title">Quick Links</h6>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/profile">My Profile</a></li>
+          <li><a href="/orders">My Orders</a></li>
+          <li><a href="/listings">Browse Products</a></li>
+        </ul>
+      </div>
+
+      <!-- SUPPORT -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="footer-title">Support</h6>
+        <ul class="footer-links">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Delivery Info</a></li>
+          <li><a href="#">Returns & Refunds</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="footer-title">Contact Us</h6>
+        <p class="mb-1"><i class="fa-solid fa-location-dot"></i> India</p>
+        <p class="mb-1"><i class="fa-solid fa-envelope"></i> support@jdmart.com</p>
+        <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
+
+        <div class="footer-social mt-3">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="mt-4">
+
+    <div class="text-center pb-3">
+      <small>
+        © <%= new Date().getFullYear() %> JD Mart. All rights reserved.
+      </small>
+    </div>
+  </div>
+</footer>
+
+
+<script src="/js/script.js"></script>
+<script>
+  function toggleOrder(id) {
+    const el = document.getElementById("order-" + id);
+    el.style.display = el.style.display === "grid" ? "none" : "grid";
+  }
+</script>
+
+
+</body>
+</html>
+98+

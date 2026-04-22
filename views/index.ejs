@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Mart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+
+    <!-- LOGO -->
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/images/image.png" alt="JD Mart Logo" height="40" style="border-radius: 8px;"/>
+      <span class="ms-2 fw-bold">JD Mart</span>
+    </a>
+
+    <!-- LOCATION -->
+    <div class="ms-auto me-4 d-flex align-items-center d-none d-lg-flex">
+      <i class="fa-solid fa-location-dot me-1" style="color: #16a34a;"></i>
+      <span id="locationText" style="font-size: 15px;">Getting location...</span>
+    </div>
+
+    <!-- TOGGLER BUTTON -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- REST OF NAVBAR -->
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-search ms-3">
+        <input type="text" id="productSearch" value="<%= search || '' %>" placeholder="Search for crops, grains, vegetables..." class="form-control" />
+      </div>
+
+      <div class="navbar-icons ms-3">
+        <a href="/notifications" class="notification-icon" title="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <% if (typeof notificationCount !== 'undefined' && notificationCount > 0) { %>
+            <span class="notification-badge"><%= notificationCount > 9 ? '9+' : notificationCount %></span>
+          <% } %>
+        </a>
+        <a href="/cart" class="cart-icon-link" title="View Cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+            <span class="cart-badge"><%= cartCount %></span>
+          <% } %>
+        </a>
+
+        <!-- USER DROPDOWN -->
+        <div class="navbar-user" id="userDropdown">
+          <div class="avatar">
+            <%= user && user.fullName ? user.fullName.charAt(0).toUpperCase() : "U" %>
+          </div>
+          <span><%= user && user.fullName ? user.fullName.split(" ")[0] : "Guest" %></span>
+          <i class="fa-solid fa-chevron-down"></i>
+
+          <div class="jd-user-menu">
+            <div class="jd-user-info">
+              <strong><%= user && user.fullName ? user.fullName : "Guest User" %></strong>
+              <small><%= user && user.email ? user.email : "Not logged in" %></small>
+            </div>
+            <a href="/profile"><i class="fa-regular fa-user"></i> Profile</a>
+            <a href="/orders"><i class="fa-solid fa-box"></i> Orders</a>
+            <div class="jd-divider"></div>
+            <a href="/logout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+    
+<!-- Premium Buyer Section -->
+<div class="premium-section container-fluid my-4 p-4 shadow-sm">
+  <div class="row">
+    
+    <!-- Left + Stats -->
+    <div class="col-12">
+
+      <!-- Text Info -->
+      <span class="fw-bold mb-2 d-block">
+        <i class="fa-regular fa-star"></i> Premium Buyer
+      </span>
+
+      <h3 class="mb-1">Fresh Crops, Direct from Farms</h3>
+      <p>Browse our selection of quality-verified crops at competitive prices. Fast delivery to your doorstep.</p>
+
+      <!-- Stats Below -->
+      <div class="d-flex flex-wrap gap-4 mt-3">
+
+        <div class="d-flex align-items-center gap-2 premium-stat">
+          <i class="fa-solid fa-box"></i>
+          <span>7 Products Available</span>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 premium-stat">
+          <i class="fa-regular fa-truck"></i>
+          <span>1-4 Days Delivery</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- DASHBOARD STATISTICS -->
+
+  <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1 gx-4 px-4">
+
+    <!-- Categories -->
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card d-flex align-items-center p-3">
+        <div class="stat-icon me-3">
+          <i class="fa-solid fa-leaf"></i>
+        </div>
+        <div>
+          <h4 class="mb-1"><%= dashboardStats.totalCategories?.[0]?.count || 0 %></h4>
+          <p class="mb-0 text-muted">Categories</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products In Stock -->
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card d-flex align-items-center p-3">
+        <div class="stat-icon me-3" style="background-color: rgba(245,158,11,0.1);">
+          <i class="fa-solid fa-cube" style="color: #f59e0b;"></i>
+        </div>
+        <div>
+          <h4 class="mb-1"><%= dashboardStats.inStock?.[0]?.count || 0 %></h4>
+          <p class="mb-0 text-muted">Products In Stock</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Below Market -->
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card d-flex align-items-center p-3">
+        <div class="stat-icon me-3" style="background-color: rgba(239,68,68,0.1);">
+          <i class="fa-solid fa-arrow-trend-down" style="color: #ef4444;"></i>
+        </div>
+        <div>
+          <h4 class="mb-1"><%= dashboardStats.belowMarket?.[0]?.count || 0 %></h4>
+          <p class="mb-0 text-muted">Below Market</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grade A Products -->
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card d-flex align-items-center p-3">
+        <div class="stat-icon me-3" style="background-color: rgba(59,130,246,0.1);">
+          <i class="fa-regular fa-star" style="color: #3b82f6;"></i>
+        </div>
+        <div>
+          <h4 class="mb-1"><%= dashboardStats.gradeA?.[0]?.count || 0 %></h4>
+          <p class="mb-0 text-muted">Grade A Products</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+
+<!-- Advanced Filters -->
+<div class="mb-4 mt-4 m-4" style="background: white; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+  <form id="filterForm" method="GET" action="/products">
+    <div class="row g-3">
+      <!-- Category Filters -->
+      <div class="col-lg-3">
+        <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
+          <i class="fa-solid fa-tag"></i> Category
+        </h6>
+        <div class="category-filters" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" class="cat-btn <%= !category || category === 'all' ? 'active' : '' %>" data-category="all" onclick="filterByCategory('all')">All</button>
+          <button type="button" class="cat-btn <%= category === 'Grains' ? 'active' : '' %>" data-category="Grains" onclick="filterByCategory('Grains')">Grains</button>
+          <button type="button" class="cat-btn <%= category === 'Pulses' ? 'active' : '' %>" data-category="Pulses" onclick="filterByCategory('Pulses')">Pulses</button>
+          <button type="button" class="cat-btn <%= category === 'Oilseeds' ? 'active' : '' %>" data-category="Oilseeds" onclick="filterByCategory('Oilseeds')">Oilseeds</button>
+          <button type="button" class="cat-btn <%= category === 'Spices' ? 'active' : '' %>" data-category="Spices" onclick="filterByCategory('Spices')">Spices</button>
+        </div>
+      </div>
+
+      <!-- Price Range -->
+      <div class="col-lg-2">
+        <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
+          <i class="fa-solid fa-indian-rupee-sign"></i> Price Range
+        </h6>
+        <div>
+          <label style="font-size: 0.875rem; margin-bottom: 0.5rem;">Min (₹/kg)</label>
+          <input type="number" name="priceMin" id="priceMin" class="form-control form-control-sm" value="<%= priceMin || '' %>" placeholder="Min">
+          <label style="font-size: 0.875rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">Max (₹/kg)</label>
+          <input type="number" name="priceMax" id="priceMax" class="form-control form-control-sm" value="<%= priceMax || '' %>" placeholder="Max">
+        </div>
+      </div>
+
+      <!-- Grade -->
+      <div class="col-lg-2">
+        <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
+          <i class="fa-solid fa-star"></i> Grade
+        </h6>
+        <select name="grade" id="gradeFilter" class="form-select form-select-sm">
+          <option value="">All Grades</option>
+          <option value="A" <%= grade === 'A' ? 'selected' : '' %>>Grade A</option>
+          <option value="B" <%= grade === 'B' ? 'selected' : '' %>>Grade B</option>
+          <option value="C" <%= grade === 'C' ? 'selected' : '' %>>Grade C</option>
+        </select>
+      </div>
+
+      <!-- Availability -->
+      <div class="col-lg-2">
+        <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
+          <i class="fa-solid fa-box"></i> Stock
+        </h6>
+        <select name="availability" id="availabilityFilter" class="form-select form-select-sm">
+          <option value="">All</option>
+          <option value="in-stock" <%= availability === 'in-stock' ? 'selected' : '' %>>In Stock</option>
+          <option value="low-stock" <%= availability === 'low-stock' ? 'selected' : '' %>>Low Stock</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="col-lg-3 d-flex align-items-end gap-2">
+        <button type="submit" class="btn btn-sm btn-success" style="flex: 1;">
+          <i class="fa-solid fa-filter"></i> Apply Filters
+        </button>
+        <a href="/products" class="btn btn-sm btn-outline-secondary" style="flex: 1;">
+          <i class="fa-solid fa-redo"></i> Reset
+        </a>
+      </div>
+    </div>
+
+    <!-- Hidden inputs for search -->
+    <input type="hidden" name="search" value="<%= search || '' %>">
+    <input type="hidden" id="categoryInput" name="category" value="<%= category || '' %>">
+  </form>
+</div>
+
+<script>
+  function filterByCategory(cat) {
+    document.getElementById('categoryInput').value = cat === 'all' ? '' : cat;
+    document.getElementById('filterForm').submit();
+  }
+</script>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="container-fluid px-4">
+    <div class="alert alert-danger"><%= error %></div>
+  </div>
+<% } %>
+
+<% if (typeof message !== 'undefined' && message) { %>
+  <div class="container-fluid px-4">
+    <div class="alert alert-success"><%= message %></div>
+  </div>
+<% } %>
+
+    <!-- No Results State -->
+    <% if (!allProducts || allProducts.length === 0) { %>
+      <div class="container-fluid px-4" style="margin: 4rem 0;">
+        <div style="text-align: center; padding: 3rem;">
+          <i class="fa-solid fa-search" style="font-size: 4rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+          <h3 style="color: #6b7280; margin-bottom: 0.5rem;">No Products Found</h3>
+          <p style="color: #9ca3af; margin-bottom: 1.5rem;">
+            Try adjusting your filters or search terms
+          </p>
+          <a href="/products" class="btn btn-success">
+            <i class="fa-solid fa-redo"></i> Clear Filters
+          </a>
+        </div>
+      </div>
+    <% } else { %>
+
+    <!-- Product Cards -->
+ <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1 gx-4 px-4 mb-6">
+
+    <% for(let product of allProducts){ %>
+    <a href="/products/<%= product._id %>" class="product-link" data-category="<%= product.category.toLowerCase() %>" data-search="<%= [product.name, product.category, product.description].filter(Boolean).join(' ') %>">
+
+  <div class="jd-card">
+
+    <!-- IMAGE -->
+    <div class="jd-image">
+      <img
+        src="<%= getImageUrl(product.images) %>"
+        alt="<%= product.name %>"
+        class="jd-image-tag"
+        onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
+      >
+
+      <!-- BADGES -->
+      <div class="jd-badges">
+        <span class="jd-grade">
+          <i class="fa-regular fa-star"></i> Grade <%= product.grade %>
+        </span>
+
+        <span class="jd-market">
+          <i class="fa-solid fa-arrow-trend-down"></i>
+          <%= product.belowMarketPercent %>% below market
+        </span>
+
+        <% 
+          const actualAvailable = (product.available - (product.reserved || 0));
+          if (actualAvailable <= 0) {
+        %>
+          <span class="badge bg-danger">
+            <i class="fa-solid fa-exclamation-circle"></i> Out of Stock
+          </span>
+        <% } else if (actualAvailable <= 5) { %>
+          <span class="badge bg-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i> Only <%= actualAvailable %> left!
+          </span>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="jd-body">
+
+      <div class="jd-meta">
+        <span class="jd-category"><%= product.category.toUpperCase() %></span>
+        <span class="jd-demand <%= product.demandLevel.toLowerCase() %>">
+          <%= product.demandLevel %> Demand
+        </span>
+      </div>
+
+      <h5 class="jd-product-name"><%= product.name %></h5>
+
+      <div class="jd-price">
+        <span class="jd-current">
+        ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
+        </span>
+        <span class="jd-unit">/kg</span>
+        <span class="jd-old">
+        ₹<%= (product.oldPrice / 100).toFixed(2) %>
+        </span>
+      </div>
+      <hr style="color: #545654; margin-bottom: 0px;">
+      <div class="jd-footer">
+        <span>
+          <i class="fa-solid fa-cart-shopping"></i>
+          <%= product.available * 100 %> kg available
+        </span>
+        <span>
+          <i class="fa-regular fa-clock"></i>
+          <%= product.deliveryTime.minDays %>-<%= product.deliveryTime.maxDays %> days
+        </span>
+      </div>
+
+    </div>
+  </div>
+</a>
+<% } %>
+    </div>
+    <% } %>
+
+<% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+  <div class="container-fluid px-4 mb-5">
+    <nav aria-label="Product pagination">
+      <ul class="pagination justify-content-center mt-3">
+        <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="/products?page=<%= Math.max(1, page - 1) %><%= search ? `&search=${encodeURIComponent(search)}` : '' %><%= category ? `&category=${encodeURIComponent(category)}` : '' %><%= priceMin ? `&priceMin=${priceMin}` : '' %><%= priceMax ? `&priceMax=${priceMax}` : '' %><%= grade ? `&grade=${grade}` : '' %><%= availability ? `&availability=${availability}` : '' %>">Previous</a>
+        </li>
+        <li class="page-item disabled"><span class="page-link">Page <%= page %> of <%= totalPages %></span></li>
+        <li class="page-item <%= page >= totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="/products?page=<%= Math.min(totalPages, page + 1) %><%= search ? `&search=${encodeURIComponent(search)}` : '' %><%= category ? `&category=${encodeURIComponent(category)}` : '' %><%= priceMin ? `&priceMin=${priceMin}` : '' %><%= priceMax ? `&priceMax=${priceMax}` : '' %><%= grade ? `&grade=${grade}` : '' %><%= availability ? `&availability=${availability}` : '' %>">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+<% } %>
+
+
+  
+<!-- FOOTER -->
+<footer class="jd-footer-section mt-5">
+  <div class="container-fluid px-5 mt-3">
+    <div class="row gy-4">
+
+      <!-- BRAND -->
+      <div class="col-lg-4 col-md-6">
+        <div class="d-flex align-items-center mb-3">
+          <img src="/images/image.png" height="40" style="border-radius:8px;">
+          <h5 class="ms-2 mb-0">JD Mart</h5>
+        </div>
+        <p class="text-muted">
+          JD Mart connects farmers directly with buyers, offering fresh crops, transparent pricing, and fast delivery across regions.
+        </p>
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="col-lg-2 col-md-6">
+        <h6 class="footer-title">Quick Links</h6>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/profile">My Profile</a></li>
+          <li><a href="/orders">My Orders</a></li>
+          <li><a href="/listings">Browse Products</a></li>
+        </ul>
+      </div>
+
+      <!-- SUPPORT -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="footer-title">Support</h6>
+        <ul class="footer-links">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Delivery Info</a></li>
+          <li><a href="#">Returns & Refunds</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="footer-title">Contact Us</h6>
+        <p class="mb-1"><i class="fa-solid fa-location-dot"></i> India</p>
+        <p class="mb-1"><i class="fa-solid fa-envelope"></i> support@jdmart.com</p>
+        <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
+
+        <div class="footer-social mt-3">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="mt-4">
+
+    <div class="text-center pb-3">
+      <small>
+        © <%= new Date().getFullYear() %> JD Mart. All rights reserved.
+      </small>
+    </div>
+  </div>
+</footer>
+
+
+
+
+   <script src="/js/script.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

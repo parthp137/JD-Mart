@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= isEdit ? 'Edit' : 'Create' %> Product - JD Mart Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8faf8;
+    }
+    .admin-nav {
+      background: linear-gradient(to right, #e9f7ee, #ffffff);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 1rem 2rem;
+    }
+    .admin-nav-brand {
+      color: #16a34a;
+      font-weight: 700;
+      font-size: 1.4rem;
+    }
+    .form-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    .form-section {
+      margin-bottom: 2rem;
+    }
+    .form-section h4 {
+      color: #1f2937;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="admin-nav">
+  <div class="d-flex justify-content-between align-items-center">
+    <a href="/admin/products" class="btn btn-outline-secondary btn-sm" style="margin-right: 1rem;">
+      <i class="fa-solid fa-arrow-left"></i> Back to Products
+    </a>
+    <div class="admin-nav-brand">
+      <i class="fa-solid fa-leaf"></i> JD Mart Admin
+    </div>
+  </div>
+</nav>
+
+<div class="container" style="margin-top: 2rem; margin-bottom: 4rem;">
+
+  <div class="form-card">
+    <h2 style="color: #1f2937; margin-bottom: 1.5rem;">
+      <i class="fa-solid fa-<%= isEdit ? 'pencil' : 'plus' %>"></i>
+      <%= isEdit ? 'Edit Product' : 'Create New Product' %>
+    </h2>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <% } %>
+
+    <form action="<%= isEdit ? `/admin/products/${product._id}/update` : '/admin/products/create' %>" method="POST">
+      
+      <!-- Basic Information -->
+      <div class="form-section">
+        <h4>Basic Information</h4>
+
+        <div class="mb-3">
+          <label for="name" class="form-label">Product Name*</label>
+          <input type="text" id="name" name="name" class="form-control" 
+                 value="<%= product ? product.name : '' %>" required>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <label for="category" class="form-label">Category*</label>
+            <select id="category" name="category" class="form-select" required>
+              <option value="">Select Category</option>
+              <option value="Grains" <%= product && product.category === 'Grains' ? 'selected' : '' %>>Grains</option>
+              <option value="Pulses" <%= product && product.category === 'Pulses' ? 'selected' : '' %>>Pulses</option>
+              <option value="Oilseeds" <%= product && product.category === 'Oilseeds' ? 'selected' : '' %>>Oilseeds</option>
+              <option value="Spices" <%= product && product.category === 'Spices' ? 'selected' : '' %>>Spices</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label for="grade" class="form-label">Grade*</label>
+            <select id="grade" name="grade" class="form-select" required>
+              <option value="">Select Grade</option>
+              <option value="A" <%= product && product.grade === 'A' ? 'selected' : '' %>>Grade A</option>
+              <option value="B" <%= product && product.grade === 'B' ? 'selected' : '' %>>Grade B</option>
+              <option value="C" <%= product && product.grade === 'C' ? 'selected' : '' %>>Grade C</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" name="description" class="form-control" rows="3" 
+                    maxlength="200"><%= product ? product.description : '' %></textarea>
+          <small class="form-text text-muted">Max 200 characters</small>
+        </div>
+      </div>
+
+      <!-- Pricing Information -->
+      <div class="form-section">
+        <h4>Pricing Information</h4>
+
+        <div class="row">
+          <div class="col-md-6">
+            <label for="pricePerQuintal" class="form-label">Price per Quintal (in paise)*</label>
+            <input type="number" id="pricePerQuintal" name="pricePerQuintal" class="form-control" 
+                   value="<%= product ? product.pricePerQuintal : '' %>" required step="100">
+            <small class="form-text text-muted">₹<span id="priceDisplay">0</span>/kg</small>
+          </div>
+
+          <div class="col-md-6">
+            <label for="oldPrice" class="form-label">Old Price (in paise)</label>
+            <input type="number" id="oldPrice" name="oldPrice" class="form-control" 
+                   value="<%= product ? product.oldPrice : '' %>" step="100">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="belowMarketPercent" class="form-label">Below Market Percent</label>
+          <div class="input-group">
+            <input type="number" id="belowMarketPercent" name="belowMarketPercent" class="form-control" 
+                   value="<%= product ? product.belowMarketPercent : '' %>" step="0.1">
+            <span class="input-group-text">%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory -->
+      <div class="form-section">
+        <h4>Inventory</h4>
+
+        <div class="row">
+          <div class="col-md-6">
+            <label for="available" class="form-label">Available Stock (in quintals)*</label>
+            <input type="number" id="available" name="available" class="form-control" 
+                   value="<%= product ? product.available : 0 %>" required min="0">
+          </div>
+
+          <% if (isEdit && product && product.reserved) { %>
+            <div class="col-md-6">
+              <label for="reserved" class="form-label">Reserved Stock (in quintals)</label>
+              <input type="number" id="reserved" name="reserved" class="form-control" 
+                     value="<%= product.reserved || 0 %>" readonly disabled>
+              <small class="form-text text-muted">This is auto-calculated and cannot be manually changed</small>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Demand & Delivery -->
+      <div class="form-section">
+        <h4>Demand & Delivery</h4>
+
+        <div class="row">
+          <div class="col-md-6">
+            <label for="demandLevel" class="form-label">Demand Level*</label>
+            <select id="demandLevel" name="demandLevel" class="form-select" required>
+              <option value="">Select Demand Level</option>
+              <option value="Low" <%= product && product.demandLevel === 'Low' ? 'selected' : '' %>>Low</option>
+              <option value="Medium" <%= product && product.demandLevel === 'Medium' ? 'selected' : '' %>>Medium</option>
+              <option value="High" <%= product && product.demandLevel === 'High' ? 'selected' : '' %>>High</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Delivery Time (in days)*</label>
+            <div class="row">
+              <div class="col-6">
+                <label for="deliveryTimeMin" class="form-label" style="font-size: 0.875rem;">Min</label>
+                <input type="number" id="deliveryTimeMin" name="deliveryTimeMin" class="form-control" 
+                       value="<%= product && product.deliveryTime ? product.deliveryTime.minDays : '' %>" required min="0">
+              </div>
+              <div class="col-6">
+                <label for="deliveryTimeMax" class="form-label" style="font-size: 0.875rem;">Max</label>
+                <input type="number" id="deliveryTimeMax" name="deliveryTimeMax" class="form-control" 
+                       value="<%= product && product.deliveryTime ? product.deliveryTime.maxDays : '' %>" required min="0">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Images/Media -->
+      <% if (isEdit && product) { %>
+        <div class="form-section">
+          <h4>Product Images</h4>
+
+          <!-- Upload Area -->
+          <div class="mb-4">
+            <div id="uploadDropZone" class="p-4 border-2 border-dashed rounded text-center" 
+                 style="border-color: #16a34a; cursor: pointer; background-color: #f0fdf4; transition: all 0.3s;">
+              <i class="fa-solid fa-cloud-arrow-up fa-3x" style="color: #16a34a; margin-bottom: 1rem;"></i>
+              <p style="color: #16a34a; font-weight: 500; margin-bottom: 0.5rem;">Drop images here or click to browse</p>
+              <small class="text-muted" style="display: block;">Supported formats: JPEG, PNG, GIF, WebP (Max 5MB each)</small>
+              <input type="file" id="imageInput" style="display: none;" accept="image/*" multiple>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div id="uploadProgress" class="mb-3" style="display: none;">
+            <div class="progress">
+              <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" 
+                   style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <!-- Current Images Gallery -->
+          <% if (product.images && product.images.length > 0) { %>
+            <div class="row g-3 mb-4">
+              <h5 style="margin-top: 1rem; margin-bottom: 1rem;">Current Images</h5>
+              <% product.images.forEach((img, index) => { %>
+                <div class="col-md-3 col-sm-6">
+                  <div class="card h-100 position-relative" style="overflow: hidden;">
+                    <img src="<%= img.url %>" class="card-img-top" style="height: 200px; object-fit: cover;" 
+                         onerror="this.src='/images/products/default-crop.svg'">
+                    <div class="card-body p-2">
+                      <small class="text-muted d-block text-truncate"><%= img.filename %></small>
+                      <small class="text-muted d-block">
+                        <%= new Date(img.uploadedAt).toLocaleDateString() %>
+                      </small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" 
+                            onclick="deleteImage(<%= index %>)" title="Delete image">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="alert alert-info mb-4">
+              <i class="fa-solid fa-info-circle"></i> No images uploaded yet. Upload your first product image above.
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+
+      <!-- Buttons -->
+      <div class="d-flex gap-2 justify-content-end" style="margin-top: 2rem;">
+        <a href="/admin/products" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-success">
+          <i class="fa-solid fa-<%= isEdit ? 'save' : 'plus' %>"></i>
+          <%= isEdit ? 'Update Product' : 'Create Product' %>
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+<script>
+  // Live price display
+  document.getElementById('pricePerQuintal').addEventListener('input', (e) => {
+    const priceInPaise = parseInt(e.target.value) || 0;
+    const pricePerKg = (priceInPaise / 100).toFixed(2);
+    document.getElementById('priceDisplay').textContent = pricePerKg;
+  });
+
+  // Initialize price display on load
+  const initialPrice = document.getElementById('pricePerQuintal').value;
+  if (initialPrice) {
+    document.getElementById('priceDisplay').textContent = (parseInt(initialPrice) / 100).toFixed(2);
+  }
+
+  // ===========================
+  // IMAGE UPLOAD FUNCTIONALITY
+  // ===========================
+  const uploadZone = document.getElementById('uploadDropZone');
+  const imageInput = document.getElementById('imageInput');
+  const uploadProgress = document.getElementById('uploadProgress');
+  const progressBar = document.getElementById('progressBar');
+
+  if (uploadZone && imageInput) {
+    // Click to upload
+    uploadZone.addEventListener('click', () => imageInput.click());
+
+    // Drag and drop
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '#059669';
+      uploadZone.style.backgroundColor = '#ecfdf5';
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.style.borderColor = '#16a34a';
+      uploadZone.style.backgroundColor = '#f0fdf4';
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '#16a34a';
+      uploadZone.style.backgroundColor = '#f0fdf4';
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleImageUpload(files);
+      }
+    });
+
+    // File input change
+    imageInput.addEventListener('change', (e) => {
+      handleImageUpload(e.target.files);
+    });
+  }
+
+  function handleImageUpload(files) {
+    const productId = '<%= product._id %>';
+    
+    Array.from(files).forEach((file, index) => {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert(`"${file.name}" is not an image file`);
+        return;
+      }
+
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert(`"${file.name}" exceeds 5MB limit`);
+        return;
+      }
+
+      uploadFile(file, productId, index, files.length);
+    });
+  }
+
+  function uploadFile(file, productId, fileIndex, totalFiles) {
+    const formData = new FormData();
+    formData.append('productImage', file);
+
+    const xhr = new XMLHttpRequest();
+
+    // Progress tracking
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable && totalFiles === 1) {
+        const percentComplete = (e.loaded / e.total) * 100;
+        uploadProgress.style.display = 'block';
+        progressBar.style.width = percentComplete + '%';
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          if (response.success) {
+            // Add image to DOM
+            const container = document.querySelector('.row.g-3.mb-4');
+            if (!container) {
+              location.reload(); // Reload to show new image
+              return;
+            }
+
+            const imageHtml = `
+              <div class="col-md-3 col-sm-6">
+                <div class="card h-100 position-relative" style="overflow: hidden;">
+                  <img src="${response.image.url}" class="card-img-top" style="height: 200px; object-fit: cover;" 
+                       onerror="this.src='/images/products/default-crop.svg'">
+                  <div class="card-body p-2">
+                    <small class="text-muted d-block text-truncate">${response.image.filename}</small>
+                    <small class="text-muted d-block">
+                      ${new Date(response.image.uploadedAt).toLocaleDateString()}
+                    </small>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" 
+                          onclick="deleteImage(${container.querySelectorAll('.col-md-3').length - 1})" title="Delete image">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            `;
+
+            const emptyState = document.querySelector('.alert.alert-info');
+            if (emptyState) {
+              emptyState.remove();
+              uploadProgress.style.display = 'none';
+            }
+
+            container.insertAdjacentHTML('beforeend', imageHtml);
+            imageInput.value = ''; // Clear input
+            alert('Image uploaded successfully!');
+          }
+        } catch (err) {
+          console.error('Parse error:', err);
+          alert('Error uploading image');
+        }
+      } else {
+        alert('Upload failed: ' + (JSON.parse(xhr.responseText).error || 'Unknown error'));
+      }
+      uploadProgress.style.display = 'none';
+      progressBar.style.width = '0%';
+    });
+
+    xhr.addEventListener('error', () => {
+      alert('Upload error');
+      uploadProgress.style.display = 'none';
+    });
+
+    xhr.open('POST', `/admin/products/${productId}/upload-image`);
+    xhr.send(formData);
+  }
+
+  function deleteImage(index) {
+    if (!confirm('Are you sure you want to delete this image?')) {
+      return;
+    }
+
+    const productId = '<%= product._id %>';
+    
+    fetch(`/admin/products/${productId}/delete-image/${index}`, {
+      method: 'POST'
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert('Image deleted successfully');
+        location.reload(); // Reload to reflect changes
+      } else {
+        alert('Failed to delete image: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(err => {
+      console.error('Delete error:', err);
+      alert('Error deleting image');
+    });
+  }
+</script>
+</body>
+</html>

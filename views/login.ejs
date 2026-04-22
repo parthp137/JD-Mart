@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JD Mart | Login</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+
+    
+<div class="container">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="logo">🍃</div>
+      <div>
+        <h3>JD Mart</h3>
+        <span>Buyer Portal</span>
+      </div>
+    </div>
+
+    <h1>
+      Source Premium Crops<br>
+      Directly from Farmers
+    </h1>
+
+    <p>
+      Connect with verified farmers, get competitive prices, and grow your business.
+    </p>
+
+    <ul class="features">
+      <li>✔ 500+ verified suppliers</li>
+      <li>✔ Real-time market prices</li>
+      <li>✔ Secure payments</li>
+      <li>✔ Fast delivery</li>
+    </ul>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <div class="theme-toggle">☀</div>
+
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Sign in to your dashboard</p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger" style="margin-bottom:16px;">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (typeof message !== 'undefined' && message) { %>
+      <div class="alert alert-success" style="margin-bottom:16px;">
+        <%= message %>
+      </div>
+    <% } %>
+
+    <!-- Tabs -->
+    <div class="tabs">
+  <a href="/login" class="tab active">Password</a>
+  <a href="/otp-login" class="tab">OTP</a>
+</div>
+
+
+    
+
+    <form action="/login" method="POST" id="loginForm" novalidate>
+
+      <div class="input-group">
+        <label for="login">Email or Phone</label>
+        <div class="input-icon">
+          <span>✉</span>
+          <input 
+            type="text" 
+            id="login"
+            name="login" 
+            placeholder="demo@jdmart.com" 
+            required
+          >
+        </div>
+        <small class="invalid-feedback"></small>
+      </div>
+
+      <div class="input-group">
+        <div class="password-header">
+          <label for="password">Password</label>
+          <a href="/forgot-password">Forgot password?</a>
+        </div>
+
+        <div class="input-icon">
+          <span>🔒</span>
+          <input 
+            type="password" 
+            id="password"
+            name="password" 
+            placeholder="demo123" 
+            required
+          >
+          <span class="eye">👁</span>
+        </div>
+        <small class="invalid-feedback"></small>
+      </div>
+
+      <button class="btn" type="submit">
+        Sign In →
+      </button>
+
+    </form>
+
+    <!-- Demo Box -->
+    <div class="demo-box">
+      <strong>Demo Credentials</strong>
+      <p>Email: demo@jdmart.com • Password: demo123</p>
+    </div>
+
+    <p class="register-link">
+      Don't have an account?
+      <a href="/register">Create Account</a>
+    </p>
+
+  </div>
+
+</div>
+<script>
+  const path = window.location.pathname;
+  const tabs = document.querySelectorAll(".tab");
+
+  tabs.forEach(tab => {
+    if (tab.getAttribute("href") === path) {
+      tab.classList.add("active");
+    } else {
+      tab.classList.remove("active");
+    }
+  });
+</script>
+
+<script src="/js/validation.js"></script>
+
+</body>
+</html>

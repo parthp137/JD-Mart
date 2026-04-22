@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JD Mart | OTP Login</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/forgot-password.css">
+</head>
+<body>
+
+<div class="container">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="logo">🍃</div>
+      <div>
+        <h3>JD Mart</h3>
+        <span>Buyer Portal</span>
+      </div>
+    </div>
+
+    <h1>
+      Secure Login<br>
+      With One-Time Password
+    </h1>
+
+    <p>
+      We verify your phone number to keep your account safe and protected.
+    </p>
+
+    <ul class="features">
+      <li>✔ Fast verification</li>
+      <li>✔ Secure session login</li>
+      <li>✔ No password needed</li>
+      <li>✔ Trusted access</li>
+    </ul>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <div class="top-bar">
+      <a href="/login">← Back to Login</a>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger" style="margin-bottom:16px;">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <% if (typeof message !== 'undefined' && message) { %>
+      <div class="alert alert-success" style="margin-bottom:16px;">
+        <%= message %>
+      </div>
+    <% } %>
+
+    <% if (!step) { %>
+      <h2>Login with OTP</h2>
+      <p class="subtitle">Enter your registered phone number</p>
+
+      <form action="/send-otp" method="POST">
+        <div class="input-group">
+          <label>Phone</label>
+          <input 
+            type="text" 
+            name="phone" 
+            placeholder="Enter your phone number"
+            required
+          />
+        </div>
+
+        <button class="btn" type="submit">
+          Send OTP →
+        </button>
+      </form>
+
+      <div class="helper-box">
+        <strong>How it works</strong>
+        <p>
+          We’ll generate a 6-digit OTP and display it securely in the server terminal.
+          Enter it on the next screen to log in.
+        </p>
+      </div>
+
+    <% } else { %>
+
+      <h2>Verify OTP</h2>
+      <p class="subtitle">
+        OTP sent to <strong><%= phone %></strong>
+      </p>
+
+      <form action="/verify-otp" method="POST">
+        <div class="input-group">
+          <label>Enter OTP</label>
+          <input 
+            type="text" 
+            name="otp" 
+            placeholder="6-digit OTP"
+            required
+          />
+        </div>
+
+        <button class="btn" type="submit">
+          Verify & Login →
+        </button>
+      </form>
+
+      <div class="helper-box">
+        <strong>Tip</strong>
+        <p>
+          Check your VS Code terminal to see the OTP printed after clicking “Send OTP”.
+        </p>
+      </div>
+
+    <% } %>
+
+    <p class="login-link">
+      Prefer password login?
+      <a href="/login">Sign In</a>
+    </p>
+
+    <p class="register-link">
+      Don’t have an account?
+      <a href="/register">Create Account</a>
+    </p>
+
+  </div>
+
+</div>
+
+</body>
+</html>

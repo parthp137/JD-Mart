@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Mart | <%= product.name %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<a href="/products" class="jd-back mb-0 m-3">← Back to Products</a>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="m-3 alert alert-danger"><%= error %></div>
+<% } %>
+
+<% if (typeof message !== 'undefined' && message) { %>
+  <div class="m-3 alert alert-success"><%= message %></div>
+<% } %>
+
+<div class="jd-view-container">
+
+  <!-- LEFT IMAGE PANEL -->
+  <div class="jd-view-image">
+    <img
+      src="<%= getImageUrl(product.images) %>"
+      alt="<%= product.name %>"
+      class="jd-view-image-tag"
+      onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
+    >
+    <span class="jd-view-market">
+      <i class="fa-solid fa-arrow-trend-down"></i>
+      <%= product.belowMarketPercent %>% below market
+    </span>
+
+    <span class="jd-view-grade">
+      <i class="fa-regular fa-star"></i> Grade <%= product.grade %>
+    </span>
+  </div>
+
+
+  <!-- RIGHT CONTENT -->
+  <div class="jd-view-content">
+
+    
+
+    <h1 class="jd-title"><%= product.name %></h1>
+
+    <!-- PRICE CARD -->
+    <div class="jd-price-card">
+      <div class="jd-price-main">
+        ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
+          <span>per kg</span>
+      </div>
+
+      <div class="jd-market-row">
+        Market Price:
+        <span class="jd-old">
+          ₹<%= (product.oldPrice / 100).toFixed(2) %>
+        </span>
+
+        <span class="jd-save">
+          Save ₹<%= ((product.oldPrice - product.pricePerQuintal) / 100).toFixed(2) %>
+        </span>
+      </div>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="jd-section">
+      <h3>Description</h3>
+      <p><%= product.description %></p>
+    </div>
+
+    <!-- INFO CARDS -->
+    <div class="jd-info-grid">
+      <div class="jd-info-card">
+        <i class="fa-solid fa-box"></i>
+        <div>
+          <small>Available Quantity</small>
+          <% 
+            const actualAvailable = (product.available - (product.reserved || 0));
+            const displayQuantity = Math.max(0, actualAvailable) * 100;
+          %>
+          <strong><%= displayQuantity %> kg</strong>
+          <% if (actualAvailable <= 0) { %>
+            <span class="badge bg-danger ms-2">Out of Stock</span>
+          <% } else if (actualAvailable <= 5) { %>
+            <span class="badge bg-warning ms-2">Only <%= actualAvailable %> units left!</span>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="jd-info-card">
+        <i class="fa-regular fa-clock"></i>
+        <div>
+          <small>Delivery Time</small>
+          <strong>
+            <%= product.deliveryTime.minDays %>-<%= product.deliveryTime.maxDays %> days
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUANTITY -->
+    <div class="jd-quantity-card">
+      <label>Quantity (kg)</label>
+
+      <div class="jd-stepper">
+        <button type="button" class="jd-step" id="minusBtn">−</button>
+        <input type="text" id="qtyInput" value="10" />
+        <button type="button" class="jd-step" id="plusBtn">+</button>
+      </div>
+
+      <div class="jd-total">
+        <span>Total Price</span>
+        <strong>
+          ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
+        </strong>
+      </div>
+
+      <div class="jd-actions">
+        <form action="/cart/add/<%= product._id %>" method="POST" style="display: inline;" id="cartForm">
+          <input type="hidden" name="quantity" id="cartQty" value="10">
+          <button class="jd-btn-outline" type="submit">
+            <i class="fa-solid fa-cart-shopping"></i>
+            Add to Cart
+          </button>
+        </form>
+
+        <form action="/orders/buy-now/<%= product._id %>" method="POST" id="buyForm">
+          <input type="hidden" name="quantity" id="buyQty" value="10">
+          <button class="jd-btn-solid" type="submit">
+            Buy Now
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const minusBtn = document.getElementById('minusBtn');
+    const plusBtn = document.getElementById('plusBtn');
+    const quantityInput = document.getElementById('qtyInput');
+    const pricePerUnit = <%= product.pricePerQuintal %>;
+    const actualAvailable = Math.max(0, <%= product.available %> - <%= product.reserved || 0 %>);
+    const maxAvailable = actualAvailable;
+    const totalPriceEl = document.querySelector('.jd-total strong');
+    const cartQtyInput = document.getElementById('cartQty');
+    const buyQtyInput = document.getElementById('buyQty');
+
+    function updateTotalPrice() {
+      const qty = parseInt(quantityInput.value) || 10;
+      const total = (qty * pricePerUnit / 100).toFixed(2);
+      totalPriceEl.textContent = '₹' + total;
+      cartQtyInput.value = qty;
+      buyQtyInput.value = qty;
+    }
+
+    minusBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      let qty = parseInt(quantityInput.value) || 10;
+      if (qty > 1) {
+        quantityInput.value = qty - 1;
+        updateTotalPrice();
+      }
+    });
+
+    plusBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      let qty = parseInt(quantityInput.value) || 10;
+      if (qty < maxAvailable) {
+        quantityInput.value = qty + 1;
+        updateTotalPrice();
+      }
+    });
+
+    quantityInput.addEventListener('change', () => {
+      let qty = parseInt(quantityInput.value) || 10;
+      if (qty < 1) qty = 1;
+      if (qty > maxAvailable) qty = maxAvailable;
+      quantityInput.value = qty;
+      updateTotalPrice();
+    });
+
+    // Update on page load
+    updateTotalPrice();
+  });
+</script>
+
+<!-- FOOTER -->
+<footer class="jd-footer-section mt-5">
+  <div class="container-fluid px-5 mt-3">
+    <div class="row gy-4">
+
+      <!-- BRAND -->
+      <div class="col-lg-4 col-md-6">
+        <div class="d-flex align-items-center mb-3">
+          <img src="/images/image.png" height="40" style="border-radius:8px;">
+          <h5 class="ms-2 mb-0">JD Mart</h5>
+        </div>
+        <p class="text-muted">
+          JD Mart connects farmers directly with buyers, offering fresh crops, transparent pricing, and fast delivery across regions.
+        </p>
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="col-lg-2 col-md-6">
+        <h6 class="footer-title">Quick Links</h6>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/profile">My Profile</a></li>
+          <li><a href="/orders">My Orders</a></li>
+          <li><a href="/listings">Browse Products</a></li>
+        </ul>
+      </div>
+
+      <!-- SUPPORT -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="footer-title">Support</h6>
+        <ul class="footer-links">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Delivery Info</a></li>
+          <li><a href="#">Returns & Refunds</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="footer-title">Contact Us</h6>
+        <p class="mb-1"><i class="fa-solid fa-location-dot"></i> India</p>
+        <p class="mb-1"><i class="fa-solid fa-envelope"></i> support@jdmart.com</p>
+        <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
+
+        <div class="footer-social mt-3">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="mt-4">
+
+    <div class="text-center pb-3">
+      <small>
+        © <%= new Date().getFullYear() %> JD Mart. All rights reserved.
+      </small>
+    </div>
+  </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+
+<script>
+  const qtyInput = document.querySelector(".jd-stepper input");
+  const buyQty = document.getElementById("buyQty");
+  const cartQty = document.getElementById("cartQty");
+  const totalPrice = document.querySelector(".jd-total strong");
+
+  const price = <%= product.pricePerQuintal %> / 100; // price per kg
+  const maxQty = <%= product.available %> * 100;     // max kg
+
+  function updateTotal(val) {
+    val = Math.max(1, Math.min(maxQty, val));
+    qtyInput.value = val;
+    buyQty.value = val;
+    if (cartQty) cartQty.value = val;
+    totalPrice.textContent = "₹" + (val * price).toLocaleString("en-IN");
+  }
+
+  // Prevent typing invalid values
+  qtyInput.addEventListener("input", () => {
+    updateTotal(parseInt(qtyInput.value) || 1);
+  });
+
+  document.querySelectorAll(".jd-step").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.preventDefault();
+      let val = parseInt(qtyInput.value) || 1;
+
+      if (btn.textContent === "+") val += 5;
+      if (btn.textContent === "−") val -= 5;
+
+      updateTotal(val);
+    });
+  });
+
+  // Safety: update both hidden inputs before submit
+  document.querySelectorAll("form").forEach(form => {
+    form.addEventListener("submit", () => {
+      buyQty.value = qtyInput.value;
+      if (cartQty) cartQty.value = qtyInput.value;
+    });
+  });
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Mart | Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+
+    <!-- LOGO -->
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/images/image.png" alt="JD Mart Logo" height="40" style="border-radius: 8px;"/>
+      <span class="ms-2 fw-bold">JD Mart</span>
+    </a>
+
+    <!-- LOCATION -->
+    <div class="ms-auto me-4 d-flex align-items-center">
+      <i class="fa-solid fa-location-dot me-1" style="color: #16a34a;"></i>
+      <span id="locationText" style="font-size: 15px;">Getting location...</span>
+    </div>
+
+    <!-- REST OF NAVBAR -->
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-search ms-3">
+        <input type="text" id="productSearch" placeholder="Search for crops, grains, vegetables..." class="form-control" />
+      </div>
+
+      <div class="navbar-icons ms-3">
+        <a href="/notifications" class="notification-icon" title="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <% if (typeof notificationCount !== 'undefined' && notificationCount > 0) { %>
+            <span class="notification-badge"><%= notificationCount > 9 ? '9+' : notificationCount %></span>
+          <% } %>
+        </a>
+        <a href="/cart" class="cart-icon-link" title="View Cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+
+        <!-- USER DROPDOWN -->
+        <div class="navbar-user" id="userDropdown">
+          <div class="avatar">
+            <%= user && user.fullName ? user.fullName.charAt(0).toUpperCase() : "U" %>
+          </div>
+          <span><%= user && user.fullName ? user.fullName.split(" ")[0] : "Guest" %></span>
+          <i class="fa-solid fa-chevron-down"></i>
+
+          <div class="jd-user-menu">
+            <div class="jd-user-info">
+              <strong><%= user && user.fullName ? user.fullName : "Guest User" %></strong>
+              <small><%= user && user.email ? user.email : "Not logged in" %></small>
+            </div>
+            <a href="/profile"><i class="fa-regular fa-user"></i> Profile</a>
+            <a href="/orders"><i class="fa-solid fa-box"></i> Orders</a>
+            <div class="jd-divider"></div>
+            <a href="/logout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+    
+
+<!-- MAIN CONTAINER -->
+<div class="container-fluid my-4 p-4 rounded shadow-sm bg-light ">
+
+  <!-- PROFILE HEADER CARD -->
+  <div class="profile-card d-flex justify-content-between align-items-center"> 
+    
+    <div class="d-flex align-items-center gap-4">
+      <div class="avatar">
+        <%= user.fullName.charAt(0).toUpperCase() %>
+      </div>
+
+      <div>
+        <h4 class="mb-1">
+          <%= user.fullName %>
+          <span class="badge-role ms-2"><%= user.businessType %></span>
+        </h4>
+
+        <p class="mb-1 text-muted"><%= user.business %></p>
+
+        <div class="text-muted small d-flex gap-3">
+          <span><i class="bi bi-calendar"></i> Member since <%= new Date(user.createdAt).toLocaleDateString() %></span>
+          <span><i class="bi bi-envelope"></i> <%= user.email %></span>
+        </div>
+      </div>
+    </div>
+
+    <a href="/profile/edit" class="edit-btn">
+      <i class="bi bi-pencil"></i> Edit Profile
+    </a>
+  </div>
+
+  <!-- INFO GRID -->
+  <div class="row g-4">
+
+    <!-- PERSONAL INFO -->
+    <div class="col-md-6">
+      <div class="info-box">
+        <h5><i class="bi bi-person"></i> Personal Information</h5>
+
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-control" value="<%= user.fullName %>" readonly>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" value="<%= user.email %>" readonly>
+        </div>
+
+        <div>
+          <label class="form-label">Phone Number</label>
+          <input type="text" class="form-control" value="<%= user.phone %>" readonly>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUSINESS INFO -->
+    <div class="col-md-6">
+      <div class="info-box">
+        <h5><i class="bi bi-building"></i> Business Information</h5>
+
+        <div class="mb-3">
+          <label class="form-label">Business Name</label>
+          <input type="text" class="form-control" value="<%= user.business %>" readonly>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Business Type</label>
+          <input type="text" class="form-control" value="<%= user.businessType %>" readonly>
+        </div>
+
+        <div>
+          <label class="form-label">GST Number (Optional)</label>
+          <input type="text" class="form-control" value="<%= user.gst || 'Not Provided' %>" readonly>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADDRESS -->
+  <div class="address-box mt-4">
+    <h5><i class="bi bi-geo-alt"></i> Default Delivery Address</h5>
+    <p class="text-muted mb-0">
+  <%= user.defaultAddress || "No address added yet" %>
+</p>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="jd-footer-section mt-5">
+  <div class="container-fluid px-5 mt-3">
+    <div class="row gy-4">
+
+      <!-- BRAND -->
+      <div class="col-lg-4 col-md-6">
+        <div class="d-flex align-items-center mb-3">
+          <img src="/images/image.png" height="40" style="border-radius:8px;">
+          <h5 class="ms-2 mb-0">JD Mart</h5>
+        </div>
+        <p class="text-muted">
+          JD Mart connects farmers directly with buyers, offering fresh crops, transparent pricing, and fast delivery across regions.
+        </p>
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="col-lg-2 col-md-6">
+        <h6 class="footer-title">Quick Links</h6>
+        <ul class="footer-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/profile">My Profile</a></li>
+          <li><a href="/orders">My Orders</a></li>
+          <li><a href="/listings">Browse Products</a></li>
+        </ul>
+      </div>
+
+      <!-- SUPPORT -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="footer-title">Support</h6>
+        <ul class="footer-links">
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Delivery Info</a></li>
+          <li><a href="#">Returns & Refunds</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="footer-title">Contact Us</h6>
+        <p class="mb-1"><i class="fa-solid fa-location-dot"></i> India</p>
+        <p class="mb-1"><i class="fa-solid fa-envelope"></i> support@jdmart.com</p>
+        <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
+
+        <div class="footer-social mt-3">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="mt-4">
+
+    <div class="text-center pb-3">
+      <small>
+        © <%= new Date().getFullYear() %> JD Mart. All rights reserved.
+      </small>
+    </div>
+  </div>
+</footer>
+
+
+<script src="/js/script.js"></script>
+
+
+</body>
+</html>
