@@ -5,6 +5,7 @@ const Products = require("./models/product");
 const Order = require("./models/order");
 const Cart = require("./models/cart");
 const Notification = require("./models/notification");
+const RFQ = require("./models/rfq");
 
 const MONGO_URL = process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/jdmart1";
 
@@ -308,7 +309,8 @@ async function seed() {
     Products.deleteMany({}),
     Order.deleteMany({}),
     Cart.deleteMany({}),
-    Notification.deleteMany({})
+    Notification.deleteMany({}),
+    RFQ.deleteMany({})
   ]);
 
   // Create users individually to trigger pre-save password hashing
@@ -462,6 +464,20 @@ async function seed() {
   ];
 
   await Notification.insertMany(sampleNotifications);
+
+  // Create sample RFQ
+  await RFQ.create({
+    buyer: demoUser._id,
+    product: products[0]._id,
+    requestedQuantity: 50,
+    targetPricePerQuintal: 260000,
+    currentProductPrice: products[0].pricePerQuintal,
+    deliveryLocation: "Unjha Mandi Yard, Gujarat",
+    buyerNotes: "Need prompt shipment in 50kg export grade bags.",
+    status: "Counter Offer",
+    counterPricePerQuintal: 270000,
+    adminNotes: "Supplier can offer ₹2700/quintal for 50 quintals bulk lot."
+  });
 
   console.log("Seed completed successfully.");
   console.log(`Users: ${users.length}`);

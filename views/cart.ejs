@@ -166,7 +166,6 @@
                                         </td>
                                         <td>₹<%= (item.priceAtAdd / 100).toFixed(2) %>/kg</td>
                                         <td>
-                                            <% const actualAvailable = Math.max(0, item.product.available - (item.product.reserved || 0)); %>
                                             <form action="/cart/update/<%= item.product._id %>" method="POST" class="d-flex align-items-center">
                                                 <input type="number" name="quantity" value="<%= item.quantity %>" 
                                                        min="1" max="<%= actualAvailable %>" 

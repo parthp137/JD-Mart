@@ -55,10 +55,10 @@
             <div class="jd-user-info">
               <strong><%= user && user.fullName ? user.fullName : "Guest User" %></strong>
               <small><%= user && user.email ? user.email : "Not logged in" %></small>
-            </div>
             <% if (user) { %>
               <a href="/profile"><i class="fa-regular fa-user"></i> Profile</a>
               <a href="/orders"><i class="fa-solid fa-box"></i> Orders</a>
+              <a href="/rfqs"><i class="fa-solid fa-handshake"></i> Bulk Quotes (RFQ)</a>
               <% if (user.role === 'admin') { %>
                 <a href="/admin"><i class="fa-solid fa-lock"></i> Admin Dashboard</a>
               <% } %>

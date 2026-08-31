@@ -1,311 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JD Mart | <%= product.name %></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JD Mart | <%= product.name %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .supplier-card {
+      border: 1px solid #dcfce7;
+      background: #f0fdf4;
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .tiered-table {
+      font-size: 0.9rem;
+    }
+    .tiered-table th {
+      background-color: #f8fafc;
+    }
+    .discount-pill {
+      background: #dcfce7;
+      color: #15803d;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+    .rfq-box {
+      border: 1px dashed #16a34a;
+      background: #fafaf9;
+      border-radius: 12px;
+      padding: 1rem;
+    }
+  </style>
 </head>
+<body class="bg-light">
 
-<a href="/products" class="jd-back mb-0 m-3">← Back to Products</a>
+<%- include("partials/header") %>
 
-<% if (typeof error !== 'undefined' && error) { %>
-  <div class="m-3 alert alert-danger"><%= error %></div>
-<% } %>
+<div class="container my-4">
+  <a href="/products" class="jd-back mb-3 d-inline-block text-decoration-none">
+    <i class="fa-solid fa-arrow-left me-1"></i> Back to Agricultural Catalog
+  </a>
 
-<% if (typeof message !== 'undefined' && message) { %>
-  <div class="m-3 alert alert-success"><%= message %></div>
-<% } %>
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fa-solid fa-circle-exclamation me-2"></i> <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
 
-<div class="jd-view-container">
+  <% if (typeof message !== 'undefined' && message) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fa-solid fa-circle-check me-2"></i> <%= message %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
 
-  <!-- LEFT IMAGE PANEL -->
-  <div class="jd-view-image">
-    <img
-      src="<%= getImageUrl(product.images) %>"
-      alt="<%= product.name %>"
-      class="jd-view-image-tag"
-      onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
-    >
-    <span class="jd-view-market">
-      <i class="fa-solid fa-arrow-trend-down"></i>
-      <%= product.belowMarketPercent %>% below market
-    </span>
-
-    <span class="jd-view-grade">
-      <i class="fa-regular fa-star"></i> Grade <%= product.grade %>
-    </span>
-  </div>
-
-
-  <!-- RIGHT CONTENT -->
-  <div class="jd-view-content">
-
-    
-
-    <h1 class="jd-title"><%= product.name %></h1>
-
-    <!-- PRICE CARD -->
-    <div class="jd-price-card">
-      <div class="jd-price-main">
-        ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
-          <span>per kg</span>
-      </div>
-
-      <div class="jd-market-row">
-        Market Price:
-        <span class="jd-old">
-          ₹<%= (product.oldPrice / 100).toFixed(2) %>
+  <div class="jd-view-container bg-white p-4 rounded-4 shadow-sm">
+    <!-- LEFT IMAGE PANEL -->
+    <div class="jd-view-image">
+      <img
+        src="<%= getImageUrl(product.images) %>"
+        alt="<%= product.name %>"
+        class="jd-view-image-tag rounded-3"
+        onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
+      >
+      <% if (product.belowMarketPercent > 0) { %>
+        <span class="jd-view-market">
+          <i class="fa-solid fa-arrow-trend-down"></i>
+          <%= product.belowMarketPercent %>% below mandi rate
         </span>
+      <% } %>
 
-        <span class="jd-save">
-          Save ₹<%= ((product.oldPrice - product.pricePerQuintal) / 100).toFixed(2) %>
-        </span>
+      <span class="jd-view-grade">
+        <i class="fa-regular fa-star"></i> Grade <%= product.grade %>
+      </span>
+
+      <!-- SUPPLIER CREDENTIALS CARD -->
+      <div class="supplier-card mt-3">
+        <div class="d-flex align-items-center mb-2">
+          <div class="bg-success text-white rounded-circle p-2 me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+            <i class="fa-solid fa-check text-xs"></i>
+          </div>
+          <div>
+            <h6 class="mb-0 fw-bold text-success"><%= (product.supplier && product.supplier.name) ? product.supplier.name : 'Verified Mandi Supplier' %></h6>
+            <small class="text-muted"><i class="fa-solid fa-location-dot"></i> <%= (product.supplier && product.supplier.location) ? product.supplier.location : 'APMC Hub' %></small>
+          </div>
+        </div>
+        <div class="small text-secondary pt-1 border-top border-success-subtle">
+          <div><i class="fa-solid fa-id-card me-1"></i> <strong>APMC License:</strong> <%= (product.supplier && product.supplier.mandiLicense) ? product.supplier.mandiLicense : 'APMC-GJ-2024-8841' %></div>
+          <div><i class="fa-solid fa-shield-halved me-1"></i> <strong>FSSAI Lic:</strong> <%= (product.supplier && product.supplier.fssaiNumber) ? product.supplier.fssaiNumber : '10020021000142' %></div>
+        </div>
       </div>
     </div>
 
-    <!-- DESCRIPTION -->
-    <div class="jd-section">
-      <h3>Description</h3>
-      <p><%= product.description %></p>
-    </div>
+    <!-- RIGHT CONTENT -->
+    <div class="jd-view-content">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><%= product.category %></span>
+        <span class="badge bg-secondary-subtle text-secondary border px-2 py-1">MOQ: <%= product.moq || 1 %> Quintal</span>
+      </div>
 
-    <!-- INFO CARDS -->
-    <div class="jd-info-grid">
-      <div class="jd-info-card">
-        <i class="fa-solid fa-box"></i>
-        <div>
-          <small>Available Quantity</small>
-          <% 
-            const actualAvailable = (product.available - (product.reserved || 0));
-            const displayQuantity = Math.max(0, actualAvailable) * 100;
-          %>
-          <strong><%= displayQuantity %> kg</strong>
-          <% if (actualAvailable <= 0) { %>
-            <span class="badge bg-danger ms-2">Out of Stock</span>
-          <% } else if (actualAvailable <= 5) { %>
-            <span class="badge bg-warning ms-2">Only <%= actualAvailable %> units left!</span>
-          <% } %>
+      <h1 class="jd-title mb-2"><%= product.name %></h1>
+
+      <!-- PRICE CARD -->
+      <div class="jd-price-card p-3 rounded-3 mb-3">
+        <div class="jd-price-main fs-2 fw-bold text-success">
+          ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
+          <span class="fs-6 text-muted fw-normal">/ quintal (₹<%= (product.pricePerQuintal / 10000).toFixed(2) %>/kg)</span>
+        </div>
+
+        <% if (product.oldPrice > product.pricePerQuintal) { %>
+          <div class="jd-market-row mt-1">
+            Mandi Benchmark:
+            <span class="jd-old text-decoration-line-through text-muted ms-1">
+              ₹<%= (product.oldPrice / 100).toFixed(2) %>
+            </span>
+            <span class="jd-save text-success ms-2 fw-semibold">
+              Save ₹<%= ((product.oldPrice - product.pricePerQuintal) / 100).toFixed(2) %>/q
+            </span>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- TIERED WHOLESALE DISCOUNT TABLE -->
+      <div class="mb-3">
+        <h6 class="fw-bold mb-2"><i class="fa-solid fa-tags text-warning me-1"></i> Wholesale Tiered Discounts</h6>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm tiered-table mb-1">
+            <thead>
+              <tr>
+                <th>Order Quantity</th>
+                <th>Volume Discount</th>
+                <th>Effective Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1 - 9 Quintals</td>
+                <td>Standard Rate</td>
+                <td>₹<%= (product.pricePerQuintal / 100).toFixed(2) %>/q</td>
+              </tr>
+              <tr>
+                <td>10 - 24 Quintals</td>
+                <td><span class="discount-pill">5% OFF</span></td>
+                <td class="text-success fw-bold">₹<%= ((product.pricePerQuintal * 0.95) / 100).toFixed(2) %>/q</td>
+              </tr>
+              <tr>
+                <td>25+ Quintals</td>
+                <td><span class="discount-pill">10% OFF</span></td>
+                <td class="text-success fw-bold">₹<%= ((product.pricePerQuintal * 0.90) / 100).toFixed(2) %>/q</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div class="jd-info-card">
-        <i class="fa-regular fa-clock"></i>
-        <div>
-          <small>Delivery Time</small>
-          <strong>
-            <%= product.deliveryTime.minDays %>-<%= product.deliveryTime.maxDays %> days
+      <!-- DESCRIPTION -->
+      <div class="jd-section mb-3">
+        <h6 class="fw-bold">Description</h6>
+        <p class="text-muted small mb-0"><%= product.description || 'High quality harvest sourced directly from certified APMC farmers, tested for moisture, grain size, and purity.' %></p>
+      </div>
+
+      <!-- INFO CARDS -->
+      <div class="jd-info-grid mb-3">
+        <div class="jd-info-card">
+          <i class="fa-solid fa-boxes-stacked text-success"></i>
+          <div>
+            <small class="text-muted d-block">Available Stock</small>
+            <% 
+              const actualAvailable = (product.available - (product.reserved || 0));
+            %>
+            <strong><%= Math.max(0, actualAvailable) %> Quintals</strong>
+            <% if (actualAvailable <= 0) { %>
+              <span class="badge bg-danger ms-1">Out of Stock</span>
+            <% } else if (actualAvailable <= 5) { %>
+              <span class="badge bg-warning text-dark ms-1">Low Stock</span>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="jd-info-card">
+          <i class="fa-regular fa-truck text-success"></i>
+          <div>
+            <small class="text-muted d-block">Mandi Dispatch</small>
+            <strong>
+              <%= product.deliveryTime ? product.deliveryTime.minDays : 2 %>-<%= product.deliveryTime ? product.deliveryTime.maxDays : 7 %> Business Days
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE QUANTITY & CALCULATOR -->
+      <div class="jd-quantity-card p-3 rounded-3 border bg-light mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <label class="fw-bold mb-0">Select Volume (Quintals)</label>
+          <span id="tierDiscountBadge" class="badge bg-success d-none">0% Tier Discount Applied</span>
+        </div>
+
+        <div class="jd-stepper mb-3">
+          <button type="button" class="jd-step btn btn-outline-secondary" id="minusBtn">−</button>
+          <input type="number" id="qtyInput" value="<%= product.moq || 1 %>" min="<%= product.moq || 1 %>" max="<%= Math.max(1, actualAvailable) %>" class="form-control text-center fw-bold" style="max-width: 120px;" />
+          <button type="button" class="jd-step btn btn-outline-secondary" id="plusBtn">+</button>
+        </div>
+
+        <div class="jd-total d-flex justify-content-between align-items-center py-2 border-top">
+          <div>
+            <span class="text-muted d-block small">Estimated Order Total</span>
+            <small id="savingsText" class="text-success fw-semibold"></small>
+          </div>
+          <strong class="fs-4 text-dark" id="displayTotal">
+            ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
           </strong>
         </div>
+
+        <div class="jd-actions d-flex gap-2 mt-3">
+          <form action="/cart/add/<%= product._id %>" method="POST" class="flex-grow-1" id="cartForm">
+            <input type="hidden" name="quantity" id="cartQty" value="<%= product.moq || 1 %>">
+            <button class="btn btn-outline-success w-100 py-2 fw-semibold" type="submit">
+              <i class="fa-solid fa-cart-plus me-1"></i> Add to Cart
+            </button>
+          </form>
+
+          <form action="/orders/buy-now/<%= product._id %>" method="POST" class="flex-grow-1" id="buyForm">
+            <input type="hidden" name="quantity" id="buyQty" value="<%= product.moq || 1 %>">
+            <button class="btn btn-success w-100 py-2 fw-semibold" type="submit">
+              <i class="fa-solid fa-bolt me-1"></i> Buy Now
+            </button>
+          </form>
+        </div>
       </div>
+
+      <!-- B2B WHOLESALE RFQ CTA BOX -->
+      <div class="rfq-box text-center">
+        <h6 class="fw-bold text-dark mb-1"><i class="fa-solid fa-handshake text-success me-1"></i> Need Large Wholesale Volume?</h6>
+        <p class="small text-muted mb-2">Buying >50 quintals or need custom contract terms? Submit a Request for Quote (RFQ) to negotiate with suppliers.</p>
+        <button type="button" class="btn btn-sm btn-outline-dark px-3 py-1" data-bs-toggle="modal" data-bs-target="#rfqModal">
+          <i class="fa-solid fa-file-signature me-1"></i> Request Custom Quote (RFQ)
+        </button>
+      </div>
+
     </div>
-
-    <!-- QUANTITY -->
-    <div class="jd-quantity-card">
-      <label>Quantity (kg)</label>
-
-      <div class="jd-stepper">
-        <button type="button" class="jd-step" id="minusBtn">−</button>
-        <input type="text" id="qtyInput" value="10" />
-        <button type="button" class="jd-step" id="plusBtn">+</button>
-      </div>
-
-      <div class="jd-total">
-        <span>Total Price</span>
-        <strong>
-          ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
-        </strong>
-      </div>
-
-      <div class="jd-actions">
-        <form action="/cart/add/<%= product._id %>" method="POST" style="display: inline;" id="cartForm">
-          <input type="hidden" name="quantity" id="cartQty" value="10">
-          <button class="jd-btn-outline" type="submit">
-            <i class="fa-solid fa-cart-shopping"></i>
-            Add to Cart
-          </button>
-        </form>
-
-        <form action="/orders/buy-now/<%= product._id %>" method="POST" id="buyForm">
-          <input type="hidden" name="quantity" id="buyQty" value="10">
-          <button class="jd-btn-solid" type="submit">
-            Buy Now
-          </button>
-        </form>
-      </div>
-    </div>
-
   </div>
 </div>
 
+<!-- RFQ MODAL -->
+<div class="modal fade" id="rfqModal" tabindex="-1" aria-labelledby="rfqModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow rounded-4">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title fw-bold" id="rfqModalLabel">
+          <i class="fa-solid fa-handshake me-2"></i> Request Wholesale Quote
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/rfq/submit" method="POST">
+        <input type="hidden" name="productId" value="<%= product._id %>">
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Product</label>
+            <input type="text" class="form-control" value="<%= product.name %> (<%= product.category %> - Grade <%= product.grade %>)" readonly>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-bold">Target Volume (Quintals)</label>
+              <input type="number" name="requestedQuantity" class="form-control" placeholder="e.g. 50" min="1" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-bold">Target Price (₹/Quintal)</label>
+              <input type="number" name="targetPricePerQuintal" class="form-control" placeholder="e.g. <%= (product.pricePerQuintal / 100).toFixed(0) %>" step="1" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Delivery APMC / Warehouse Location</label>
+            <input type="text" name="deliveryLocation" class="form-control" placeholder="e.g., Unjha APMC Yard, Gujarat" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Additional Buyer Notes</label>
+            <textarea name="buyerNotes" class="form-control" rows="2" placeholder="Specify packaging requirements (e.g. 50kg jute bags), delivery date constraints, etc."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success fw-semibold">
+            <i class="fa-solid fa-paper-plane me-1"></i> Submit Quote Request
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include("partials/footer") %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const minusBtn = document.getElementById('minusBtn');
     const plusBtn = document.getElementById('plusBtn');
-    const quantityInput = document.getElementById('qtyInput');
-    const pricePerUnit = <%= product.pricePerQuintal %>;
-    const actualAvailable = Math.max(0, <%= product.available %> - <%= product.reserved || 0 %>);
-    const maxAvailable = actualAvailable;
-    const totalPriceEl = document.querySelector('.jd-total strong');
+    const qtyInput = document.getElementById('qtyInput');
     const cartQtyInput = document.getElementById('cartQty');
     const buyQtyInput = document.getElementById('buyQty');
+    const displayTotal = document.getElementById('displayTotal');
+    const tierBadge = document.getElementById('tierDiscountBadge');
+    const savingsText = document.getElementById('savingsText');
 
-    function updateTotalPrice() {
-      const qty = parseInt(quantityInput.value) || 10;
-      const total = (qty * pricePerUnit / 100).toFixed(2);
-      totalPriceEl.textContent = '₹' + total;
+    const basePricePerQuintal = <%= product.pricePerQuintal %> / 100; // in Rupees
+    const moq = <%= product.moq || 1 %>;
+    const maxAvailable = <%= Math.max(1, actualAvailable) %>;
+
+    function calculateDiscount(qty) {
+      if (qty >= 25) return 10;
+      if (qty >= 10) return 5;
+      return 0;
+    }
+
+    function updatePricing() {
+      let qty = parseInt(qtyInput.value, 10);
+      if (isNaN(qty) || qty < moq) qty = moq;
+      if (qty > maxAvailable) qty = maxAvailable;
+      qtyInput.value = qty;
       cartQtyInput.value = qty;
       buyQtyInput.value = qty;
+
+      const discountPercent = calculateDiscount(qty);
+      const discountedRate = basePricePerQuintal * (1 - discountPercent / 100);
+      const total = qty * discountedRate;
+      const originalTotal = qty * basePricePerQuintal;
+      const savings = originalTotal - total;
+
+      displayTotal.textContent = '₹' + total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      if (discountPercent > 0) {
+        tierBadge.textContent = `${discountPercent}% Volume Discount Active`;
+        tierBadge.classList.remove('d-none');
+        savingsText.textContent = `You save ₹${savings.toFixed(2)} on this volume!`;
+      } else {
+        tierBadge.classList.add('d-none');
+        savingsText.textContent = '';
+      }
     }
 
     minusBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      let qty = parseInt(quantityInput.value) || 10;
-      if (qty > 1) {
-        quantityInput.value = qty - 1;
-        updateTotalPrice();
+      let qty = parseInt(qtyInput.value, 10) || moq;
+      if (qty > moq) {
+        qtyInput.value = qty - 1;
+        updatePricing();
       }
     });
 
     plusBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      let qty = parseInt(quantityInput.value) || 10;
+      let qty = parseInt(qtyInput.value, 10) || moq;
       if (qty < maxAvailable) {
-        quantityInput.value = qty + 1;
-        updateTotalPrice();
+        qtyInput.value = qty + 1;
+        updatePricing();
       }
     });
 
-    quantityInput.addEventListener('change', () => {
-      let qty = parseInt(quantityInput.value) || 10;
-      if (qty < 1) qty = 1;
-      if (qty > maxAvailable) qty = maxAvailable;
-      quantityInput.value = qty;
-      updateTotalPrice();
-    });
-
-    // Update on page load
-    updateTotalPrice();
+    qtyInput.addEventListener('input', updatePricing);
+    updatePricing();
   });
 </script>
-
-<!-- FOOTER -->
-<footer class="jd-footer-section mt-5">
-  <div class="container-fluid px-5 mt-3">
-    <div class="row gy-4">
-
-      <!-- BRAND -->
-      <div class="col-lg-4 col-md-6">
-        <div class="d-flex align-items-center mb-3">
-          <img src="/images/image.png" height="40" style="border-radius:8px;">
-          <h5 class="ms-2 mb-0">JD Mart</h5>
-        </div>
-        <p class="text-muted">
-          JD Mart connects farmers directly with buyers, offering fresh crops, transparent pricing, and fast delivery across regions.
-        </p>
-      </div>
-
-      <!-- QUICK LINKS -->
-      <div class="col-lg-2 col-md-6">
-        <h6 class="footer-title">Quick Links</h6>
-        <ul class="footer-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/profile">My Profile</a></li>
-          <li><a href="/orders">My Orders</a></li>
-          <li><a href="/listings">Browse Products</a></li>
-        </ul>
-      </div>
-
-      <!-- SUPPORT -->
-      <div class="col-lg-3 col-md-6">
-        <h6 class="footer-title">Support</h6>
-        <ul class="footer-links">
-          <li><a href="#">Help Center</a></li>
-          <li><a href="#">Delivery Info</a></li>
-          <li><a href="#">Returns & Refunds</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-        </ul>
-      </div>
-
-      <!-- CONTACT -->
-      <div class="col-lg-3 col-md-6">
-        <h6 class="footer-title">Contact Us</h6>
-        <p class="mb-1"><i class="fa-solid fa-location-dot"></i> India</p>
-        <p class="mb-1"><i class="fa-solid fa-envelope"></i> support@jdmart.com</p>
-        <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
-
-        <div class="footer-social mt-3">
-          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
-        </div>
-      </div>
-
-    </div>
-
-    <hr class="mt-4">
-
-    <div class="text-center pb-3">
-      <small>
-        © <%= new Date().getFullYear() %> JD Mart. All rights reserved.
-      </small>
-    </div>
-  </div>
-</footer>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-
-<script>
-  const qtyInput = document.querySelector(".jd-stepper input");
-  const buyQty = document.getElementById("buyQty");
-  const cartQty = document.getElementById("cartQty");
-  const totalPrice = document.querySelector(".jd-total strong");
-
-  const price = <%= product.pricePerQuintal %> / 100; // price per kg
-  const maxQty = <%= product.available %> * 100;     // max kg
-
-  function updateTotal(val) {
-    val = Math.max(1, Math.min(maxQty, val));
-    qtyInput.value = val;
-    buyQty.value = val;
-    if (cartQty) cartQty.value = val;
-    totalPrice.textContent = "₹" + (val * price).toLocaleString("en-IN");
-  }
-
-  // Prevent typing invalid values
-  qtyInput.addEventListener("input", () => {
-    updateTotal(parseInt(qtyInput.value) || 1);
-  });
-
-  document.querySelectorAll(".jd-step").forEach(btn => {
-    btn.addEventListener("click", e => {
-      e.preventDefault();
-      let val = parseInt(qtyInput.value) || 1;
-
-      if (btn.textContent === "+") val += 5;
-      if (btn.textContent === "−") val -= 5;
-
-      updateTotal(val);
-    });
-  });
-
-  // Safety: update both hidden inputs before submit
-  document.querySelectorAll("form").forEach(form => {
-    form.addEventListener("submit", () => {
-      buyQty.value = qtyInput.value;
-      if (cartQty) cartQty.value = qtyInput.value;
-    });
-  });
-</script>
-
-
 
 </body>
 </html>

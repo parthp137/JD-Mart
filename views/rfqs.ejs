@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JD Mart | Wholesale Quotes (RFQ)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .rfq-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #ffffff;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .rfq-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+    .badge-submitted { background-color: #3b82f6; color: #fff; }
+    .badge-counter { background-color: #f59e0b; color: #fff; }
+    .badge-accepted { background-color: #10b981; color: #fff; }
+    .badge-rejected { background-color: #ef4444; color: #fff; }
+    .rfq-stepper {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 1.5rem 0;
+    }
+    .rfq-stepper::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 20px;
+      right: 20px;
+      height: 3px;
+      background: #e2e8f0;
+      z-index: 1;
+    }
+    .rfq-step-item {
+      position: relative;
+      z-index: 2;
+      background: #fff;
+      padding: 0 8px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+    .rfq-step-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 6px;
+      font-size: 0.75rem;
+    }
+    .rfq-step-circle.active {
+      background: #16a34a;
+      color: #fff;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<%- include("partials/header") %>
+
+<div class="container my-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+      <h2 class="fw-bold mb-1"><i class="fa-solid fa-handshake text-success me-2"></i> Wholesale Quotes (RFQ)</h2>
+      <p class="text-muted mb-0">Manage bulk agricultural purchase requests, review supplier counter offers, and seal deals.</p>
+    </div>
+    <a href="/products" class="btn btn-outline-success">
+      <i class="fa-solid fa-plus me-1"></i> Request New Quote
+    </a>
+  </div>
+
+  <% if (typeof message !== 'undefined' && message) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fa-solid fa-circle-check me-2"></i> <%= message %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fa-solid fa-triangle-exclamation me-2"></i> <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+
+  <% if (!rfqs || rfqs.length === 0) { %>
+    <div class="card p-5 text-center border-0 shadow-sm rounded-4">
+      <div class="mb-3">
+        <i class="fa-solid fa-file-invoice text-muted" style="font-size: 3.5rem;"></i>
+      </div>
+      <h4>No Quote Requests Yet</h4>
+      <p class="text-muted mb-4">Request wholesale quotes for volume agricultural purchases directly on any product page.</p>
+      <div>
+        <a href="/products" class="btn btn-success px-4 py-2">
+          <i class="fa-solid fa-wheat-awn me-2"></i> Browse Agricultural Catalog
+        </a>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="row g-4">
+      <% rfqs.forEach(rfq => { %>
+        <div class="col-lg-6">
+          <div class="rfq-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                  <span class="badge bg-light text-dark border px-2 py-1 mb-2 font-monospace"><%= rfq.rfqNumber %></span>
+                  <h4 class="fw-bold mb-1"><%= rfq.product ? rfq.product.name : "Product" %></h4>
+                  <small class="text-muted"><i class="fa-solid fa-calendar me-1"></i> Submitted on <%= new Date(rfq.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' }) %></small>
+                </div>
+                <div>
+                  <% if (rfq.status === 'Submitted') { %>
+                    <span class="badge badge-submitted px-3 py-2 rounded-pill"><i class="fa-solid fa-clock me-1"></i> Submitted</span>
+                  <% } else if (rfq.status === 'Counter Offer') { %>
+                    <span class="badge badge-counter px-3 py-2 rounded-pill"><i class="fa-solid fa-comments-dollar me-1"></i> Counter Offer</span>
+                  <% } else if (rfq.status === 'Accepted') { %>
+                    <span class="badge badge-accepted px-3 py-2 rounded-pill"><i class="fa-solid fa-circle-check me-1"></i> Accepted</span>
+                  <% } else { %>
+                    <span class="badge badge-rejected px-3 py-2 rounded-pill"><i class="fa-solid fa-circle-xmark me-1"></i> <%= rfq.status %></span>
+                  <% } %>
+                </div>
+              </div>
+
+              <!-- PRICING BREAKDOWN GRID -->
+              <div class="row g-2 bg-light p-3 rounded-3 mb-3 text-center">
+                <div class="col-4 border-end">
+                  <small class="text-muted d-block">Requested Volume</small>
+                  <strong class="fs-6 text-dark"><%= rfq.requestedQuantity %> Quintals</strong>
+                </div>
+                <div class="col-4 border-end">
+                  <small class="text-muted d-block">Target Price</small>
+                  <strong class="fs-6 text-primary">₹<%= (rfq.targetPricePerQuintal / 100).toFixed(2) %>/q</strong>
+                </div>
+                <div class="col-4">
+                  <small class="text-muted d-block">Catalog Price</small>
+                  <span class="text-muted text-decoration-line-through">₹<%= (rfq.currentProductPrice / 100).toFixed(2) %>/q</span>
+                </div>
+              </div>
+
+              <!-- COUNTER OFFER ALERT IF PRESENT -->
+              <% if (rfq.status === 'Counter Offer' && rfq.counterPricePerQuintal) { %>
+                <div class="alert alert-warning border-warning d-flex align-items-center mb-3">
+                  <i class="fa-solid fa-bell text-warning fs-4 me-3"></i>
+                  <div>
+                    <strong>Supplier Counter Offer:</strong>
+                    <div class="fs-5 text-dark fw-bold">₹<%= (rfq.counterPricePerQuintal / 100).toFixed(2) %> <small class="text-muted fs-6">/ quintal</small></div>
+                    <% if (rfq.adminNotes) { %>
+                      <small class="text-muted"><%= rfq.adminNotes %></small>
+                    <% } %>
+                  </div>
+                </div>
+              <% } %>
+
+              <!-- NOTES & LOCATION -->
+              <div class="small text-muted mb-3">
+                <div><i class="fa-solid fa-location-dot text-success me-1"></i> <strong>Delivery Hub:</strong> <%= rfq.deliveryLocation %></div>
+                <% if (rfq.buyerNotes) { %>
+                  <div class="mt-1"><i class="fa-solid fa-note-sticky text-secondary me-1"></i> <strong>Notes:</strong> <%= rfq.buyerNotes %></div>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+              <% if (rfq.status === 'Counter Offer') { %>
+                <form action="/rfqs/<%= rfq._id %>/accept-counter" method="POST" class="w-100">
+                  <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">
+                    <i class="fa-solid fa-check me-2"></i> Accept Offer & Proceed to Checkout
+                  </button>
+                </form>
+              <% } else if (rfq.status === 'Accepted') { %>
+                <span class="text-success fw-bold"><i class="fa-solid fa-circle-check me-1"></i> Deal Finalized</span>
+                <a href="/orders" class="btn btn-sm btn-outline-success">View Orders</a>
+              <% } else { %>
+                <span class="text-muted small"><i class="fa-solid fa-spinner fa-spin me-1"></i> Awaiting supplier review</span>
+                <a href="/products/<%= rfq.product ? rfq.product._id : '' %>" class="btn btn-sm btn-outline-secondary">View Product</a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include("partials/footer") %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
