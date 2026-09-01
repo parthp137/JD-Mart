@@ -70,6 +70,221 @@
   </div>
 </footer>
 
+<!-- 5. MOBILE BOTTOM NAVIGATION BAR -->
+<div class="jd-bottom-nav">
+  <div class="jd-bottom-nav-items">
+    <a href="/products" class="jd-bottom-nav-link" id="navHome">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="/products" class="jd-bottom-nav-link" id="navCatalog">
+      <i class="fa-solid fa-wheat-awn"></i>
+      <span>Catalog</span>
+    </a>
+    <a href="/rfqs" class="jd-bottom-nav-link" id="navRfqs">
+      <i class="fa-solid fa-handshake"></i>
+      <span>Quotes</span>
+    </a>
+    <a href="/orders" class="jd-bottom-nav-link" id="navOrders">
+      <i class="fa-solid fa-box"></i>
+      <span>Orders</span>
+    </a>
+    <a href="/cart" class="jd-bottom-nav-link" id="navCart">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span>Cart</span>
+      <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
+        <span class="jd-bottom-nav-badge"><%= cartCount %></span>
+      <% } %>
+    </a>
+  </div>
+</div>
+
+<!-- 2. CROP QUALITY & HARVEST INSPECTION MODAL -->
+<div class="modal fade" id="cropInspectionModal" tabindex="-1" aria-labelledby="cropInspectionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+      <div class="inspection-sheet-header d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="modal-title fw-bold mb-0" id="cropInspectionLabel">
+            <i class="fa-solid fa-certificate me-2 text-warning"></i> Quality & Harvest Certificate
+          </h5>
+          <small class="text-white-50">Verified Lab Inspection Report</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <!-- Product header -->
+        <div class="d-flex align-items-center gap-3 pb-3 border-bottom mb-3">
+          <div class="bg-success-subtle text-success p-3 rounded-3 fs-3">
+            <i class="fa-solid fa-wheat-awn" id="modalCropIcon"></i>
+          </div>
+          <div>
+            <h5 class="fw-bold mb-1" id="modalCropName">Agricultural Harvest</h5>
+            <div class="d-flex gap-2">
+              <span class="badge bg-success" id="modalCropGrade">Grade A Quality</span>
+              <span class="badge bg-primary-subtle text-primary" id="modalCropCategory">Commodity</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Moisture Meter -->
+        <div class="mb-3 p-3 bg-light rounded-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="small fw-bold text-dark"><i class="fa-solid fa-droplet text-info me-1"></i> Moisture Content</span>
+            <span class="small fw-bold text-success" id="modalMoistureVal">11.8% (APMC Optimal: &lt;14%)</span>
+          </div>
+          <div class="meter-container">
+            <div class="meter-fill" id="modalMoistureMeter" style="width: 78%;"></div>
+          </div>
+          <small class="text-muted" style="font-size: 0.75rem;">Dry and conditioned under ventilated storage.</small>
+        </div>
+
+        <!-- Quality Parameters Grid -->
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <div class="p-2 border rounded-2 bg-white">
+              <small class="text-muted d-block" style="font-size: 0.72rem;">GRAIN PURITY</small>
+              <strong class="text-success"><i class="fa-solid fa-check-double text-xs me-1"></i> 99.4% Clean</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 border rounded-2 bg-white">
+              <small class="text-muted d-block" style="font-size: 0.72rem;">FOREIGN MATTER</small>
+              <strong class="text-dark">&lt; 0.5% (Allowed: 1%)</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 border rounded-2 bg-white">
+              <small class="text-muted d-block" style="font-size: 0.72rem;">HARVEST WINDOW</small>
+              <strong class="text-dark" id="modalHarvestDate">Current Season</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 border rounded-2 bg-white">
+              <small class="text-muted d-block" style="font-size: 0.72rem;">NPOP ORGANIC</small>
+              <strong class="text-success" id="modalOrganicStatus"><i class="fa-solid fa-leaf me-1"></i> Certified</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Supplier Verification Stamp -->
+        <div class="cert-stamp">
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+            <i class="fa-solid fa-shield-halved text-success fs-5"></i>
+            <strong class="text-success" id="modalSupplierName">APMC Mandi Verified Lot</strong>
+          </div>
+          <p class="small text-muted mb-0" style="font-size: 0.78rem;">
+            Certified under APMC Gujarat Mandi Board · Reg: APMC-GJ-2024-8841 · FSSAI: 10020021000142
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer bg-light py-2">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. SLIDE-OUT QUICK RFQ DRAWER & BACKDROP -->
+<div class="jd-rfq-backdrop" id="jdRfqBackdrop" onclick="closeRfqDrawer()"></div>
+<div class="jd-rfq-drawer" id="jdRfqDrawer">
+  <div class="jd-rfq-header">
+    <div>
+      <h5 class="mb-0 fw-bold"><i class="fa-solid fa-handshake me-2"></i> Instant RFQ Negotiation</h5>
+      <small class="text-white-50">Direct wholesale price counter-offer</small>
+    </div>
+    <button type="button" class="btn-close btn-close-white" onclick="closeRfqDrawer()"></button>
+  </div>
+  
+  <form action="/rfq/submit" method="POST" id="drawerRfqForm" class="d-flex flex-column h-100">
+    <input type="hidden" name="productId" id="drawerProductId" value="">
+    
+    <div class="jd-rfq-body">
+      <!-- Selected Crop Info -->
+      <div class="p-3 bg-light rounded-3 mb-3 border">
+        <span class="text-muted small d-block">Negotiating For:</span>
+        <h6 class="fw-bold mb-1 text-dark" id="drawerProductName">Product Name</h6>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <span class="small text-muted">Listed Rate:</span>
+          <strong class="text-success" id="drawerListedRate">₹0.00/quintal</strong>
+        </div>
+      </div>
+
+      <!-- Volume & Target Counter Offer -->
+      <div class="row g-3 mb-3">
+        <div class="col-6">
+          <label class="form-label fw-bold small">Required Volume</label>
+          <div class="input-group input-group-sm">
+            <input type="number" name="requestedQuantity" id="drawerQuantity" class="form-control" placeholder="50" min="1" required oninput="recalcDrawerOffer()">
+            <span class="input-group-text">Qtl</span>
+          </div>
+          <small class="text-muted" style="font-size: 0.72rem;">1 Quintal = 100 kg</small>
+        </div>
+        <div class="col-6">
+          <label class="form-label fw-bold small">Target Offer (₹/Qtl)</label>
+          <div class="input-group input-group-sm">
+            <span class="input-group-text">₹</span>
+            <input type="number" name="targetPricePerQuintal" id="drawerTargetPrice" class="form-control" placeholder="3800" min="1" step="1" required oninput="recalcDrawerOffer()">
+          </div>
+          <small class="text-muted" style="font-size: 0.72rem;">Proposed purchase rate</small>
+        </div>
+      </div>
+
+      <!-- Offer Summary Box -->
+      <div class="calc-breakdown-box mb-3" id="drawerCalcBox">
+        <div class="d-flex justify-content-between mb-1">
+          <span class="text-muted">Total Proposed Value:</span>
+          <strong class="text-dark" id="drawerTotalProposed">₹0.00</strong>
+        </div>
+        <div class="d-flex justify-content-between small">
+          <span class="text-muted">Variance from Listed Price:</span>
+          <span class="fw-bold" id="drawerPriceVariance">0%</span>
+        </div>
+      </div>
+
+      <!-- Logistics Mode Preference -->
+      <div class="mb-3">
+        <label class="form-label fw-bold small">Logistics & Freight Preference</label>
+        <div class="logistics-toggle-group">
+          <div class="logistics-toggle-card selected" id="logisticsDoorstep" onclick="selectLogistics('Doorstep Delivery')">
+            <i class="fa-solid fa-truck-fast mb-1 d-block text-success"></i>
+            <strong>Doorstep Delivery</strong>
+            <small class="d-block text-muted" style="font-size: 0.7rem;">Supplier manages freight</small>
+          </div>
+          <div class="logistics-toggle-card" id="logisticsPickup" onclick="selectLogistics('Ex-Mandi Yard Pickup')">
+            <i class="fa-solid fa-warehouse mb-1 d-block text-secondary"></i>
+            <strong>Ex-Mandi Pickup</strong>
+            <small class="d-block text-muted" style="font-size: 0.7rem;">Buyer arranges vehicle</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Location -->
+      <div class="mb-3">
+        <label class="form-label fw-bold small">Delivery APMC / Warehouse Location</label>
+        <div class="input-group input-group-sm">
+          <span class="input-group-text"><i class="fa-solid fa-location-dot text-success"></i></span>
+          <input type="text" name="deliveryLocation" id="drawerLocation" class="form-control" placeholder="e.g. Unjha APMC Yard, Gujarat" required>
+        </div>
+      </div>
+
+      <!-- Buyer Notes & Packaging -->
+      <div class="mb-2">
+        <label class="form-label fw-bold small">Packaging & Target Delivery Window</label>
+        <textarea name="buyerNotes" class="form-control form-control-sm" rows="2" placeholder="e.g. 50kg jute bags, delivery needed within 5 days, lab certificate required."></textarea>
+      </div>
+    </div>
+
+    <div class="jd-rfq-footer">
+      <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+        <i class="fa-solid fa-paper-plane me-1"></i> Send Instant RFQ Offer
+      </button>
+    </div>
+  </form>
+</div>
+
+<script src="/js/script.js"></script>
+
 <!-- Footer Styles -->
 <style>
   .jd-footer-section {
@@ -108,8 +323,9 @@
       --bs-gutter-y: 1.5rem;
     }
 
-    .jd-footer-section .col-md-6 {
+    .col-md-6 {
       text-align: center !important;
     }
   }
 </style>
+
