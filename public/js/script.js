@@ -267,5 +267,138 @@
 
   // ================= INIT =================
   getLocationAndSave();
+
+  // Highlight active mobile bottom nav item
+  const currentPath = window.location.pathname;
+  if (currentPath === "/" || currentPath === "/products") {
+    document.getElementById("navHome")?.classList.add("active");
+    document.getElementById("navCatalog")?.classList.add("active");
+  } else if (currentPath.startsWith("/rfq")) {
+    document.getElementById("navRfqs")?.classList.add("active");
+  } else if (currentPath.startsWith("/orders")) {
+    document.getElementById("navOrders")?.classList.add("active");
+  } else if (currentPath.startsWith("/cart")) {
+    document.getElementById("navCart")?.classList.add("active");
+  }
 })();
+
+/* ==========================================================================
+   GLOBAL UI/UX ENHANCEMENT HANDLERS (JD MART)
+   ========================================================================== */
+
+// 2. CROP QUALITY & HARVEST INSPECTION MODAL HANDLER
+window.openCropInspection = function(cropName, grade, category, moisture, supplier) {
+  const modalElem = document.getElementById("cropInspectionModal");
+  if (!modalElem) return;
+
+  const modalCropName = document.getElementById("modalCropName");
+  const modalCropGrade = document.getElementById("modalCropGrade");
+  const modalCropCategory = document.getElementById("modalCropCategory");
+  const modalMoistureVal = document.getElementById("modalMoistureVal");
+  const modalMoistureMeter = document.getElementById("modalMoistureMeter");
+  const modalSupplierName = document.getElementById("modalSupplierName");
+  const modalHarvestDate = document.getElementById("modalHarvestDate");
+
+  if (modalCropName) modalCropName.textContent = cropName || "Agricultural Commodity";
+  if (modalCropGrade) modalCropGrade.textContent = `Grade ${grade || 'A'} Quality`;
+  if (modalCropCategory) modalCropCategory.textContent = category || "Mandi Certified";
+  if (modalMoistureVal) modalMoistureVal.textContent = `${moisture || '11.8%'} (APMC Standard: <14%)`;
+  if (modalMoistureMeter) {
+    const moistNum = parseFloat(moisture) || 12;
+    const fillPercent = Math.min(100, Math.max(20, (moistNum / 15) * 100));
+    modalMoistureMeter.style.width = `${fillPercent}%`;
+  }
+  if (modalSupplierName) modalSupplierName.textContent = supplier || "APMC Mandi Verified Lot";
+  if (modalHarvestDate) {
+    const today = new Date();
+    const formatted = today.toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" });
+    modalHarvestDate.textContent = `Harvested ${formatted}`;
+  }
+
+  // Open Bootstrap modal
+  if (window.bootstrap && bootstrap.Modal) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElem);
+    modal.show();
+  }
+};
+
+// 3. SLIDE-OUT INSTANT RFQ DRAWER HANDLERS
+let currentDrawerListedRate = 0;
+
+window.openRfqDrawer = function(productId, productName, listedRate, defaultLocation) {
+  const drawer = document.getElementById("jdRfqDrawer");
+  const backdrop = document.getElementById("jdRfqBackdrop");
+  if (!drawer) return;
+
+  currentDrawerListedRate = parseFloat(listedRate) || 0;
+
+  const idInput = document.getElementById("drawerProductId");
+  const nameElem = document.getElementById("drawerProductName");
+  const rateElem = document.getElementById("drawerListedRate");
+  const qtyInput = document.getElementById("drawerQuantity");
+  const targetPriceInput = document.getElementById("drawerTargetPrice");
+  const locationInput = document.getElementById("drawerLocation");
+
+  if (idInput) idInput.value = productId || "";
+  if (nameElem) nameElem.textContent = productName || "Selected Commodity";
+  if (rateElem) rateElem.textContent = `₹${currentDrawerListedRate.toFixed(2)}/quintal`;
+  if (qtyInput) qtyInput.value = 50; // default wholesale sample
+  if (targetPriceInput) targetPriceInput.value = Math.round(currentDrawerListedRate * 0.92); // default proposed 8% discount
+  if (locationInput && !locationInput.value) locationInput.value = defaultLocation || "";
+
+  window.recalcDrawerOffer();
+
+  drawer.classList.add("open");
+  if (backdrop) backdrop.classList.add("open");
+  document.body.style.overflow = "hidden";
+};
+
+window.closeRfqDrawer = function() {
+  const drawer = document.getElementById("jdRfqDrawer");
+  const backdrop = document.getElementById("jdRfqBackdrop");
+  if (drawer) drawer.classList.remove("open");
+  if (backdrop) backdrop.classList.remove("open");
+  document.body.style.overflow = "";
+};
+
+window.recalcDrawerOffer = function() {
+  const qtyInput = document.getElementById("drawerQuantity");
+  const targetPriceInput = document.getElementById("drawerTargetPrice");
+  const totalProposedElem = document.getElementById("drawerTotalProposed");
+  const varianceElem = document.getElementById("drawerPriceVariance");
+
+  const qty = parseFloat(qtyInput?.value) || 0;
+  const targetRate = parseFloat(targetPriceInput?.value) || 0;
+
+  const total = qty * targetRate;
+  if (totalProposedElem) {
+    totalProposedElem.textContent = `₹${total.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  if (varianceElem && currentDrawerListedRate > 0) {
+    const diff = targetRate - currentDrawerListedRate;
+    const percent = ((diff / currentDrawerListedRate) * 100).toFixed(1);
+    if (diff <= 0) {
+      varianceElem.textContent = `${Math.abs(percent)}% below listed rate`;
+      varianceElem.className = "fw-bold text-success";
+    } else {
+      varianceElem.textContent = `+${percent}% above listed rate`;
+      varianceElem.className = "fw-bold text-primary";
+    }
+  }
+};
+
+window.selectLogistics = function(mode) {
+  const doorstep = document.getElementById("logisticsDoorstep");
+  const pickup = document.getElementById("logisticsPickup");
+
+  if (mode === "Doorstep Delivery") {
+    doorstep?.classList.add("selected");
+    pickup?.classList.remove("selected");
+  } else {
+    pickup?.classList.add("selected");
+    doorstep?.classList.remove("selected");
+  }
+};
+
 
