@@ -288,82 +288,109 @@
  <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1 gx-4 px-4 mb-6">
 
     <% for(let product of allProducts){ %>
-    <a href="/products/<%= product._id %>" class="product-link" data-category="<%= product.category.toLowerCase() %>" data-search="<%= [product.name, product.category, product.description].filter(Boolean).join(' ') %>">
+    <div class="col mb-4">
+      <div class="jd-card h-100 d-flex flex-column">
 
-  <div class="jd-card">
+        <!-- IMAGE -->
+        <div class="jd-image position-relative">
+          <a href="/products/<%= product._id %>" class="d-block">
+            <img
+              src="<%= getImageUrl(product.images) %>"
+              alt="<%= product.name %>"
+              class="jd-image-tag"
+              onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
+            >
+          </a>
 
-    <!-- IMAGE -->
-    <div class="jd-image">
-      <img
-        src="<%= getImageUrl(product.images) %>"
-        alt="<%= product.name %>"
-        class="jd-image-tag"
-        onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
-      >
+          <!-- BADGES -->
+          <div class="jd-badges">
+            <span class="jd-grade quality-chip quality-chip-grade" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')" title="Click to view lab certificate">
+              <i class="fa-solid fa-certificate"></i> Grade <%= product.grade %>
+            </span>
 
-      <!-- BADGES -->
-      <div class="jd-badges">
-        <span class="jd-grade">
-          <i class="fa-regular fa-star"></i> Grade <%= product.grade %>
-        </span>
+            <% if (product.belowMarketPercent > 0) { %>
+              <span class="jd-market">
+                <i class="fa-solid fa-arrow-trend-down"></i>
+                <%= product.belowMarketPercent %>% below market
+              </span>
+            <% } %>
 
-        <span class="jd-market">
-          <i class="fa-solid fa-arrow-trend-down"></i>
-          <%= product.belowMarketPercent %>% below market
-        </span>
+            <% 
+              const actualAvailable = (product.available - (product.reserved || 0));
+              if (actualAvailable <= 0) {
+            %>
+              <span class="badge bg-danger">
+                <i class="fa-solid fa-exclamation-circle"></i> Out of Stock
+              </span>
+            <% } else if (actualAvailable <= 5) { %>
+              <span class="badge bg-warning text-dark">
+                <i class="fa-solid fa-triangle-exclamation"></i> <%= actualAvailable %> left
+              </span>
+            <% } %>
+          </div>
+        </div>
 
-        <% 
-          const actualAvailable = (product.available - (product.reserved || 0));
-          if (actualAvailable <= 0) {
-        %>
-          <span class="badge bg-danger">
-            <i class="fa-solid fa-exclamation-circle"></i> Out of Stock
-          </span>
-        <% } else if (actualAvailable <= 5) { %>
-          <span class="badge bg-warning">
-            <i class="fa-solid fa-triangle-exclamation"></i> Only <%= actualAvailable %> left!
-          </span>
-        <% } %>
+        <!-- BODY -->
+        <div class="jd-body d-flex flex-column flex-grow-1">
+
+          <div class="jd-meta">
+            <span class="jd-category"><%= product.category.toUpperCase() %></span>
+            <span class="jd-demand <%= product.demandLevel.toLowerCase() %>">
+              <%= product.demandLevel %> Demand
+            </span>
+          </div>
+
+          <h5 class="jd-product-name mb-1">
+            <a href="/products/<%= product._id %>" class="text-decoration-none text-dark"><%= product.name %></a>
+          </h5>
+
+          <!-- MANDI BENCHMARK & QUALITY CHIPS -->
+          <div class="quality-badges-row my-1">
+            <span class="quality-chip quality-chip-fresh" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')">
+              <i class="fa-solid fa-bolt text-warning"></i> Fresh Harvest
+            </span>
+            <span class="quality-chip quality-chip-moisture" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')">
+              <i class="fa-solid fa-droplet text-info"></i> 12% Moisture
+            </span>
+          </div>
+
+          <div class="jd-price mt-auto">
+            <span class="jd-current">
+              ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
+            </span>
+            <span class="jd-unit">/kg (₹<%= ((product.pricePerQuintal * 100) / 100).toFixed(0) %>/Qtl)</span>
+            <% if (product.oldPrice > product.pricePerQuintal) { %>
+              <span class="jd-old">
+                ₹<%= (product.oldPrice / 100).toFixed(2) %>
+              </span>
+            <% } %>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="d-flex gap-2 mt-2 pt-2 border-top">
+            <a href="/products/<%= product._id %>" class="btn btn-sm btn-outline-success flex-grow-1 fw-semibold">
+              <i class="fa-regular fa-eye me-1"></i> Details
+            </a>
+            <button type="button" class="btn btn-sm btn-light border flex-grow-1 fw-semibold text-secondary" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')" title="Submit instant wholesale offer">
+              <i class="fa-solid fa-handshake text-success me-1"></i> Bulk RFQ
+            </button>
+          </div>
+
+          <div class="jd-footer mt-2 pt-1 border-top">
+            <span>
+              <i class="fa-solid fa-boxes-stacked text-success"></i>
+              <%= product.available * 100 %> kg
+            </span>
+            <span>
+              <i class="fa-regular fa-clock text-muted"></i>
+              <%= product.deliveryTime ? product.deliveryTime.minDays : 1 %>-<%= product.deliveryTime ? product.deliveryTime.maxDays : 4 %> days
+            </span>
+          </div>
+
+        </div>
       </div>
     </div>
-
-    <!-- BODY -->
-    <div class="jd-body">
-
-      <div class="jd-meta">
-        <span class="jd-category"><%= product.category.toUpperCase() %></span>
-        <span class="jd-demand <%= product.demandLevel.toLowerCase() %>">
-          <%= product.demandLevel %> Demand
-        </span>
-      </div>
-
-      <h5 class="jd-product-name"><%= product.name %></h5>
-
-      <div class="jd-price">
-        <span class="jd-current">
-        ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
-        </span>
-        <span class="jd-unit">/kg</span>
-        <span class="jd-old">
-        ₹<%= (product.oldPrice / 100).toFixed(2) %>
-        </span>
-      </div>
-      <hr style="color: #545654; margin-bottom: 0px;">
-      <div class="jd-footer">
-        <span>
-          <i class="fa-solid fa-cart-shopping"></i>
-          <%= product.available * 100 %> kg available
-        </span>
-        <span>
-          <i class="fa-regular fa-clock"></i>
-          <%= product.deliveryTime.minDays %>-<%= product.deliveryTime.maxDays %> days
-        </span>
-      </div>
-
-    </div>
-  </div>
-</a>
-<% } %>
+    <% } %>
     </div>
     <% } %>
 
@@ -383,79 +410,8 @@
   </div>
 <% } %>
 
+<%- include("partials/footer") %>
 
-  
-<!-- FOOTER -->
-<footer class="jd-footer-section mt-5">
-  <div class="container-fluid px-5 mt-3">
-    <div class="row gy-4">
-
-      <!-- BRAND -->
-      <div class="col-lg-4 col-md-6">
-        <div class="d-flex align-items-center mb-3">
-          <img src="/images/image.png" height="40" style="border-radius:8px;">
-          <h5 class="ms-2 mb-0">JD Mart</h5>
-        </div>
-        <p class="text-muted">
-          JD Mart connects farmers directly with buyers, offering fresh crops, transparent pricing, and fast delivery across regions.
-        </p>
-      </div>
-
-      <!-- QUICK LINKS -->
-      <div class="col-lg-2 col-md-6">
-        <h6 class="footer-title">Quick Links</h6>
-        <ul class="footer-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/profile">My Profile</a></li>
-          <li><a href="/orders">My Orders</a></li>
-          <li><a href="/listings">Browse Products</a></li>
-        </ul>
-      </div>
-
-      <!-- SUPPORT -->
-      <div class="col-lg-3 col-md-6">
-        <h6 class="footer-title">Support</h6>
-        <ul class="footer-links">
-          <li><a href="#">Help Center</a></li>
-          <li><a href="#">Delivery Info</a></li>
-          <li><a href="#">Returns & Refunds</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-        </ul>
-      </div>
-
-      <!-- CONTACT -->
-      <div class="col-lg-3 col-md-6">
-        <h6 class="footer-title">Contact Us</h6>
-        <p class="mb-1"><i class="fa-solid fa-location-dot"></i> India</p>
-        <p class="mb-1"><i class="fa-solid fa-envelope"></i> support@jdmart.com</p>
-        <p><i class="fa-solid fa-phone"></i> +91 98765 43210</p>
-
-        <div class="footer-social mt-3">
-          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#"><i class="fa-brands fa-instagram"></i></a>
-          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-          <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
-        </div>
-      </div>
-
-    </div>
-
-    <hr class="mt-4">
-
-    <div class="text-center pb-3">
-      <small>
-        © <%= new Date().getFullYear() %> JD Mart. All rights reserved.
-      </small>
-    </div>
-  </div>
-</footer>
-
-
-
-
-   <script src="/js/script.js"></script>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html>
