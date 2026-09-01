@@ -146,144 +146,232 @@
         <div class="alert alert-success"><%= message %></div>
     <% } %>
 
-    <div class="step-indicator">
-        <div class="step-item active">
-            <div class="step-circle">1</div>
-            <div class="step-title">Review Order</div>
+    <!-- 4. STEP-BY-STEP CHECKOUT STEPPER -->
+    <div class="checkout-stepper">
+        <div class="stepper-progress-bar" id="stepperProgress" style="width: 0%;"></div>
+        <div class="stepper-node active" id="stepNode1" onclick="goToStep(1)">
+            <div class="stepper-node-bubble"><i class="fa-solid fa-location-dot"></i></div>
+            <div class="stepper-node-label">1. Address</div>
         </div>
-        <div class="step-item active">
-            <div class="step-circle">2</div>
-            <div class="step-title">Delivery Address</div>
+        <div class="stepper-node" id="stepNode2" onclick="goToStep(2)">
+            <div class="stepper-node-bubble"><i class="fa-solid fa-truck"></i></div>
+            <div class="stepper-node-label">2. Logistics</div>
         </div>
-        <div class="step-item">
-            <div class="step-circle">3</div>
-            <div class="step-title">Confirm & Pay</div>
+        <div class="stepper-node" id="stepNode3" onclick="goToStep(3)">
+            <div class="stepper-node-bubble"><i class="fa-solid fa-credit-card"></i></div>
+            <div class="stepper-node-label">3. Payment</div>
         </div>
     </div>
 
     <div class="row">
-        <!-- Order Summary -->
+        <!-- Main Form Area -->
         <div class="col-lg-8">
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fa-solid fa-box me-2"></i>Your Order</h5>
-                </div>
-                <div class="card-body">
-                    <div class="order-item">
-                                                <div class="item-image">
-                                                        <img
-                                                            src="<%= getImageUrl(item.images) %>"
-                                                            alt="<%= item.productName %>"
-                                                            class="item-image-tag"
-                                                            onerror="this.onerror=null;this.src='<%= getCropPlaceholder(item.category || item.productName) %>'"
-                                                        >
-                                                </div>
-                        <div class="item-details">
-                            <div class="item-name"><%= item.productName %></div>
-                            <div class="item-qty">Quantity: <%= item.quantity %> kg</div>
-                            <div class="item-qty">Price: ₹<%= (item.price / 100).toFixed(2) %>/kg</div>
-                            <div class="item-price">Total: ₹<%= ((item.quantity * item.price) / 100).toFixed(2) %></div>
+            <form id="checkoutForm" action="/orders/buy-now-place" method="POST">
+                
+                <!-- STEP 1: DELIVERY ADDRESS -->
+                <div class="checkout-step-panel" id="stepPanel1">
+                    <div class="card mb-4 shadow-sm border-0 rounded-3">
+                        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-location-dot text-success me-2"></i>Step 1: Delivery Destination</h5>
+                            <span class="badge bg-success-subtle text-success">Verified Mandi Hub</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <% if (user.defaultAddress) { %>
+                                <div class="mb-3">
+                                    <label class="address-option selected d-block p-3 rounded-3 border border-success bg-light">
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <div class="d-flex align-items-center">
+                                                <input type="radio" name="deliveryAddress" value="<%= user.defaultAddress %>" checked class="form-check-input me-2">
+                                                <strong class="text-success"><i class="fa-solid fa-circle-check me-1"></i> Current Delivery Address</strong>
+                                            </div>
+                                            <span class="badge bg-success text-white">Default</span>
+                                        </div>
+                                        <p class="text-secondary mb-0 ps-4 small"><%= user.defaultAddress %></p>
+                                    </label>
+                                </div>
+                            <% } else { %>
+                                <div class="alert alert-warning mb-3">
+                                    <i class="fa-solid fa-triangle-exclamation me-2"></i> No default address found.
+                                    <a href="/profile" class="alert-link">Please update your address in profile first.</a>
+                                </div>
+                            <% } %>
+
+                            <div class="p-3 bg-light rounded-3 border mt-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="fa-solid fa-route text-success fs-3"></i>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">APMC Mandi Direct Dispatch</h6>
+                                        <small class="text-muted">Estimated dispatch in 24 hours with sealed quality tag.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="button" class="btn btn-success px-4 py-2 fw-semibold" onclick="goToStep(2)">
+                                    Continue to Logistics <i class="fa-solid fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Delivery Address Selection -->
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fa-solid fa-location-dot me-2"></i>Delivery Address</h5>
-                </div>
-                <div class="card-body">
-                    <form id="checkoutForm" action="/orders/buy-now-place" method="POST">
-                        <% if (user.defaultAddress) { %>
-                            <div class="mb-3">
-                                <p class="text-muted mb-3">Delivery address:</p>
-                                <label class="address-option selected">
-                                    <input type="radio" name="deliveryAddress" value="<%= user.defaultAddress %>" checked class="addressRadio">
-                                    <strong><i class="fa-solid fa-check-circle me-2" style="color: #16a34a;"></i>Current Address</strong>
-                                    <br>
-                                    <small class="text-muted"><%= user.defaultAddress %></small>
+                <!-- STEP 2: LOGISTICS & VEHICLE SELECTOR -->
+                <div class="checkout-step-panel d-none" id="stepPanel2">
+                    <div class="card mb-4 shadow-sm border-0 rounded-3">
+                        <div class="card-header bg-white py-3 border-bottom">
+                            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-truck-moving text-success me-2"></i>Step 2: Select Logistics & Vehicle Mode</h5>
+                            <small class="text-muted">Pick the logistics vehicle suitable for your order tonnage.</small>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="vehicle-grid">
+                                <label class="vehicle-card selected" id="vehicleTempo" onclick="selectVehicle('tempo', 450, '1-2 Days')">
+                                    <input type="radio" name="logisticsVehicle" value="mini-truck" checked>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <i class="fa-solid fa-van-shuttle text-success fs-4"></i>
+                                        <h6 class="mb-0 fw-bold">Mini-Truck / Tempo</h6>
+                                    </div>
+                                    <p class="small text-muted mb-2">Direct express dispatch (up to 1.5 Metric Tons).</p>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="badge bg-success-subtle text-success">⚡ 1-2 Days Express</span>
+                                        <strong class="text-dark">₹450</strong>
+                                    </div>
+                                </label>
+
+                                <label class="vehicle-card" id="vehicleTruck" onclick="selectVehicle('truck', 1200, '2-4 Days')">
+                                    <input type="radio" name="logisticsVehicle" value="commercial-truck">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <i class="fa-solid fa-truck-front text-primary fs-4"></i>
+                                        <h6 class="mb-0 fw-bold">Commercial Truck</h6>
+                                    </div>
+                                    <p class="small text-muted mb-2">Standard commercial freight for 5 - 10 MT lots.</p>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="badge bg-primary-subtle text-primary">📦 2-4 Days</span>
+                                        <strong class="text-dark">₹1,200</strong>
+                                    </div>
+                                </label>
+
+                                <label class="vehicle-card" id="vehicleBulk" onclick="selectVehicle('bulk', 2500, '3-5 Days')">
+                                    <input type="radio" name="logisticsVehicle" value="mandi-bulk">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <i class="fa-solid fa-trailer text-warning fs-4"></i>
+                                        <h6 class="mb-0 fw-bold">APMC Bulk Carrier</h6>
+                                    </div>
+                                    <p class="small text-muted mb-2">High capacity 10+ Tons transport.</p>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="badge bg-warning-subtle text-warning-emphasis">🏛️ 3-5 Days</span>
+                                        <strong class="text-dark">₹2,500</strong>
+                                    </div>
                                 </label>
                             </div>
-                        <% } else { %>
-                            <div class="alert alert-warning">
-                                <i class="fa-solid fa-exclamation-triangle me-2"></i>
-                                No delivery address found. Please add one in your profile first.
-                            </div>
-                            <a href="/profile" class="btn btn-warning">Update Profile</a>
-                            <% return; %>
-                        <% } %>
 
-                        <div class="delivery-info">
-                            <div class="d-flex align-items-start">
-                                <i class="fa-solid fa-info-circle me-2 mt-1" style="color: #16a34a;"></i>
-                                <div>
-                                    <strong>Estimated Delivery</strong>
-                                    <p class="mb-0 text-muted">Your order will be delivered within 3-5 business days</p>
-                                </div>
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-outline-secondary px-4 py-2" onclick="goToStep(1)">
+                                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Address
+                                </button>
+                                <button type="button" class="btn btn-success px-4 py-2 fw-semibold" onclick="goToStep(3)">
+                                    Continue to Payment <i class="fa-solid fa-arrow-right ms-1"></i>
+                                </button>
                             </div>
                         </div>
-
-                        <!-- Order Summary Card -->
-                        <div class="card mt-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0">Order Summary</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="summary-row">
-                                    <span><%= item.productName %> x <%= item.quantity %> kg</span>
-                                    <span>₹<%= ((item.quantity * item.price) / 100).toFixed(2) %></span>
-                                </div>
-                                <div class="summary-row">
-                                    <span>Delivery</span>
-                                    <span class="text-success">FREE</span>
-                                </div>
-                                <div class="summary-row total">
-                                    <span>Total Amount</span>
-                                    <span>₹<%= (totalAmount / 100).toFixed(2) %></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="fa-solid fa-check-circle me-2"></i>Place Order
-                            </button>
-                            <a href="/products" class="btn btn-outline-secondary">
-                                <i class="fa-solid fa-arrow-left me-2"></i>Back to Products
-                            </a>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+
+                <!-- STEP 3: PAYMENT & CONFIRMATION -->
+                <div class="checkout-step-panel d-none" id="stepPanel3">
+                    <div class="card mb-4 shadow-sm border-0 rounded-3">
+                        <div class="card-header bg-white py-3 border-bottom">
+                            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-credit-card text-success me-2"></i>Step 3: Payment Method</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="payment-option p-3 border border-2 border-success rounded text-center cursor-pointer d-block" style="cursor: pointer;">
+                                        <input type="radio" name="paymentMethod" value="bank-transfer" checked>
+                                        <div><i class="fa-solid fa-building-columns fs-3 text-success my-2"></i></div>
+                                        <div class="fw-bold">Bank Transfer</div>
+                                        <small class="text-muted">NEFT / RTGS Escrow</small>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="payment-option p-3 border border-2 border-secondary rounded text-center cursor-pointer d-block" style="cursor: pointer;">
+                                        <input type="radio" name="paymentMethod" value="upi">
+                                        <div><i class="fa-solid fa-mobile fs-3 text-success my-2"></i></div>
+                                        <div class="fw-bold">UPI Payment</div>
+                                        <small class="text-muted">GPay / PhonePe / Paytm</small>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="payment-option p-3 border border-2 border-secondary rounded text-center cursor-pointer d-block" style="cursor: pointer;">
+                                        <input type="radio" name="paymentMethod" value="debit-card">
+                                        <div><i class="fa-solid fa-credit-card fs-3 text-success my-2"></i></div>
+                                        <div class="fw-bold">Debit / Credit Card</div>
+                                        <small class="text-muted">Instant card checkout</small>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="payment-option p-3 border border-2 border-secondary rounded text-center cursor-pointer d-block" style="cursor: pointer;">
+                                        <input type="radio" name="paymentMethod" value="cod">
+                                        <div><i class="fa-solid fa-hand-holding-dollar fs-3 text-success my-2"></i></div>
+                                        <div class="fw-bold">Cash On Delivery</div>
+                                        <small class="text-muted">Pay at delivery</small>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-outline-secondary px-4 py-2" onclick="goToStep(2)">
+                                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Logistics
+                                </button>
+                                <button type="submit" class="btn btn-success btn-lg px-4 py-2 fw-bold">
+                                    <i class="fa-solid fa-circle-check me-2"></i> Confirm Instant Order
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
         </div>
 
         <!-- Right Sidebar Summary -->
         <div class="col-lg-4">
-            <div class="card sticky-top" style="top: 80px;">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Order Summary</h5>
+            <div class="card sticky-top shadow-sm border-0 rounded-3" style="top: 80px;">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="fa-solid fa-receipt text-success me-2"></i>Order Summary</h5>
                 </div>
-                <div class="card-body">
-                    <div class="summary-row">
-                        <strong><%= item.productName %></strong>
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center gap-3 pb-3 border-bottom mb-3">
+                        <img src="<%= getImageUrl(item.images) %>" alt="<%= item.productName %>" class="rounded-2" style="width: 55px; height: 55px; object-fit: cover;" onerror="this.onerror=null;this.src='<%= getCropPlaceholder(item.category || item.productName) %>'">
+                        <div>
+                            <h6 class="mb-0 fw-bold"><%= item.productName %></h6>
+                            <small class="text-muted"><%= item.quantity %> Quintal (<%= item.quantity * 100 %> kg)</small>
+                        </div>
                     </div>
-                    <div class="summary-row">
-                        <span><%= item.quantity %> kg @ ₹<%= (item.price / 100).toFixed(2) %>/kg</span>
+
+                    <div class="summary-row d-flex justify-content-between py-1">
+                        <span class="text-muted">Rate:</span>
+                        <span>₹<%= (item.price / 100).toFixed(2) %>/q</span>
+                    </div>
+                    <div class="summary-row d-flex justify-content-between py-1">
+                        <span class="text-muted">Subtotal:</span>
                         <span>₹<%= ((item.quantity * item.price) / 100).toFixed(2) %></span>
                     </div>
-                    <div class="summary-row">
-                        <strong>Delivery</strong>
-                        <span class="text-success">FREE</span>
+                    <div class="summary-row d-flex justify-content-between py-1">
+                        <span class="text-muted">GST (5%):</span>
+                        <span>₹<%= (((item.quantity * item.price) * 0.05) / 100).toFixed(2) %></span>
                     </div>
-                    <hr>
-                    <div class="summary-row total">
-                        <strong>Total Amount</strong>
-                        <strong style="color: #16a34a;">₹<%= (totalAmount / 100).toFixed(2) %></strong>
+                    <div class="summary-row d-flex justify-content-between py-1">
+                        <span class="text-muted">Logistics Freight:</span>
+                        <span class="text-success fw-bold" id="checkoutFreightDisplay">₹450.00</span>
                     </div>
-                    <div class="alert alert-info mt-3" role="alert">
-                        <i class="fa-solid fa-shield-check me-2"></i>
-                        <small><strong>Safe & Secure:</strong> Your payment is encrypted and secure</small>
+                    <hr class="my-2">
+                    <div class="summary-row total d-flex justify-content-between py-1 fs-5 fw-bold text-success">
+                        <span>Grand Total</span>
+                        <span id="checkoutGrandTotal">₹<%= ((((item.quantity * item.price) * 1.05) + 45000) / 100).toFixed(2) %></span>
+                    </div>
+
+                    <div class="alert alert-success-subtle border border-success-subtle mt-3 mb-0 p-2 text-center rounded-3">
+                        <small class="text-success fw-semibold"><i class="fa-solid fa-shield-halved me-1"></i> APMC Quality Guarantee & Escrow Protected</small>
                     </div>
                 </div>
             </div>
@@ -299,6 +387,55 @@
   </div>
 </footer>
 
+<script>
+    let currentStep = 1;
+    let baseTotal = <%= (item.quantity * item.price) / 100 %>;
+    let freightCost = 450;
+
+    function goToStep(step) {
+        currentStep = step;
+        document.querySelectorAll('.checkout-step-panel').forEach(p => p.classList.add('d-none'));
+        const activePanel = document.getElementById('stepPanel' + step);
+        if (activePanel) activePanel.classList.remove('d-none');
+
+        document.querySelectorAll('.stepper-node').forEach((node, idx) => {
+            const stepNum = idx + 1;
+            node.classList.remove('active', 'completed');
+            if (stepNum < step) node.classList.add('completed');
+            if (stepNum === step) node.classList.add('active');
+        });
+
+        const progressPercent = step === 1 ? '0%' : step === 2 ? '50%' : '100%';
+        const prog = document.getElementById('stepperProgress');
+        if (prog) prog.style.width = progressPercent;
+    }
+
+    function selectVehicle(type, cost, days) {
+        freightCost = cost;
+        document.querySelectorAll('.vehicle-card').forEach(c => c.classList.remove('selected'));
+        const cardId = type === 'tempo' ? 'vehicleTempo' : type === 'truck' ? 'vehicleTruck' : 'vehicleBulk';
+        const card = document.getElementById(cardId);
+        if (card) card.classList.add('selected');
+
+        const freightDisplay = document.getElementById('checkoutFreightDisplay');
+        if (freightDisplay) freightDisplay.textContent = '₹' + cost.toFixed(2);
+
+        const grandTotal = (baseTotal * 1.05) + cost;
+        const grandDisplay = document.getElementById('checkoutGrandTotal');
+        if (grandDisplay) grandDisplay.textContent = '₹' + grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    document.querySelectorAll('.payment-option input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('border-success');
+                opt.classList.add('border-secondary');
+            });
+            this.closest('.payment-option').classList.add('border-success');
+            this.closest('.payment-option').classList.remove('border-secondary');
+        });
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
