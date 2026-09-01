@@ -1583,3 +1583,456 @@ body {
     width: 45%;
   }
 }
+
+/* ==========================================================================
+   UI/UX ENHANCEMENT SUITE (JD MART 5-PILLAR OVERHAUL)
+   ========================================================================== */
+
+/* 1. DYNAMIC BULK PRICING CALCULATOR & VOLUME CHIPS */
+.jd-volume-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.jd-volume-chip {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.jd-volume-chip:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+.jd-volume-chip.active {
+  background: #16a34a;
+  border-color: #15803d;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);
+}
+
+.jd-volume-chip .chip-badge {
+  background: #fef08a;
+  color: #854d0e;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.jd-volume-chip.active .chip-badge {
+  background: #ffffff;
+  color: #166534;
+}
+
+.mandi-trend-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  padding: 0.3rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-top: 0.35rem;
+}
+
+.mandi-trend-pill i {
+  color: #10b981;
+}
+
+.calc-breakdown-box {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+}
+
+/* 2. CROP QUALITY, HARVEST FRESHNESS BADGES & INSPECTION MODAL */
+.quality-badges-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.quality-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.quality-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.quality-chip-grade {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.quality-chip-fresh {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.quality-chip-moisture {
+  background: #f0fdfa;
+  color: #115e59;
+  border: 1px solid #99f6e4;
+}
+
+.quality-chip-organic {
+  background: #f5f3ff;
+  color: #5b21b6;
+  border: 1px solid #ddd6fe;
+}
+
+/* Inspection Modal Quality Sheet */
+.inspection-sheet-header {
+  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  color: #ffffff;
+  padding: 1.25rem 1.5rem;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.meter-container {
+  background: #e2e8f0;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.meter-fill {
+  background: linear-gradient(90deg, #10b981, #059669);
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s ease-in-out;
+}
+
+.cert-stamp {
+  border: 2px dashed #16a34a;
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #f0fdf4;
+  text-align: center;
+}
+
+/* 3. SLIDE-OUT QUICK RFQ DRAWER */
+.jd-rfq-drawer {
+  position: fixed;
+  top: 0;
+  right: -480px;
+  width: 460px;
+  max-width: 95vw;
+  height: 100vh;
+  background: #ffffff;
+  z-index: 1060;
+  box-shadow: -8px 0 25px rgba(0, 0, 0, 0.15);
+  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.jd-rfq-drawer.open {
+  right: 0;
+}
+
+.jd-rfq-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 1055;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.jd-rfq-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.jd-rfq-header {
+  background: linear-gradient(135deg, #14532d 0%, #16a34a 100%);
+  color: white;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.jd-rfq-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.jd-rfq-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.logistics-toggle-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.logistics-toggle-card {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.65rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.logistics-toggle-card.selected {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  color: #166534;
+  font-weight: 600;
+}
+
+/* 4. MULTI-STEP CHECKOUT & LOGISTICS VEHICLE ESTIMATOR */
+.checkout-stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.checkout-stepper::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 10%;
+  right: 10%;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.stepper-progress-bar {
+  position: absolute;
+  top: 20px;
+  left: 10%;
+  height: 3px;
+  background: #16a34a;
+  z-index: 2;
+  transition: width 0.4s ease;
+}
+
+.stepper-node {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  cursor: pointer;
+}
+
+.stepper-node-bubble {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem auto;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.stepper-node.completed .stepper-node-bubble {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #ffffff;
+}
+
+.stepper-node.active .stepper-node-bubble {
+  background: #ffffff;
+  border-color: #16a34a;
+  color: #16a34a;
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
+}
+
+.stepper-node-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.stepper-node.active .stepper-node-label {
+  color: #16a34a;
+}
+
+/* Vehicle Mode Cards */
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.vehicle-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: #ffffff;
+  position: relative;
+}
+
+.vehicle-card:hover {
+  border-color: #94a3b8;
+  transform: translateY(-2px);
+}
+
+.vehicle-card.selected {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.12);
+}
+
+.vehicle-card input[type="radio"] {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  accent-color: #16a34a;
+}
+
+/* 5. MOBILE BOTTOM NAV & STICKY ACTION BAR */
+.jd-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #e2e8f0;
+  z-index: 1040;
+  padding: 0 0.5rem;
+}
+
+.jd-bottom-nav-items {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+}
+
+.jd-bottom-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.jd-bottom-nav-link i {
+  font-size: 1.25rem;
+  margin-bottom: 2px;
+}
+
+.jd-bottom-nav-link.active,
+.jd-bottom-nav-link:hover {
+  color: #16a34a;
+}
+
+.jd-bottom-nav-badge {
+  position: absolute;
+  top: 2px;
+  right: 12px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.65rem;
+  border-radius: 9999px;
+  padding: 0.1rem 0.35rem;
+  font-weight: 700;
+}
+
+/* Mobile Sticky Product Action Bar */
+.jd-mobile-action-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+  padding: 0.75rem 1rem;
+  z-index: 1030;
+  border-top: 1px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .jd-bottom-nav {
+    display: block;
+  }
+  
+  /* Add padding to page bottom so footer/content isn't covered by bottom nav */
+  body {
+    padding-bottom: 70px;
+  }
+
+  .jd-mobile-action-bar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .jd-mobile-action-bar ~ .jd-bottom-nav {
+    display: none; /* Hide standard bottom nav when product action bar is active */
+  }
+}
+
