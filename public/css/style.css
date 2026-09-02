@@ -2036,3 +2036,243 @@ body {
   }
 }
 
+/* ==========================================================================
+   3D FRONTEND TRANSFORMATION DESIGN SYSTEM (JD MART 3D)
+   ========================================================================== */
+
+/* 1. 3D Perspective & Spatial Layering */
+:root {
+  --jd-perspective: 1000px;
+  --jd-3d-shadow: 0 12px 30px -8px rgba(22, 101, 52, 0.14), 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+  --jd-3d-shadow-hover: 0 24px 45px -10px rgba(22, 163, 74, 0.22), 0 10px 20px -5px rgba(0, 0, 0, 0.08);
+}
+
+.jd-card,
+.stat-card,
+.supplier-card,
+.premium-section,
+.rfq-box {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+  position: relative;
+}
+
+.jd-card:hover {
+  box-shadow: var(--jd-3d-shadow-hover);
+  border-color: rgba(34, 197, 94, 0.4) !important;
+}
+
+/* 3D Depth Layer Popouts */
+.jd-card .jd-image {
+  transform: translateZ(20px);
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease;
+}
+
+.jd-card:hover .jd-image {
+  transform: translateZ(32px);
+}
+
+.jd-card .jd-badges {
+  transform: translateZ(38px);
+}
+
+.jd-card .jd-price {
+  transform: translateZ(24px);
+}
+
+.jd-card .quality-badges-row {
+  transform: translateZ(22px);
+}
+
+.stat-card:hover {
+  box-shadow: var(--jd-3d-shadow-hover);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.stat-card .stat-icon {
+  transform: translateZ(25px);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stat-card:hover .stat-icon {
+  transform: translateZ(38px) scale(1.1);
+}
+
+/* 2. Tactile 3D Buttons (Physical Press State) */
+.btn-3d {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  padding: 0.55rem 1.25rem;
+  text-decoration: none;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 0 #15803d, 0 8px 18px rgba(22, 101, 52, 0.25);
+  transform: translateY(0);
+}
+
+.btn-3d:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #15803d, 0 12px 24px rgba(22, 101, 52, 0.32);
+}
+
+.btn-3d:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #15803d, 0 3px 8px rgba(22, 101, 52, 0.2);
+}
+
+.btn-3d-success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff !important;
+}
+
+.btn-3d-secondary {
+  background: linear-gradient(135deg, #ffffff, #f1f5f9);
+  color: #334155 !important;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 4px 0 #94a3b8, 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.btn-3d-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #94a3b8, 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+.btn-3d-secondary:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #94a3b8, 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* 3. 3D Glassmorphism & Elevation */
+.glass-3d-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+}
+
+.premium-section {
+  background: linear-gradient(135deg, rgba(240, 253, 244, 0.95), rgba(255, 255, 255, 0.98)) !important;
+  border: 1px solid rgba(187, 247, 208, 0.7) !important;
+  box-shadow: 0 15px 35px -10px rgba(22, 163, 74, 0.15) !important;
+  border-radius: 18px !important;
+}
+
+/* 4. 3D Product Stage & Media Switcher (show.ejs) */
+.jd-media-container {
+  position: relative;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.jd-media-switch-tabs {
+  display: inline-flex;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.jd-media-tab-btn {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jd-media-tab-btn.active {
+  background: #ffffff;
+  color: #16a34a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.jd-3d-stage {
+  width: 100%;
+  height: 380px;
+  position: relative;
+  background: radial-gradient(circle at 50% 35%, #ffffff 0%, #f0fdf4 75%, #dcfce7 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+
+.jd-3d-stage:active {
+  cursor: grabbing;
+}
+
+.jd-3d-btn {
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.jd-3d-btn:hover {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.jd-3d-btn.active {
+  background: #16a34a;
+  color: #ffffff;
+}
+
+/* 5. Scroll-Driven 3D Spatial Reveals */
+.jd-3d-reveal {
+  opacity: 0;
+  transform: perspective(1000px) rotateX(12deg) translateY(28px) scale(0.96);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.jd-3d-visible {
+  opacity: 1 !important;
+  transform: perspective(1000px) rotateX(0deg) translateY(0) scale(1) !important;
+}
+
+/* Floating 3D Badge Pulse */
+.quality-chip-3d-glow {
+  box-shadow: 0 0 12px rgba(22, 163, 74, 0.35);
+  animation: pulse3DGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse3DGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(22, 163, 74, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(22, 163, 74, 0.5);
+  }
+}
+
+
