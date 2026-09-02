@@ -86,7 +86,7 @@ app.use(
           "https://images.unsplash.com",
           "https://cdn.jsdelivr.net"
         ],
-        connectSrc: ["'self'", "https://ka-f.fontawesome.com"]
+        connectSrc: ["'self'", "https://ka-f.fontawesome.com", "blob:", "data:"]
       }
     },
     crossOriginEmbedderPolicy: false
