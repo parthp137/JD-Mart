@@ -65,22 +65,41 @@
   <div class="jd-view-container bg-white p-4 rounded-4 shadow-sm">
     <!-- LEFT IMAGE PANEL -->
     <div class="jd-view-image">
-      <img
-        src="<%= getImageUrl(product.images) %>"
-        alt="<%= product.name %>"
-        class="jd-view-image-tag rounded-3"
-        onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
-      >
-      <% if (product.belowMarketPercent > 0) { %>
-        <span class="jd-view-market">
-          <i class="fa-solid fa-arrow-trend-down"></i>
-          <%= product.belowMarketPercent %>% below mandi rate
-        </span>
-      <% } %>
+      <!-- 2D / 3D Media View Switcher -->
+      <div class="jd-media-switch-tabs mb-3">
+        <button type="button" class="jd-media-tab-btn active" id="tabMedia2D" onclick="switchMediaView('2d')">
+          <i class="fa-regular fa-image"></i> High-Res Photo
+        </button>
+        <button type="button" class="jd-media-tab-btn" id="tabMedia3D" onclick="switchMediaView('3d')">
+          <i class="fa-solid fa-cube text-success"></i> 3D 360° Inspection Stage
+        </button>
+      </div>
 
-      <span class="jd-view-grade quality-chip quality-chip-grade" onclick="openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')" style="cursor: pointer;" title="Click to view lab certificate">
-        <i class="fa-regular fa-star"></i> Grade <%= product.grade %> Certified
-      </span>
+      <div id="media2DWrapper" class="position-relative">
+        <img
+          src="<%= getImageUrl(product.images) %>"
+          alt="<%= product.name %>"
+          class="jd-view-image-tag rounded-3"
+          onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
+        >
+        <% if (product.belowMarketPercent > 0) { %>
+          <span class="jd-view-market">
+            <i class="fa-solid fa-arrow-trend-down"></i>
+            <%= product.belowMarketPercent %>% below mandi rate
+          </span>
+        <% } %>
+
+        <span class="jd-view-grade quality-chip quality-chip-grade" onclick="openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')" style="cursor: pointer;" title="Click to view lab certificate">
+          <i class="fa-regular fa-star"></i> Grade <%= product.grade %> Certified
+        </span>
+      </div>
+
+      <!-- 3D Interactive Inspection Stage Container -->
+      <div id="product3DStage" class="jd-3d-stage d-none">
+        <div class="position-absolute top-0 start-0 m-3 d-flex align-items-center gap-1 bg-white bg-opacity-75 px-2 py-1 rounded-pill small fw-bold text-success border border-success-subtle" style="z-index: 5;">
+          <i class="fa-solid fa-hand-pointer text-xs"></i> Drag to rotate 360°
+        </div>
+      </div>
 
       <!-- SUPPLIER CREDENTIALS CARD -->
       <div class="supplier-card mt-3">
@@ -259,15 +278,15 @@
         <div class="jd-actions d-flex gap-2 mt-3">
           <form action="/cart/add/<%= product._id %>" method="POST" class="flex-grow-1" id="cartForm">
             <input type="hidden" name="quantity" id="cartQty" value="<%= product.moq || 1 %>">
-            <button class="btn btn-outline-success w-100 py-2 fw-semibold" type="submit">
-              <i class="fa-solid fa-cart-plus me-1"></i> Add to Cart
+            <button class="btn btn-3d btn-3d-secondary w-100 py-2.5 fw-semibold" type="submit">
+              <i class="fa-solid fa-cart-plus me-1 text-success"></i> Add to Cart
             </button>
           </form>
 
           <form action="/orders/buy-now/<%= product._id %>" method="POST" class="flex-grow-1" id="buyForm">
             <input type="hidden" name="quantity" id="buyQty" value="<%= product.moq || 1 %>">
-            <button class="btn btn-success w-100 py-2 fw-semibold" type="submit">
-              <i class="fa-solid fa-bolt me-1"></i> Buy Now
+            <button class="btn btn-3d btn-3d-success w-100 py-2.5 fw-semibold" type="submit">
+              <i class="fa-solid fa-bolt me-1"></i> Buy Wholesale Now
             </button>
           </form>
         </div>
@@ -303,10 +322,40 @@
 <%- include("partials/footer") %>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/product-3d-viewer.js"></script>
 <script>
   const basePricePerQuintal = <%= product.pricePerQuintal %> / 100; // in Rupees
   const moq = <%= product.moq || 1 %>;
   const maxAvailable = <%= Math.max(1, actualAvailable) %>;
+  let viewer3DInstance = null;
+
+  function switchMediaView(viewType) {
+    const tab2D = document.getElementById("tabMedia2D");
+    const tab3D = document.getElementById("tabMedia3D");
+    const media2DWrapper = document.getElementById("media2DWrapper");
+    const product3DStage = document.getElementById("product3DStage");
+
+    if (viewType === '3d') {
+      tab3D.classList.add("active");
+      tab2D.classList.remove("active");
+      media2DWrapper.classList.add("d-none");
+      product3DStage.classList.remove("d-none");
+
+      if (!viewer3DInstance) {
+        viewer3DInstance = window.initProduct3DViewer("product3DStage", {
+          cropName: "<%= product.name.replace(/'/g, "\\'") %>",
+          category: "<%= product.category %>",
+          grade: "<%= product.grade %>",
+          autoRotate: true
+        });
+      }
+    } else {
+      tab2D.classList.add("active");
+      tab3D.classList.remove("active");
+      media2DWrapper.classList.remove("d-none");
+      product3DStage.classList.add("d-none");
+    }
+  }
 
   function setVolumePreset(volume, elem) {
     document.querySelectorAll('.jd-volume-chip').forEach(c => c.classList.remove('active'));
@@ -397,6 +446,7 @@
     if (qtyInput) {
       qtyInput.addEventListener('input', updatePricing);
     }
+  });
 </script>
 </body>
 </html>
