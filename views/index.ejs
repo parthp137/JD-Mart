@@ -81,32 +81,42 @@
   </div>
 </nav>
     
-<!-- Premium Buyer Section -->
-<div class="premium-section container-fluid my-4 p-4 shadow-sm">
-  <div class="row">
+<!-- Premium Buyer Section with 3D Canvas -->
+<div class="premium-section container-fluid my-4 p-4 shadow-sm" data-tilt-3d="true">
+  <div class="row align-items-center">
     
     <!-- Left + Stats -->
     <div class="col-12">
 
-      <!-- Text Info -->
-      <span class="fw-bold mb-2 d-block">
-        <i class="fa-regular fa-star"></i> Premium Buyer
-      </span>
+      <!-- 3D Mandi Badge & Text Info -->
+      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+        <span class="fw-bold d-inline-flex align-items-center gap-1 text-success">
+          <i class="fa-regular fa-star"></i> Premium Buyer
+        </span>
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill small">
+          <i class="fa-solid fa-cube me-1"></i> Interactive 3D Mandi Floor
+        </span>
+      </div>
 
-      <h3 class="mb-1">Fresh Crops, Direct from Farms</h3>
-      <p>Browse our selection of quality-verified crops at competitive prices. Fast delivery to your doorstep.</p>
+      <h3 class="mb-1 fw-bold text-dark">Fresh Crops, Direct from APMC Farms</h3>
+      <p class="text-muted mb-0">Browse our selection of quality-verified crops with 3D lot inspection at competitive mandi rates.</p>
 
       <!-- Stats Below -->
       <div class="d-flex flex-wrap gap-4 mt-3">
 
         <div class="d-flex align-items-center gap-2 premium-stat">
           <i class="fa-solid fa-box"></i>
-          <span>7 Products Available</span>
+          <span><%= typeof allProducts !== 'undefined' ? allProducts.length : 7 %> Verified Products</span>
         </div>
 
         <div class="d-flex align-items-center gap-2 premium-stat">
           <i class="fa-regular fa-truck"></i>
-          <span>1-4 Days Delivery</span>
+          <span>1-4 Days Doorstep Delivery</span>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 premium-stat">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>100% Escrow Protected</span>
         </div>
 
       </div>
@@ -234,11 +244,11 @@
 
       <!-- Action Buttons -->
       <div class="col-lg-3 d-flex align-items-end gap-2">
-        <button type="submit" class="btn btn-sm btn-success" style="flex: 1;">
-          <i class="fa-solid fa-filter"></i> Apply Filters
+        <button type="submit" class="btn btn-sm btn-3d btn-3d-success" style="flex: 1;">
+          <i class="fa-solid fa-filter me-1"></i> Apply Filters
         </button>
-        <a href="/products" class="btn btn-sm btn-outline-secondary" style="flex: 1;">
-          <i class="fa-solid fa-redo"></i> Reset
+        <a href="/products" class="btn btn-sm btn-3d btn-3d-secondary" style="flex: 1;">
+          <i class="fa-solid fa-redo me-1"></i> Reset
         </a>
       </div>
     </div>
