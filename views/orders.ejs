@@ -14,66 +14,11 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-
-    <!-- LOGO -->
-    <a class="navbar-brand d-flex align-items-center" href="/">
-      <img src="/images/image.png" alt="JD Mart Logo" height="40" style="border-radius: 8px;"/>
-      <span class="ms-2 fw-bold">JD Mart</span>
-    </a>
-
-    <!-- LOCATION -->
-    <div class="ms-auto me-4 d-flex align-items-center">
-      <i class="fa-solid fa-location-dot me-1" style="color: #16a34a;"></i>
-      <span id="locationText" style="font-size: 15px;">Getting location...</span>
-    </div>
-
-    <!-- REST OF NAVBAR -->
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-search ms-3">
-        <input type="text" id="productSearch" placeholder="Search for crops, grains, vegetables..." class="form-control" />
-      </div>
-
-      <div class="navbar-icons ms-3">
-        <a href="/notifications" class="notification-icon" title="Notifications">
-          <i class="fa-regular fa-bell"></i>
-          <% if (typeof notificationCount !== 'undefined' && notificationCount > 0) { %>
-            <span class="notification-badge"><%= notificationCount > 9 ? '9+' : notificationCount %></span>
-          <% } %>
-        </a>
-        <a href="/cart" class="cart-icon-link" title="View Cart">
-          <i class="fa-solid fa-cart-shopping"></i>
-        </a>
-
-        <!-- USER DROPDOWN -->
-        <div class="navbar-user" id="userDropdown">
-          <div class="avatar">
-            <%= user && user.fullName ? user.fullName.charAt(0).toUpperCase() : "U" %>
-          </div>
-          <span><%= user && user.fullName ? user.fullName.split(" ")[0] : "Guest" %></span>
-          <i class="fa-solid fa-chevron-down"></i>
-
-          <div class="jd-user-menu">
-            <div class="jd-user-info">
-              <strong><%= user && user.fullName ? user.fullName : "Guest User" %></strong>
-              <small><%= user && user.email ? user.email : "Not logged in" %></small>
-            </div>
-            <a href="/profile"><i class="fa-regular fa-user"></i> Profile</a>
-            <a href="/orders"><i class="fa-solid fa-box"></i> Orders</a>
-            <div class="jd-divider"></div>
-            <a href="/logout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</nav>
+<%- include("partials/header") %>
     
-
 <!-- PAGE -->
-<div class="container">
+<div class="container my-4">
+
 
   <% if (typeof error !== 'undefined' && error) { %>
     <div class="alert alert-danger"><%= error %></div>
