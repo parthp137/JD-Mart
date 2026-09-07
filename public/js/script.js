@@ -401,4 +401,204 @@ window.selectLogistics = function(mode) {
   }
 };
 
+/* ==========================================================================
+   TOP 5 ENHANCEMENTS CLIENT JS ENGINE (THEME, COMPARISON, SPARKLINES, TOASTS)
+   ========================================================================== */
+
+// 1. THEME ENGINE (DARK / LIGHT MANDI MODE)
+(function initTheme() {
+  const savedTheme = localStorage.getItem("jd_theme") || "light";
+  document.body.setAttribute("data-theme", savedTheme);
+  updateThemeIcon(savedTheme);
+})();
+
+window.toggleTheme = function() {
+  const currentTheme = document.body.getAttribute("data-theme") || "light";
+  const newTheme = currentTheme === "dark" ? "light" : "dark";
+  document.body.setAttribute("data-theme", newTheme);
+  localStorage.setItem("jd_theme", newTheme);
+  updateThemeIcon(newTheme);
+  window.showToast(`Switched to ${newTheme === 'dark' ? 'Dark Mandi' : 'Light'} theme`, "info");
+};
+
+function updateThemeIcon(theme) {
+  const icon = document.getElementById("themeIcon");
+  if (!icon) return;
+  if (theme === "dark") {
+    icon.className = "fa-regular fa-sun";
+  } else {
+    icon.className = "fa-regular fa-moon";
+  }
+}
+
+// 2. CROP LOT COMPARISON MATRIX ENGINE
+let comparedProducts = [];
+try {
+  comparedProducts = JSON.parse(localStorage.getItem("jd_compare_lots") || "[]");
+} catch(e) {
+  comparedProducts = [];
+}
+
+window.handleCompareToggle = function(chk) {
+  const id = chk.dataset.id;
+  const name = chk.dataset.name;
+  const category = chk.dataset.category;
+  const grade = chk.dataset.grade;
+  const price = chk.dataset.price;
+  const moisture = chk.dataset.moisture;
+  const purity = chk.dataset.purity;
+  const supplier = chk.dataset.supplier;
+  const location = chk.dataset.location;
+  const delivery = chk.dataset.delivery;
+  const image = chk.dataset.image;
+
+  if (chk.checked) {
+    if (comparedProducts.length >= 4) {
+      chk.checked = false;
+      window.showToast("You can compare up to 4 crop lots simultaneously.", "error");
+      return;
+    }
+    if (!comparedProducts.some(p => p.id === id)) {
+      comparedProducts.push({ id, name, category, grade, price, moisture, purity, supplier, location, delivery, image });
+      window.showToast(`Added "${name}" to comparison matrix`, "info");
+    }
+  } else {
+    comparedProducts = comparedProducts.filter(p => p.id !== id);
+    window.showToast(`Removed "${name}" from comparison`, "info");
+  }
+
+  localStorage.setItem("jd_compare_lots", JSON.stringify(comparedProducts));
+  updateCompareUI();
+};
+
+function updateCompareUI() {
+  const bar = document.getElementById("floatingCompareBar");
+  const countBadge = document.getElementById("compareCountBadge");
+
+  // Sync checkboxes on page
+  document.querySelectorAll(".compare-item-chk").forEach(chk => {
+    chk.checked = comparedProducts.some(p => p.id === chk.dataset.id);
+  });
+
+  if (countBadge) countBadge.textContent = comparedProducts.length;
+
+  if (bar) {
+    if (comparedProducts.length > 0) {
+      bar.classList.add("show");
+    } else {
+      bar.classList.remove("show");
+    }
+  }
+}
+
+window.openComparisonModal = function() {
+  if (comparedProducts.length === 0) {
+    window.showToast("Select at least 1 product to compare.", "info");
+    return;
+  }
+  renderComparisonTable();
+  const modalElem = document.getElementById("cropComparisonModal");
+  if (modalElem && window.bootstrap && bootstrap.Modal) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElem);
+    modal.show();
+  }
+};
+
+function renderComparisonTable() {
+  const tbody = document.getElementById("comparisonTableBody");
+  if (!tbody) return;
+
+  const fields = [
+    { label: "Commodity", key: "name", render: p => `<strong>${p.name}</strong><br><small class="text-muted">${p.category}</small>` },
+    { label: "Grade", key: "grade", render: p => `<span class="badge bg-success">Grade ${p.grade} Quality</span>` },
+    { label: "Price Rate", key: "price", render: p => `<span class="fw-bold text-success fs-6">₹${p.price}/kg</span><br><small class="text-muted">₹${(parseFloat(p.price) * 100).toFixed(0)}/Qtl</small>` },
+    { label: "Moisture Content", key: "moisture", render: p => `<span class="text-info fw-bold"><i class="fa-solid fa-droplet me-1"></i>${p.moisture}</span> (Optimal: &lt;14%)` },
+    { label: "Grain Purity", key: "purity", render: p => `<span class="text-success fw-bold"><i class="fa-solid fa-check-double me-1"></i>${p.purity}</span>` },
+    { label: "APMC Mandi / Location", key: "location", render: p => `<i class="fa-solid fa-location-dot text-danger me-1"></i>${p.location}` },
+    { label: "Supplier / Farmer", key: "supplier", render: p => `<i class="fa-solid fa-shield-halved text-success me-1"></i>${p.supplier}` },
+    { label: "Delivery Lead Time", key: "delivery", render: p => `<i class="fa-regular fa-clock me-1 text-muted"></i>${p.delivery}` },
+    { 
+      label: "Actions", 
+      key: "actions", 
+      render: p => `
+        <div class="d-flex flex-column gap-1">
+          <a href="/products/${p.id}" class="btn btn-sm btn-success fw-semibold"><i class="fa-solid fa-eye me-1"></i> Inspect Lot</a>
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCompareItem('${p.id}')"><i class="fa-solid fa-trash me-1"></i> Remove</button>
+        </div>
+      `
+    }
+  ];
+
+  let html = "";
+  fields.forEach(field => {
+    html += `<tr>
+      <th style="width: 20%; background: var(--jd-bg-elevated); font-weight: 600;">${field.label}</th>
+      ${comparedProducts.map(p => `<td style="width: ${80 / comparedProducts.length}%; vertical-align: middle;">${field.render(p)}</td>`).join("")}
+    </tr>`;
+  });
+
+  tbody.innerHTML = html;
+}
+
+window.removeCompareItem = function(id) {
+  comparedProducts = comparedProducts.filter(p => p.id !== id);
+  localStorage.setItem("jd_compare_lots", JSON.stringify(comparedProducts));
+  updateCompareUI();
+  if (comparedProducts.length === 0) {
+    const modalElem = document.getElementById("cropComparisonModal");
+    if (modalElem && window.bootstrap && bootstrap.Modal) {
+      const modal = bootstrap.Modal.getInstance(modalElem);
+      if (modal) modal.hide();
+    }
+  } else {
+    renderComparisonTable();
+  }
+};
+
+window.clearAllCompared = function() {
+  comparedProducts = [];
+  localStorage.removeItem("jd_compare_lots");
+  updateCompareUI();
+  const modalElem = document.getElementById("cropComparisonModal");
+  if (modalElem && window.bootstrap && bootstrap.Modal) {
+    const modal = bootstrap.Modal.getInstance(modalElem);
+    if (modal) modal.hide();
+  }
+  window.showToast("Cleared comparison selection.", "info");
+};
+
+// 3. GLOBAL TOAST NOTIFICATION HELPER
+window.showToast = function(message, type = "info") {
+  const container = document.getElementById("jdToastContainer");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = `jd-toast ${type === "error" ? "toast-error" : type === "info" ? "toast-info" : ""}`;
+  
+  let icon = "fa-solid fa-circle-check text-success";
+  if (type === "error") icon = "fa-solid fa-circle-exclamation text-danger";
+  if (type === "info") icon = "fa-solid fa-info-circle text-primary";
+
+  toast.innerHTML = `
+    <i class="${icon} fs-5"></i>
+    <span class="flex-grow-1">${message}</span>
+    <button type="button" class="btn-close btn-close-white ms-2 small" onclick="this.parentElement.remove()"></button>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(50px)";
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+};
+
+// Initialize UI States on DOM load
+document.addEventListener("DOMContentLoaded", () => {
+  updateCompareUI();
+});
+
+
 
