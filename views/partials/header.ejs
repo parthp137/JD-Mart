@@ -1,5 +1,5 @@
 <!-- JD Mart Shared Navigation Header -->
-<nav class="navbar navbar-expand-lg navbar-light bg-body-light border-bottom sticky-top">
+<nav class="navbar navbar-expand-lg border-bottom sticky-top">
   <div class="container-fluid">
     <!-- LOGO -->
     <a class="navbar-brand d-flex align-items-center" href="/products">
@@ -8,9 +8,9 @@
     </a>
 
     <!-- LOCATION (Hidden on mobile by default) -->
-    <div class="ms-auto me-4 d-none d-lg-flex align-items-center">
+    <div class="ms-auto me-3 d-none d-lg-flex align-items-center">
       <i class="fa-solid fa-location-dot me-1" style="color: #16a34a;"></i>
-      <span id="locationText" style="font-size: 15px;">Getting location...</span>
+      <span id="locationText" style="font-size: 14px;">Getting location...</span>
     </div>
 
     <!-- MOBILE TOGGLE -->
@@ -22,11 +22,16 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <!-- SEARCH BAR -->
       <div class="navbar-search ms-lg-3 my-2 my-lg-0">
-        <input type="text" id="productSearch" placeholder="Search for crops..." class="form-control" />
+        <input type="text" id="productSearch" value="<%= typeof search !== 'undefined' ? search : '' %>" placeholder="Search for crops, grains, spices..." class="form-control" />
       </div>
 
       <!-- RIGHT ICONS -->
-      <div class="navbar-icons ms-lg-3">
+      <div class="navbar-icons ms-lg-auto d-flex align-items-center gap-2">
+        <!-- THEME TOGGLE (Light / Dark) -->
+        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+          <i class="fa-regular fa-moon" id="themeIcon"></i>
+        </button>
+
         <!-- NOTIFICATIONS -->
         <a href="/notifications" class="notification-icon" title="Notifications">
           <i class="fa-regular fa-bell"></i>
@@ -39,7 +44,7 @@
         <a href="/cart" class="cart-icon-link" title="View Cart">
           <i class="fa-solid fa-cart-shopping"></i>
           <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
-            <span class="cart-badge"><%= cartCount %></span>
+            <span class="cart-badge" id="navCartBadge"><%= cartCount %></span>
           <% } %>
         </a>
 
@@ -55,6 +60,7 @@
             <div class="jd-user-info">
               <strong><%= user && user.fullName ? user.fullName : "Guest User" %></strong>
               <small><%= user && user.email ? user.email : "Not logged in" %></small>
+            </div>
             <% if (user) { %>
               <a href="/profile"><i class="fa-regular fa-user"></i> Profile</a>
               <a href="/orders"><i class="fa-solid fa-box"></i> Orders</a>
@@ -66,6 +72,7 @@
               <a href="/logout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
             <% } else { %>
               <a href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+              <a href="/register"><i class="fa-solid fa-user-plus"></i> Register</a>
             <% } %>
           </div>
         </div>
@@ -73,3 +80,48 @@
     </div>
   </div>
 </nav>
+
+<!-- LIVE MANDI COMMODITY TICKER -->
+<div class="mandi-ticker-wrapper" id="mandiTicker">
+  <div class="mandi-ticker-badge">
+    <i class="fa-solid fa-chart-line"></i> APMC Live
+  </div>
+  <div class="mandi-ticker-track" id="mandiTickerTrack">
+    <span class="mandi-ticker-item">
+      <span>Unjha Jeera (Cumin):</span>
+      <strong>₹27,450/Qtl</strong>
+      <span class="mandi-rate-up"><i class="fa-solid fa-caret-up"></i> +2.4%</span>
+    </span>
+    <span class="mandi-ticker-item">
+      <span>Indore Soyabean (Yellow):</span>
+      <strong>₹4,820/Qtl</strong>
+      <span class="mandi-rate-down"><i class="fa-solid fa-caret-down"></i> -0.8%</span>
+    </span>
+    <span class="mandi-ticker-item">
+      <span>Karnal Basmati Paddy 1121:</span>
+      <strong>₹3,890/Qtl</strong>
+      <span class="mandi-rate-up"><i class="fa-solid fa-caret-up"></i> +1.6%</span>
+    </span>
+    <span class="mandi-ticker-item">
+      <span>Latur Chana (Desi Gram):</span>
+      <strong>₹6,150/Qtl</strong>
+      <span class="mandi-rate-up"><i class="fa-solid fa-caret-up"></i> +0.9%</span>
+    </span>
+    <span class="mandi-ticker-item">
+      <span>Khargone Wheat Sharbati:</span>
+      <strong>₹3,420/Qtl</strong>
+      <span class="mandi-rate-down"><i class="fa-solid fa-caret-down"></i> -1.2%</span>
+    </span>
+    <span class="mandi-ticker-item">
+      <span>Rajkot Groundnut Bold:</span>
+      <strong>₹6,780/Qtl</strong>
+      <span class="mandi-rate-up"><i class="fa-solid fa-caret-up"></i> +3.1%</span>
+    </span>
+    <span class="mandi-ticker-item">
+      <span>Guntur Red Chilli Teja:</span>
+      <strong>₹19,200/Qtl</strong>
+      <span class="mandi-rate-up"><i class="fa-solid fa-caret-up"></i> +1.8%</span>
+    </span>
+  </div>
+</div>
+
