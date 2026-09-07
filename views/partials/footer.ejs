@@ -283,10 +283,58 @@
   </form>
 </div>
 
+<!-- 4. SIDE-BY-SIDE CROP LOT COMPARISON MODAL -->
+<div class="modal fade" id="cropComparisonModal" tabindex="-1" aria-labelledby="cropComparisonLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+      <div class="modal-header bg-dark text-white p-3">
+        <h5 class="modal-title fw-bold mb-0" id="cropComparisonLabel">
+          <i class="fa-solid fa-scale-balanced text-success me-2"></i> Side-by-Side Commodity Lot Comparison
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover mb-0" id="comparisonTable">
+            <tbody id="comparisonTableBody">
+              <!-- Dynamically populated by window.renderComparisonModal() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer bg-light p-3 d-flex justify-content-between">
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearAllCompared()">
+          <i class="fa-solid fa-trash me-1"></i> Clear All
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. FLOATING COMPARE TRAY -->
+<div class="floating-compare-bar" id="floatingCompareBar">
+  <div class="d-flex align-items-center gap-2">
+    <i class="fa-solid fa-scale-balanced text-success fs-5"></i>
+    <span class="fw-semibold">Compare Lots:</span>
+    <span class="compare-badge-count" id="compareCountBadge">0</span>
+  </div>
+  <button type="button" class="btn btn-success btn-sm rounded-pill px-3 fw-bold" onclick="openComparisonModal()">
+    <i class="fa-solid fa-table-columns me-1"></i> Compare Matrix
+  </button>
+  <button type="button" class="btn btn-link text-white-50 p-0 text-decoration-none" onclick="clearAllCompared()" title="Clear selection">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+</div>
+
+<!-- 6. GLOBAL TOAST NOTIFICATION STACK -->
+<div class="jd-toast-container" id="jdToastContainer"></div>
+
 <script src="/js/script.js"></script>
 <script src="/js/tilt-3d.js"></script>
 <script src="/js/hero-3d-canvas.js"></script>
 <script src="/js/scroll-3d.js"></script>
+
 
 <!-- Footer Styles -->
 <style>
