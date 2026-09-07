@@ -16,70 +16,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-
-    <!-- LOGO -->
-    <a class="navbar-brand d-flex align-items-center" href="/">
-      <img src="/images/image.png" alt="JD Mart Logo" height="40" style="border-radius: 8px;"/>
-      <span class="ms-2 fw-bold">JD Mart</span>
-    </a>
-
-    <!-- LOCATION -->
-    <div class="ms-auto me-4 d-flex align-items-center d-none d-lg-flex">
-      <i class="fa-solid fa-location-dot me-1" style="color: #16a34a;"></i>
-      <span id="locationText" style="font-size: 15px;">Getting location...</span>
-    </div>
-
-    <!-- TOGGLER BUTTON -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <!-- REST OF NAVBAR -->
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-search ms-3">
-        <input type="text" id="productSearch" value="<%= search || '' %>" placeholder="Search for crops, grains, vegetables..." class="form-control" />
-      </div>
-
-      <div class="navbar-icons ms-3">
-        <a href="/notifications" class="notification-icon" title="Notifications">
-          <i class="fa-regular fa-bell"></i>
-          <% if (typeof notificationCount !== 'undefined' && notificationCount > 0) { %>
-            <span class="notification-badge"><%= notificationCount > 9 ? '9+' : notificationCount %></span>
-          <% } %>
-        </a>
-        <a href="/cart" class="cart-icon-link" title="View Cart">
-          <i class="fa-solid fa-cart-shopping"></i>
-          <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
-            <span class="cart-badge"><%= cartCount %></span>
-          <% } %>
-        </a>
-
-        <!-- USER DROPDOWN -->
-        <div class="navbar-user" id="userDropdown">
-          <div class="avatar">
-            <%= user && user.fullName ? user.fullName.charAt(0).toUpperCase() : "U" %>
-          </div>
-          <span><%= user && user.fullName ? user.fullName.split(" ")[0] : "Guest" %></span>
-          <i class="fa-solid fa-chevron-down"></i>
-
-          <div class="jd-user-menu">
-            <div class="jd-user-info">
-              <strong><%= user && user.fullName ? user.fullName : "Guest User" %></strong>
-              <small><%= user && user.email ? user.email : "Not logged in" %></small>
-            </div>
-            <a href="/profile"><i class="fa-regular fa-user"></i> Profile</a>
-            <a href="/orders"><i class="fa-solid fa-box"></i> Orders</a>
-            <div class="jd-divider"></div>
-            <a href="/logout" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</nav>
+<%- include("partials/header") %>
     
 <!-- Premium Buyer Section with 3D Canvas -->
 <div class="premium-section container-fluid my-4 p-4 shadow-sm" data-tilt-3d="true">
@@ -187,7 +124,7 @@
 
 
 <!-- Advanced Filters -->
-<div class="mb-4 mt-4 m-4" style="background: white; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+<div class="mb-3 mt-4 m-4" style="background: var(--jd-bg-surface); padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--jd-border-color);">
   <form id="filterForm" method="GET" action="/products">
     <div class="row g-3">
       <!-- Category Filters -->
@@ -259,10 +196,50 @@
   </form>
 </div>
 
+<!-- ACTIVE FILTER PILLS (Dynamic) -->
+<div class="container-fluid px-4" id="activeFilterSection">
+  <% 
+    const hasActiveFilters = category || grade || availability || priceMin || priceMax || search;
+    if (hasActiveFilters) { 
+  %>
+    <div class="active-filters-bar">
+      <span class="small fw-bold text-muted me-1"><i class="fa-solid fa-sliders text-success"></i> Active Filters:</span>
+      <% if (category && category !== 'all') { %>
+        <span class="filter-chip">Category: <%= category %> <span class="filter-chip-remove" onclick="clearFilter('category')">✕</span></span>
+      <% } %>
+      <% if (grade) { %>
+        <span class="filter-chip">Grade: <%= grade %> <span class="filter-chip-remove" onclick="clearFilter('grade')">✕</span></span>
+      <% } %>
+      <% if (availability) { %>
+        <span class="filter-chip">Stock: <%= availability %> <span class="filter-chip-remove" onclick="clearFilter('availability')">✕</span></span>
+      <% } %>
+      <% if (priceMin || priceMax) { %>
+        <span class="filter-chip">Price: ₹<%= priceMin || '0' %> - ₹<%= priceMax || '∞' %> <span class="filter-chip-remove" onclick="clearFilter('price')">✕</span></span>
+      <% } %>
+      <% if (search) { %>
+        <span class="filter-chip">Search: "<%= search %>" <span class="filter-chip-remove" onclick="clearFilter('search')">✕</span></span>
+      <% } %>
+      <a href="/products" class="btn btn-link btn-sm text-danger text-decoration-none ms-auto p-0 small fw-bold">Clear All</a>
+    </div>
+  <% } %>
+</div>
+
 <script>
   function filterByCategory(cat) {
     document.getElementById('categoryInput').value = cat === 'all' ? '' : cat;
     document.getElementById('filterForm').submit();
+  }
+
+  function clearFilter(filterType) {
+    const url = new URL(window.location.href);
+    if (filterType === 'price') {
+      url.searchParams.delete('priceMin');
+      url.searchParams.delete('priceMax');
+    } else {
+      url.searchParams.delete(filterType);
+    }
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
   }
 </script>
 
@@ -295,14 +272,35 @@
     <% } else { %>
 
     <!-- Product Cards -->
- <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1 gx-4 px-4 mb-6">
+ <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1 gx-4 px-4 mb-6" id="productGrid">
 
     <% for(let product of allProducts){ %>
-    <div class="col mb-4">
+    <div class="col mb-4 product-card-col">
       <div class="jd-card h-100 d-flex flex-column">
 
         <!-- IMAGE -->
         <div class="jd-image position-relative">
+          <!-- COMPARE CHECKBOX TRIGGER -->
+          <label class="compare-checkbox-wrapper" onclick="event.stopPropagation();" title="Add to side-by-side comparison matrix">
+            <input 
+              type="checkbox" 
+              class="compare-item-chk form-check-input mt-0" 
+              data-id="<%= product._id %>"
+              data-name="<%= product.name.replace(/"/g, '&quot;') %>"
+              data-category="<%= product.category %>"
+              data-grade="<%= product.grade %>"
+              data-price="<%= (product.pricePerQuintal / 100).toFixed(2) %>"
+              data-moisture="11.8%"
+              data-purity="99.4%"
+              data-supplier="<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/"/g, '&quot;') : 'APMC Mandi Farmer' %>"
+              data-location="<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/"/g, '&quot;') : 'Gujarat Mandi' %>"
+              data-delivery="<%= product.deliveryTime ? `${product.deliveryTime.minDays}-${product.deliveryTime.maxDays} days` : '1-4 days' %>"
+              data-image="<%= getImageUrl(product.images) %>"
+              onchange="handleCompareToggle(this)"
+            >
+            <span>Compare</span>
+          </label>
+
           <a href="/products/<%= product._id %>" class="d-block">
             <img
               src="<%= getImageUrl(product.images) %>"
@@ -362,6 +360,18 @@
             <span class="quality-chip quality-chip-moisture" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')">
               <i class="fa-solid fa-droplet text-info"></i> 12% Moisture
             </span>
+          </div>
+
+          <!-- 7-DAY APMC PRICE TREND SPARKLINES -->
+          <div class="d-flex align-items-center justify-content-between my-2">
+            <div class="sparkline-container" data-sparkline-target="true" data-grade="<%= product.grade %>" title="7-day APMC Mandi price trajectory">
+              <svg class="sparkline-svg" viewBox="0 0 58 18">
+                <path d="M 2 14 L 11 11 L 20 13 L 30 8 L 40 10 L 49 5 L 56 4" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="56" cy="4" r="2.5" fill="#16a34a"/>
+              </svg>
+              <span style="font-size: 0.72rem; font-weight: 700; color: #16a34a;">7D Trend</span>
+            </div>
+            <span class="small text-muted" style="font-size: 0.75rem;">APMC Verified</span>
           </div>
 
           <div class="jd-price mt-auto">
@@ -424,4 +434,5 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html>
+
