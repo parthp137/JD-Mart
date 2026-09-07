@@ -2275,4 +2275,386 @@ body {
   }
 }
 
+/* ==========================================================================
+   TOP 5 FRONTEND ENHANCEMENTS: DESIGN SYSTEM, THEME ENGINE & COMPONENTS
+   ========================================================================== */
+
+/* 1. ROOT DESIGN TOKENS & DARK THEME ENGINE */
+:root {
+  --jd-bg-base: #f8faf8;
+  --jd-bg-surface: #ffffff;
+  --jd-bg-card: #ffffff;
+  --jd-bg-elevated: #f1f5f9;
+  --jd-border-color: #e2e8f0;
+  --jd-border-light: #edf2f7;
+  --jd-text-main: #1e293b;
+  --jd-text-muted: #64748b;
+  --jd-text-inverse: #ffffff;
+  --jd-primary-green: #16a34a;
+  --jd-primary-dark: #15803d;
+  --jd-primary-light: #dcfce7;
+  --jd-primary-subtle: #f0fdf4;
+  --jd-accent-gold: #f59e0b;
+  --jd-card-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  --jd-card-shadow-hover: 0 12px 28px rgba(22, 163, 74, 0.12);
+  --jd-transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  --jd-bg-base: #0f172a;
+  --jd-bg-surface: #1e293b;
+  --jd-bg-card: #1e293b;
+  --jd-bg-elevated: #334155;
+  --jd-border-color: #334155;
+  --jd-border-light: #283548;
+  --jd-text-main: #f8fafc;
+  --jd-text-muted: #94a3b8;
+  --jd-text-inverse: #0f172a;
+  --jd-primary-green: #22c55e;
+  --jd-primary-dark: #16a34a;
+  --jd-primary-light: #14532d;
+  --jd-primary-subtle: #142e20;
+  --jd-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --jd-card-shadow-hover: 0 12px 32px rgba(34, 197, 94, 0.2);
+}
+
+body[data-theme="dark"] {
+  background-color: var(--jd-bg-base) !important;
+  color: var(--jd-text-main) !important;
+}
+
+[data-theme="dark"] .navbar,
+[data-theme="dark"] .bg-body-light,
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light {
+  background-color: var(--jd-bg-surface) !important;
+  color: var(--jd-text-main) !important;
+  border-color: var(--jd-border-color) !important;
+}
+
+[data-theme="dark"] .jd-card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .rfq-card,
+[data-theme="dark"] .order-card,
+[data-theme="dark"] .notification-item,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .calc-card {
+  background-color: var(--jd-bg-card) !important;
+  color: var(--jd-text-main) !important;
+  border-color: var(--jd-border-color) !important;
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background-color: var(--jd-bg-elevated) !important;
+  color: var(--jd-text-main) !important;
+  border-color: var(--jd-border-color) !important;
+}
+
+[data-theme="dark"] .text-dark,
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3,
+[data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+  color: var(--jd-text-main) !important;
+}
+
+[data-theme="dark"] .text-muted {
+  color: var(--jd-text-muted) !important;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  background: var(--jd-bg-elevated);
+  border: 1px solid var(--jd-border-color);
+  color: var(--jd-text-main);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--jd-transition-smooth);
+}
+.theme-toggle-btn:hover {
+  transform: rotate(20deg) scale(1.08);
+  border-color: var(--jd-primary-green);
+  color: var(--jd-primary-green);
+}
+
+/* 2. LIVE APMC MANDI PRICE TICKER */
+.mandi-ticker-wrapper {
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  border-bottom: 1px solid #1e293b;
+  overflow: hidden;
+  position: relative;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  z-index: 990;
+}
+
+.mandi-ticker-badge {
+  background: var(--jd-primary-green);
+  color: #ffffff;
+  padding: 0 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.76rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+  z-index: 2;
+}
+
+.mandi-ticker-track {
+  display: flex;
+  gap: 2rem;
+  white-space: nowrap;
+  animation: marqueeScroll 35s linear infinite;
+  padding-left: 2rem;
+}
+
+.mandi-ticker-track:hover {
+  animation-play-state: paused;
+}
+
+.mandi-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.mandi-rate-up {
+  color: #4ade80;
+}
+
+.mandi-rate-down {
+  color: #f87171;
+}
+
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* 3. PRICE TREND SPARKLINES */
+.sparkline-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--jd-bg-elevated);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--jd-border-light);
+}
+
+.sparkline-svg {
+  width: 58px;
+  height: 18px;
+  overflow: visible;
+}
+
+/* 4. INSTANT SEARCH ACTIVE FILTER CHIPS */
+.active-filters-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--jd-primary-subtle);
+  border: 1px solid var(--jd-primary-light);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.filter-chip {
+  background: var(--jd-bg-surface);
+  border: 1px solid var(--jd-border-color);
+  color: var(--jd-text-main);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-chip-remove {
+  cursor: pointer;
+  color: var(--jd-text-muted);
+  font-weight: bold;
+}
+.filter-chip-remove:hover {
+  color: #ef4444;
+}
+
+/* Shimmer Skeleton Loaders */
+.skeleton-box {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+[data-theme="dark"] .skeleton-box {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 5. CROP LOT COMPARISON DRAWER & MODAL */
+.compare-checkbox-wrapper {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  border: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+}
+
+[data-theme="dark"] .compare-checkbox-wrapper {
+  background: rgba(30, 41, 59, 0.9);
+  color: #ffffff;
+  border-color: #475569;
+}
+
+.floating-compare-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: #0f172a;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 50px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 1050;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-compare-bar.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.compare-badge-count {
+  background: var(--jd-primary-green);
+  color: #fff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* 6. INTERACTIVE BULK LOGISTICS & VOLUME CALCULATOR (PRODUCT DETAILS) */
+.bulk-calculator-card {
+  background: linear-gradient(135deg, var(--jd-primary-subtle), var(--jd-bg-surface));
+  border: 2px solid var(--jd-primary-light);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: var(--jd-card-shadow);
+}
+
+.calc-slider-container {
+  position: relative;
+  margin: 1.5rem 0 1rem;
+}
+
+.calc-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: #e2e8f0;
+  outline: none;
+  -webkit-appearance: none;
+  accent-color: var(--jd-primary-green);
+}
+
+.truck-fill-meter {
+  height: 12px;
+  background: var(--jd-border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.truck-fill-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+  transition: width 0.3s ease;
+}
+
+/* 7. GLOBAL TOAST NOTIFICATION CONTAINER */
+.jd-toast-container {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.jd-toast {
+  min-width: 280px;
+  max-width: 360px;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.88rem;
+  pointer-events: auto;
+  animation: slideToastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  border-left: 4px solid var(--jd-primary-green);
+}
+
+.jd-toast.toast-error {
+  border-left-color: #ef4444;
+}
+
+.jd-toast.toast-info {
+  border-left-color: #3b82f6;
+}
+
+@keyframes slideToastIn {
+  from { opacity: 0; transform: translateX(50px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+
 
