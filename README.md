@@ -26,12 +26,18 @@ A modern, full-featured Express.js application connecting agricultural buyers wi
 - 💰 Price range filtering (min/max in ₹/kg)
 - 🏷️ Grade and availability filters
 - 📱 Mobile-responsive design (Bootstrap 5)
+- 🛒 **Slide-Over Mini-Cart Drawer** with free-freight milestone tracking (25 Qtl threshold)
+- 🌱 **Farm Traceability Passport & QR Certificate** with soil health & APMC registration
+- 🔔 **Mandi Target Price Alert Engine** with threshold triggers and notifications
+- 🌐 **Multi-Lingual Mandi Localization** (English, Hindi, Gujarati, Punjabi)
+- 📍 **5-Step Visual Delivery Progression Tracker** with in-app tax invoice preview
 - ⚡ Product caching system (5-minute TTL)
 - 📄 Invoice generation and download
 - 💳 Multiple payment method options
 - 🔐 Atomic database operations preventing race conditions
 - ✨ Real-time form validation with client-side feedback
 - 🎯 Pagination across all list views (10-20 items per page)
+
 
 ## 🛠️ Tech Stack
 
