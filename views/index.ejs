@@ -353,12 +353,15 @@
           </h5>
 
           <!-- MANDI BENCHMARK & QUALITY CHIPS -->
-          <div class="quality-badges-row my-1">
+          <div class="quality-badges-row my-1 d-flex flex-wrap gap-1">
             <span class="quality-chip quality-chip-fresh" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')">
-              <i class="fa-solid fa-bolt text-warning"></i> Fresh Harvest
+              <i class="fa-solid fa-bolt text-warning"></i> Fresh
             </span>
             <span class="quality-chip quality-chip-moisture" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')">
               <i class="fa-solid fa-droplet text-info"></i> 12% Moisture
+            </span>
+            <span class="traceability-badge" onclick="event.stopPropagation(); openTraceabilityPassport('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'Patel Organic Farms' %>', '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'Unjha APMC Yard, Gujarat' %>')" title="View Farm Traceability & QR Passport">
+              <i class="fa-solid fa-seedling"></i> Origin
             </span>
           </div>
 
@@ -387,14 +390,18 @@
           </div>
 
           <!-- Quick Action Buttons -->
-          <div class="d-flex gap-2 mt-2 pt-2 border-top">
+          <div class="d-flex align-items-center gap-1.5 mt-2 pt-2 border-top">
             <a href="/products/<%= product._id %>" class="btn btn-sm btn-outline-success flex-grow-1 fw-semibold">
               <i class="fa-regular fa-eye me-1"></i> Details
             </a>
             <button type="button" class="btn btn-sm btn-light border flex-grow-1 fw-semibold text-secondary" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')" title="Submit instant wholesale offer">
-              <i class="fa-solid fa-handshake text-success me-1"></i> Bulk RFQ
+              <i class="fa-solid fa-handshake text-success me-1"></i> RFQ
+            </button>
+            <button type="button" class="price-alert-btn" onclick="openPriceAlertModal('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>)" title="Set Mandi Target Price Alert">
+              <i class="fa-solid fa-bell"></i>
             </button>
           </div>
+
 
           <div class="jd-footer mt-2 pt-1 border-top">
             <span>
