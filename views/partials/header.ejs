@@ -27,6 +27,20 @@
 
       <!-- RIGHT ICONS -->
       <div class="navbar-icons ms-lg-auto d-flex align-items-center gap-2">
+        <!-- MULTI-LINGUAL REGIONAL PICKER -->
+        <div class="dropdown lang-picker-dropdown">
+          <button class="lang-btn dropdown-toggle" type="button" id="langDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid fa-globe text-success"></i>
+            <span id="currentLangLabel">EN</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 py-1" aria-labelledby="langDropdownBtn" style="font-size: 0.85rem;">
+            <li><a class="dropdown-item fw-semibold" href="javascript:void(0)" onclick="setLanguage('en')">English (EN)</a></li>
+            <li><a class="dropdown-item fw-semibold" href="javascript:void(0)" onclick="setLanguage('hi')">हिन्दी (Hindi)</a></li>
+            <li><a class="dropdown-item fw-semibold" href="javascript:void(0)" onclick="setLanguage('gu')">ગુજરાતી (Gujarati)</a></li>
+            <li><a class="dropdown-item fw-semibold" href="javascript:void(0)" onclick="setLanguage('pa')">ਪੰਜਾਬੀ (Punjabi)</a></li>
+          </ul>
+        </div>
+
         <!-- THEME TOGGLE (Light / Dark) -->
         <button type="button" class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
           <i class="fa-regular fa-moon" id="themeIcon"></i>
@@ -40,13 +54,14 @@
           <% } %>
         </a>
 
-        <!-- CART -->
-        <a href="/cart" class="cart-icon-link" title="View Cart">
+        <!-- CART DRAWER TRIGGER -->
+        <a href="javascript:void(0)" onclick="openCartDrawer()" class="cart-icon-link" title="View Quick Cart Drawer">
           <i class="fa-solid fa-cart-shopping"></i>
           <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
             <span class="cart-badge" id="navCartBadge"><%= cartCount %></span>
           <% } %>
         </a>
+
 
         <!-- USER DROPDOWN -->
         <div class="navbar-user" id="userDropdown">
