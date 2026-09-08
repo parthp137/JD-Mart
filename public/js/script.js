@@ -595,10 +595,379 @@ window.showToast = function(message, type = "info") {
   }, 4000);
 };
 
+/* ==========================================================================
+   4. SLIDE-OVER MINI-CART DRAWER ENGINE
+   ========================================================================== */
+let cartDrawerItems = [
+  { id: "sample1", name: "Premium Basmati Paddy 1121", category: "Grains", grade: "A", rate: 38.90, qty: 10, image: "/images/image.png" },
+  { id: "sample2", name: "Unjha Export Quality Jeera", category: "Spices", grade: "A", rate: 274.50, qty: 5, image: "/images/image.png" }
+];
+
+window.openCartDrawer = function() {
+  const drawer = document.getElementById("jdCartDrawer");
+  const backdrop = document.getElementById("jdCartBackdrop");
+  if (!drawer) return;
+
+  renderCartDrawer();
+  drawer.classList.add("open");
+  if (backdrop) backdrop.classList.add("open");
+  document.body.style.overflow = "hidden";
+};
+
+window.closeCartDrawer = function() {
+  const drawer = document.getElementById("jdCartDrawer");
+  const backdrop = document.getElementById("jdCartBackdrop");
+  if (drawer) drawer.classList.remove("open");
+  if (backdrop) backdrop.classList.remove("open");
+  document.body.style.overflow = "";
+};
+
+function renderCartDrawer() {
+  const itemsContainer = document.getElementById("drawerCartItems");
+  const countBadge = document.getElementById("drawerCartCount");
+  const navBadge = document.getElementById("navCartBadge");
+  const subtotalElem = document.getElementById("drawerSubtotal");
+  const gstElem = document.getElementById("drawerGst");
+  const totalElem = document.getElementById("drawerTotal");
+  const progressFill = document.getElementById("freightProgressFill");
+  const milestoneText = document.getElementById("freightMilestoneText");
+
+  if (!itemsContainer) return;
+
+  if (cartDrawerItems.length === 0) {
+    itemsContainer.innerHTML = `
+      <div class="text-center py-5 text-muted">
+        <i class="fa-solid fa-cart-shopping fs-1 mb-2 text-secondary opacity-50"></i>
+        <h6>Your Wholesale Cart is Empty</h6>
+        <small class="d-block mb-3">Add verified agricultural lots to start ordering.</small>
+        <a href="/products" class="btn btn-sm btn-outline-success" onclick="closeCartDrawer()">Browse Catalog</a>
+      </div>
+    `;
+    if (countBadge) countBadge.textContent = "0 Items";
+    if (navBadge) navBadge.textContent = "0";
+    if (subtotalElem) subtotalElem.textContent = "₹0.00";
+    if (gstElem) gstElem.textContent = "₹0.00";
+    if (totalElem) totalElem.textContent = "₹0.00";
+    if (progressFill) progressFill.style.width = "0%";
+    if (milestoneText) milestoneText.textContent = "Add 25 Qtl for Free Freight";
+    return;
+  }
+
+  let totalQuintals = 0;
+  let subtotal = 0;
+
+  itemsContainer.innerHTML = cartDrawerItems.map((item, index) => {
+    const itemSubtotal = item.qty * item.rate * 100;
+    subtotal += itemSubtotal;
+    totalQuintals += item.qty;
+
+    return `
+      <div class="jd-cart-item-row">
+        <img src="${item.image}" alt="${item.name}" class="jd-cart-item-img" onerror="this.src='/images/image.png'">
+        <div class="flex-grow-1">
+          <h6 class="mb-0 fw-bold small text-dark">${item.name}</h6>
+          <small class="text-muted d-block" style="font-size: 0.75rem;">Grade ${item.grade} • ₹${item.rate.toFixed(2)}/kg</small>
+          <strong class="text-success small">₹${itemSubtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</strong>
+        </div>
+        <div class="d-flex align-items-center gap-1">
+          <button type="button" class="btn btn-sm btn-light border px-2 py-0" onclick="adjustDrawerQty(${index}, -1)">−</button>
+          <span class="fw-bold px-1 small">${item.qty} Q</span>
+          <button type="button" class="btn btn-sm btn-light border px-2 py-0" onclick="adjustDrawerQty(${index}, 1)">+</button>
+          <button type="button" class="btn btn-sm text-danger border-0 p-1 ms-1" onclick="removeDrawerItem(${index})" title="Remove">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const gst = subtotal * 0.05;
+  const total = subtotal + gst;
+
+  if (countBadge) countBadge.textContent = `${cartDrawerItems.length} Lots`;
+  if (navBadge) navBadge.textContent = cartDrawerItems.length;
+  if (subtotalElem) subtotalElem.textContent = `₹${subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (gstElem) gstElem.textContent = `₹${gst.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (totalElem) totalElem.textContent = `₹${total.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // Free Freight Milestones (Threshold: 25 Quintals)
+  const freightPercent = Math.min(100, Math.round((totalQuintals / 25) * 100));
+  if (progressFill) progressFill.style.width = `${freightPercent}%`;
+  if (milestoneText) {
+    if (totalQuintals >= 25) {
+      milestoneText.textContent = "🎉 Free Freight Unlocked!";
+      milestoneText.className = "text-success fw-bold";
+    } else {
+      milestoneText.textContent = `Add ${25 - totalQuintals} more Qtl for Free Freight`;
+      milestoneText.className = "text-muted fw-semibold";
+    }
+  }
+}
+
+window.adjustDrawerQty = function(index, delta) {
+  if (!cartDrawerItems[index]) return;
+  cartDrawerItems[index].qty += delta;
+  if (cartDrawerItems[index].qty <= 0) {
+    cartDrawerItems.splice(index, 1);
+  }
+  renderCartDrawer();
+};
+
+window.removeDrawerItem = function(index) {
+  if (!cartDrawerItems[index]) return;
+  const removedName = cartDrawerItems[index].name;
+  cartDrawerItems.splice(index, 1);
+  renderCartDrawer();
+  window.showToast(`Removed "${removedName}" from cart`, "info");
+};
+
+/* ==========================================================================
+   5. FARM TRACEABILITY PASSPORT MODAL ENGINE
+   ========================================================================== */
+window.openTraceabilityPassport = function(cropName, grade, category, farmer, location) {
+  const modalElem = document.getElementById("farmTraceabilityModal");
+  if (!modalElem) return;
+
+  const nameElem = document.getElementById("traceCropName");
+  const lotElem = document.getElementById("traceLotNumber");
+  const gradeElem = document.getElementById("traceGradeBadge");
+  const mandiElem = document.getElementById("traceMandiYard");
+  const farmerElem = document.getElementById("traceFarmerName");
+
+  const randomLot = Math.floor(1000 + Math.random() * 9000);
+
+  if (nameElem) nameElem.textContent = cropName || "Agricultural Harvest";
+  if (lotElem) lotElem.textContent = `Lot #APMC-${randomLot}`;
+  if (gradeElem) gradeElem.textContent = `Grade ${grade || 'A'} Certified`;
+  if (mandiElem) mandiElem.textContent = location || "Unjha APMC Yard, Gujarat";
+  if (farmerElem) farmerElem.textContent = farmer || "Patel Organic Mandi Producer";
+
+  if (window.bootstrap && bootstrap.Modal) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElem);
+    modal.show();
+  }
+};
+
+/* ==========================================================================
+   6. MANDI TARGET PRICE ALERT ENGINE
+   ========================================================================== */
+let activePriceAlertProduct = null;
+
+window.openPriceAlertModal = function(productId, cropName, currentRate) {
+  const modalElem = document.getElementById("mandiPriceAlertModal");
+  if (!modalElem) return;
+
+  activePriceAlertProduct = { productId, cropName, currentRate };
+
+  const nameElem = document.getElementById("alertCropName");
+  const rateElem = document.getElementById("alertCurrentRate");
+  const inputElem = document.getElementById("alertTargetRateInput");
+
+  if (nameElem) nameElem.textContent = cropName || "Selected Commodity";
+  if (rateElem) rateElem.textContent = `₹${(parseFloat(currentRate) * 100).toFixed(0)}/Quintal`;
+  if (inputElem) inputElem.value = Math.round(parseFloat(currentRate) * 100 * 0.93);
+
+  if (window.bootstrap && bootstrap.Modal) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElem);
+    modal.show();
+  }
+};
+
+window.saveMandiPriceAlert = function() {
+  const inputElem = document.getElementById("alertTargetRateInput");
+  const targetRate = parseFloat(inputElem?.value) || 0;
+  const modalElem = document.getElementById("mandiPriceAlertModal");
+
+  if (activePriceAlertProduct && targetRate > 0) {
+    let savedAlerts = [];
+    try {
+      savedAlerts = JSON.parse(localStorage.getItem("jd_price_alerts") || "[]");
+    } catch(e) {
+      savedAlerts = [];
+    }
+    savedAlerts.push({
+      ...activePriceAlertProduct,
+      targetRate,
+      createdAt: new Date().toISOString()
+    });
+    localStorage.setItem("jd_price_alerts", JSON.stringify(savedAlerts));
+
+    if (modalElem && window.bootstrap && bootstrap.Modal) {
+      const modal = bootstrap.Modal.getInstance(modalElem);
+      if (modal) modal.hide();
+    }
+    window.showToast(`🔔 Price Alert Activated for "${activePriceAlertProduct.cropName}" at ₹${targetRate}/Qtl!`, "info");
+  }
+};
+
+/* ==========================================================================
+   7. MULTI-LINGUAL MANDI LOCALIZATION ENGINE
+   ========================================================================== */
+const agriTranslations = {
+  en: {
+    label: "EN",
+    searchPlaceholder: "Search for crops, grains, spices...",
+    categories: "Categories",
+    grains: "Grains",
+    pulses: "Pulses",
+    oilseeds: "Oilseeds",
+    spices: "Spices",
+    priceRange: "Price Range",
+    applyFilters: "Apply Filters",
+    freshHarvest: "Fresh Harvest",
+    details: "Details",
+    bulkRfq: "Bulk RFQ"
+  },
+  hi: {
+    label: "हिन्दी",
+    searchPlaceholder: "फसलें, अनाज, मसाले खोजें...",
+    categories: "श्रेणियाँ",
+    grains: "अनाज (Grains)",
+    pulses: "दालें (Pulses)",
+    oilseeds: "तिलहन (Oilseeds)",
+    spices: "मसाले (Spices)",
+    priceRange: "मूल्य सीमा (₹/किग्रा)",
+    applyFilters: "फ़िल्टर लागू करें",
+    freshHarvest: "ताज़ा फसल",
+    details: "विवरण",
+    bulkRfq: "थोक बोली (RFQ)"
+  },
+  gu: {
+    label: "ગુજરાતી",
+    searchPlaceholder: "પાક, અનાજ, મસાલા શોધો...",
+    categories: "કેટેગરીઝ",
+    grains: "અનાજ (Grains)",
+    pulses: "કઠોળ (Pulses)",
+    oilseeds: "તેલીબિયાં (Oilseeds)",
+    spices: "મસાલા (Spices)",
+    priceRange: "ભાવ મર્યાદા (₹/કિલો)",
+    applyFilters: "ફિલ્ટર લાગુ કરો",
+    freshHarvest: "તાજો પાક",
+    details: "વિગત",
+    bulkRfq: "જથ્થાબંધ ભાવ (RFQ)"
+  },
+  pa: {
+    label: "ਪੰਜਾਬੀ",
+    searchPlaceholder: "ਫਸਲਾਂ, ਅਨਾਜ, ਮਸਾਲੇ ਖੋਜੋ...",
+    categories: "ਸ਼੍ਰੇਣੀਆਂ",
+    grains: "ਅਨਾਜ (Grains)",
+    pulses: "ਦਾਲਾਂ (Pulses)",
+    oilseeds: "ਤੇਲ ਬੀਜ (Oilseeds)",
+    spices: "ਮਸਾਲੇ (Spices)",
+    priceRange: "ਕੀਮਤ ਦਾ ਦਾਇਰਾ",
+    applyFilters: "ਫਿਲਟਰ ਲਗਾਓ",
+    freshHarvest: "ਤਾਜ਼ੀ ਫ਼ਸਲ",
+    details: "ਵੇਰਵਾ",
+    bulkRfq: "ਥੋਕ ਪੇਸ਼ਕਸ਼ (RFQ)"
+  }
+};
+
+window.setLanguage = function(langKey) {
+  if (!agriTranslations[langKey]) langKey = "en";
+  localStorage.setItem("jd_language", langKey);
+
+  const currentLangLabel = document.getElementById("currentLangLabel");
+  if (currentLangLabel) currentLangLabel.textContent = agriTranslations[langKey].label;
+
+  const searchInput = document.getElementById("productSearch");
+  if (searchInput) searchInput.placeholder = agriTranslations[langKey].searchPlaceholder;
+
+  window.showToast(`Language switched to ${agriTranslations[langKey].label}`, "info");
+};
+
+(function initLanguage() {
+  const savedLang = localStorage.getItem("jd_language") || "en";
+  const labelElem = document.getElementById("currentLangLabel");
+  if (labelElem && agriTranslations[savedLang]) {
+    labelElem.textContent = agriTranslations[savedLang].label;
+  }
+})();
+
+/* ==========================================================================
+   8. IN-APP INVOICE PREVIEW MODAL GENERATOR
+   ========================================================================== */
+window.openInvoicePreview = function(orderId, cropName, qty, total, address, date, status) {
+  const modalElem = document.getElementById("invoicePreviewModal");
+  const modalBody = document.getElementById("invoiceModalBody");
+  if (!modalElem || !modalBody) return;
+
+  const parsedTotal = parseFloat(total) || 0;
+  const taxable = (parsedTotal / 1.05).toFixed(2);
+  const gst = (parsedTotal - taxable).toFixed(2);
+
+  modalBody.innerHTML = `
+    <div class="p-3 border rounded-3 bg-white">
+      <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+        <div class="d-flex align-items-center">
+          <img src="/images/image.png" alt="JD Mart Logo" height="38" class="me-2" style="border-radius: 6px;">
+          <div>
+            <h5 class="fw-bold mb-0 text-success">JD Mart Agricultural Marketplace</h5>
+            <small class="text-muted">GSTIN: 24AABCA1234F1Z8 • APMC Reg: APMC-GJ-2024-8841</small>
+          </div>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-success fs-6">${status || 'Confirmed'}</span>
+          <small class="d-block text-muted mt-1">Invoice: <strong>#INV-${orderId || '2026-001'}</strong></small>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3 small">
+        <div class="col-6">
+          <span class="text-muted d-block">BILLED TO (BUYER):</span>
+          <strong>Wholesale Agricultural Buyer</strong>
+          <p class="mb-0 text-muted">${address || 'APMC Mandi Hub Delivery'}</p>
+        </div>
+        <div class="col-6 text-end">
+          <span class="text-muted d-block">ORDER DATE:</span>
+          <strong>${date || new Date().toDateString()}</strong>
+          <span class="text-muted d-block mt-1">DISPATCH MANDI:</span>
+          <strong>Gujarat APMC Yard (Verified Hub)</strong>
+        </div>
+      </div>
+
+      <div class="table-responsive mb-3">
+        <table class="table table-bordered table-sm small mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Commodity Lot</th>
+              <th class="text-center">HSN Code</th>
+              <th class="text-center">Quantity</th>
+              <th class="text-end">Taxable Value</th>
+              <th class="text-end">GST (5%)</th>
+              <th class="text-end">Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>${cropName || 'Verified Agricultural Lot'}</strong><br><small class="text-muted">Grade A Mandi Tested</small></td>
+              <td class="text-center">100190</td>
+              <td class="text-center fw-bold">${qty || 1} Quintals</td>
+              <td class="text-end">₹${taxable}</td>
+              <td class="text-end">₹${gst}</td>
+              <td class="text-end fw-bold text-success">₹${parsedTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between p-2 bg-light rounded-2 small fw-bold">
+        <span>Grand Total (in Words): Indian Rupees Only</span>
+        <span class="text-success fs-6">₹${parsedTotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+      </div>
+    </div>
+  `;
+
+  if (window.bootstrap && bootstrap.Modal) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElem);
+    modal.show();
+  }
+};
+
 // Initialize UI States on DOM load
 document.addEventListener("DOMContentLoaded", () => {
   updateCompareUI();
 });
+
 
 
 
