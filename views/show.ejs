@@ -92,6 +92,10 @@
         <span class="jd-view-grade quality-chip quality-chip-grade" onclick="openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')" style="cursor: pointer;" title="Click to view lab certificate">
           <i class="fa-regular fa-star"></i> Grade <%= product.grade %> Certified
         </span>
+
+        <button type="button" class="btn btn-sm btn-light border text-success fw-bold position-absolute top-0 end-0 m-3 shadow-sm rounded-pill px-2.5 py-1" onclick="openTraceabilityPassport('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'Patel Organic Farms' %>', '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'Unjha APMC Yard, Gujarat' %>')" title="Inspect Origin Farm & Soil Health">
+          <i class="fa-solid fa-seedling me-1"></i> Traceability Passport
+        </button>
       </div>
 
       <!-- 3D Interactive Inspection Stage Container -->
@@ -103,16 +107,22 @@
 
       <!-- SUPPLIER CREDENTIALS CARD -->
       <div class="supplier-card mt-3">
-        <div class="d-flex align-items-center mb-2">
-          <div class="bg-success text-white rounded-circle p-2 me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-            <i class="fa-solid fa-check text-xs"></i>
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div class="d-flex align-items-center">
+            <div class="bg-success text-white rounded-circle p-2 me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+              <i class="fa-solid fa-check text-xs"></i>
+            </div>
+            <div>
+              <h6 class="mb-0 fw-bold text-success"><%= (product.supplier && product.supplier.name) ? product.supplier.name : 'Verified Mandi Supplier' %></h6>
+              <small class="text-muted"><i class="fa-solid fa-location-dot"></i> <%= (product.supplier && product.supplier.location) ? product.supplier.location : 'APMC Hub' %></small>
+            </div>
           </div>
-          <div>
-            <h6 class="mb-0 fw-bold text-success"><%= (product.supplier && product.supplier.name) ? product.supplier.name : 'Verified Mandi Supplier' %></h6>
-            <small class="text-muted"><i class="fa-solid fa-location-dot"></i> <%= (product.supplier && product.supplier.location) ? product.supplier.location : 'APMC Hub' %></small>
-          </div>
+          <button type="button" class="btn btn-outline-success btn-sm rounded-pill" onclick="openTraceabilityPassport('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'Patel Organic Farms' %>', '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'Unjha APMC Yard, Gujarat' %>')">
+            <i class="fa-solid fa-qrcode me-1"></i> QR Passport
+          </button>
         </div>
         <div class="small text-secondary pt-1 border-top border-success-subtle">
+
           <div><i class="fa-solid fa-id-card me-1"></i> <strong>APMC License:</strong> <%= (product.supplier && product.supplier.mandiLicense) ? product.supplier.mandiLicense : 'APMC-GJ-2024-8841' %></div>
           <div><i class="fa-solid fa-shield-halved me-1"></i> <strong>FSSAI Lic:</strong> <%= (product.supplier && product.supplier.fssaiNumber) ? product.supplier.fssaiNumber : '10020021000142' %></div>
         </div>
