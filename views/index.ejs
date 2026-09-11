@@ -199,27 +199,44 @@
 <!-- ACTIVE FILTER PILLS (Dynamic) -->
 <div class="container-fluid px-4" id="activeFilterSection">
   <% 
-    const hasActiveFilters = category || grade || availability || priceMin || priceMax || search;
+    const hasActiveFilters = (category && category !== 'all') || grade || availability || priceMin || priceMax || search;
     if (hasActiveFilters) { 
   %>
-    <div class="active-filters-bar">
-      <span class="small fw-bold text-muted me-1"><i class="fa-solid fa-sliders text-success"></i> Active Filters:</span>
+    <div class="active-filters-bar shadow-sm">
+      <span class="small fw-bold text-success me-1"><i class="fa-solid fa-sliders me-1"></i> Active Filters:</span>
       <% if (category && category !== 'all') { %>
-        <span class="filter-chip">Category: <%= category %> <span class="filter-chip-remove" onclick="clearFilter('category')">✕</span></span>
+        <span class="filter-chip">
+          <i class="fa-solid fa-tag text-xs text-muted"></i> Category: <strong><%= category %></strong>
+          <span class="filter-chip-remove" onclick="clearFilter('category')" title="Remove filter">✕</span>
+        </span>
       <% } %>
       <% if (grade) { %>
-        <span class="filter-chip">Grade: <%= grade %> <span class="filter-chip-remove" onclick="clearFilter('grade')">✕</span></span>
+        <span class="filter-chip">
+          <i class="fa-solid fa-star text-xs text-warning"></i> Grade: <strong><%= grade %></strong>
+          <span class="filter-chip-remove" onclick="clearFilter('grade')" title="Remove filter">✕</span>
+        </span>
       <% } %>
       <% if (availability) { %>
-        <span class="filter-chip">Stock: <%= availability %> <span class="filter-chip-remove" onclick="clearFilter('availability')">✕</span></span>
+        <span class="filter-chip">
+          <i class="fa-solid fa-box text-xs text-primary"></i> Stock: <strong><%= availability === 'in-stock' ? 'In Stock' : 'Low Stock' %></strong>
+          <span class="filter-chip-remove" onclick="clearFilter('availability')" title="Remove filter">✕</span>
+        </span>
       <% } %>
       <% if (priceMin || priceMax) { %>
-        <span class="filter-chip">Price: ₹<%= priceMin || '0' %> - ₹<%= priceMax || '∞' %> <span class="filter-chip-remove" onclick="clearFilter('price')">✕</span></span>
+        <span class="filter-chip">
+          <i class="fa-solid fa-indian-rupee-sign text-xs text-success"></i> Rate: <strong>₹<%= priceMin || '0' %> - ₹<%= priceMax || 'Any' %>/kg</strong>
+          <span class="filter-chip-remove" onclick="clearFilter('price')" title="Remove filter">✕</span>
+        </span>
       <% } %>
       <% if (search) { %>
-        <span class="filter-chip">Search: "<%= search %>" <span class="filter-chip-remove" onclick="clearFilter('search')">✕</span></span>
+        <span class="filter-chip">
+          <i class="fa-solid fa-magnifying-glass text-xs text-info"></i> Search: <strong>"<%= search %>"</strong>
+          <span class="filter-chip-remove" onclick="clearFilter('search')" title="Remove filter">✕</span>
+        </span>
       <% } %>
-      <a href="/products" class="btn btn-link btn-sm text-danger text-decoration-none ms-auto p-0 small fw-bold">Clear All</a>
+      <a href="/products" class="btn-clear-filters ms-auto" title="Reset all search & filter parameters">
+        <i class="fa-solid fa-xmark"></i> Clear All Filters
+      </a>
     </div>
   <% } %>
 </div>
