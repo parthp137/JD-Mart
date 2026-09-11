@@ -121,13 +121,14 @@
                                         </td>
                                         <td>₹<%= (item.priceAtAdd / 100).toFixed(2) %>/kg</td>
                                         <td>
-                                            <form action="/cart/update/<%= item.product._id %>" method="POST" class="d-flex align-items-center">
-                                                <input type="number" name="quantity" value="<%= item.quantity %>" 
-                                                       min="1" max="<%= actualAvailable %>" 
-                                                       class="qty-input" />
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary ms-2">
-                                                    <i class="fa-solid fa-refresh"></i>
-                                                </button>
+                                            <form action="/cart/update/<%= item.product._id %>" method="POST" class="d-flex align-items-center gap-2">
+                                                <div class="cart-stepper-group">
+                                                    <button type="button" class="cart-step-btn" onclick="stepCartQty(this, -1); this.closest('form').submit();" title="Decrease quantity">−</button>
+                                                    <input type="number" name="quantity" value="<%= item.quantity %>" 
+                                                           min="1" max="<%= actualAvailable %>" 
+                                                           class="qty-input" />
+                                                    <button type="button" class="cart-step-btn" onclick="stepCartQty(this, 1); this.closest('form').submit();" title="Increase quantity">+</button>
+                                                </div>
                                             </form>
                                         </td>
                                         <td>

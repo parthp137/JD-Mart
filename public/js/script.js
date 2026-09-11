@@ -966,8 +966,88 @@ window.openInvoicePreview = function(orderId, cropName, qty, total, address, dat
 // Initialize UI States on DOM load
 document.addEventListener("DOMContentLoaded", () => {
   updateCompareUI();
+  initBackToTop();
 });
 
+/* ==========================================================================
+   9. COPY TO CLIPBOARD HELPER
+   ========================================================================== */
+window.copyToClipboard = function(text, btnElement, event) {
+  if (event) {
+    event.stopPropagation();
+  }
+  if (!text) return;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    if (btnElement) {
+      const originalHTML = btnElement.innerHTML;
+      btnElement.innerHTML = '<i class="fa-solid fa-check text-success"></i> <span class="copied-badge">Copied!</span>';
+      btnElement.classList.add('copy-success');
+      setTimeout(() => {
+        btnElement.innerHTML = originalHTML;
+        btnElement.classList.remove('copy-success');
+      }, 2000);
+    }
+    if (window.showToast) {
+      window.showToast(`📋 Copied "${text}" to clipboard!`, "success");
+    }
+  }).catch(() => {
+    // Fallback for non-https/unsupported browsers
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      if (window.showToast) {
+        window.showToast(`📋 Copied "${text}" to clipboard!`, "success");
+      }
+    } catch (e) {
+      console.error("Clipboard copy failed", e);
+    }
+    document.body.removeChild(textarea);
+  });
+};
 
+/* ==========================================================================
+   10. FLOATING BACK TO TOP BUTTON
+   ========================================================================== */
+function initBackToTop() {
+  const btn = document.getElementById("backToTopBtn");
+  if (!btn) return;
 
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+      btn.classList.add("visible");
+    } else {
+      btn.classList.remove("visible");
+    }
+  }, { passive: true });
 
+  btn.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+}
+
+/* ==========================================================================
+   11. CART QUANTITY STEPPER HELPER
+   ========================================================================== */
+window.stepCartQty = function(btn, delta) {
+  const container = btn.closest(".cart-stepper-group");
+  if (!container) return;
+  const input = container.querySelector(".qty-input");
+  if (!input) return;
+
+  const min = parseInt(input.getAttribute("min")) || 1;
+  const max = parseInt(input.getAttribute("max")) || 999999;
+  let val = parseInt(input.value) || min;
+
+  val += delta;
+  if (val < min) val = min;
+  if (val > max) val = max;
+
+  input.value = val;
+};

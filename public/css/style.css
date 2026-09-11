@@ -2952,6 +2952,254 @@ body[data-theme="dark"] {
   font-weight: 700;
 }
 
+/* ==========================================================================
+   9. FLOATING BACK TO TOP BUTTON
+   ========================================================================== */
+.back-to-top-btn {
+  position: fixed;
+  bottom: 85px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--jd-primary-green, #16a34a);
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 1040;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+}
 
+.back-to-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
 
+.back-to-top-btn:hover {
+  background: #15803d;
+  color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.45);
+}
 
+/* ==========================================================================
+   10. COPY ORDER ID & CLIPBOARD BUTTONS
+   ========================================================================== */
+.copy-order-btn {
+  border: none;
+  background: transparent;
+  color: var(--jd-text-muted, #64748b);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none !important;
+}
+
+.copy-order-btn:hover {
+  color: var(--jd-primary-green, #16a34a);
+  background: rgba(22, 163, 74, 0.08);
+}
+
+.copy-order-btn.copy-success {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.12);
+}
+
+.copied-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* ==========================================================================
+   11. CART QUANTITY STEPPERS
+   ========================================================================== */
+.cart-stepper-group {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--jd-border-color, #e2e8f0);
+  border-radius: 8px;
+  background: var(--jd-bg-surface, #ffffff);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.cart-step-btn {
+  background: transparent;
+  border: none;
+  color: var(--jd-text-main, #1e293b);
+  width: 32px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cart-step-btn:hover {
+  background: var(--jd-bg-hover, #f1f5f9);
+  color: var(--jd-primary-green, #16a34a);
+}
+
+.cart-stepper-group .qty-input {
+  width: 52px;
+  height: 34px;
+  border: none;
+  border-left: 1px solid var(--jd-border-color, #e2e8f0);
+  border-right: 1px solid var(--jd-border-color, #e2e8f0);
+  border-radius: 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0;
+  background: transparent;
+  color: var(--jd-text-main, #1e293b);
+}
+
+.cart-stepper-group .qty-input:focus {
+  outline: none;
+  background: rgba(22, 163, 74, 0.04);
+}
+
+/* ==========================================================================
+   12. ACTIVE FILTER CHIPS & CLEAR BADGES
+   ========================================================================== */
+.active-filters-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(22, 163, 74, 0.06);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+[data-theme="dark"] .filter-chip {
+  background: #1e293b;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.filter-chip a {
+  color: #94a3b8;
+  text-decoration: none;
+  display: inline-flex;
+}
+
+.filter-chip a:hover {
+  color: #ef4444;
+}
+
+.btn-clear-filters {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #dc2626;
+  text-decoration: none;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(220, 38, 38, 0.08);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-clear-filters:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   13. PRINT STYLESHEET (CLEAN INVOICE / RECEIPT EXPORT)
+   ========================================================================== */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt;
+  }
+
+  header,
+  footer,
+  .jd-header,
+  .jd-footer-section,
+  .jd-bottom-nav,
+  .back-to-top-btn,
+  .floating-compare-bar,
+  .jd-toast-container,
+  .btn,
+  .modal-footer,
+  .modal-header .btn-close,
+  .filter,
+  .stats,
+  .title-row select,
+  .copy-order-btn {
+    display: none !important;
+  }
+
+  .modal {
+    position: static !important;
+    display: block !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+  }
+
+  .modal-dialog {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .modal-content {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .order-card {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 20px !important;
+  }
+
+  .order-details {
+    display: block !important;
+  }
+}
