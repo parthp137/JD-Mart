@@ -139,7 +139,12 @@
         </span>
       </div>
 
-      <h1 class="jd-title mb-2"><%= product.name %></h1>
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h1 class="jd-title mb-0"><%= product.name %></h1>
+        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold shadow-sm" onclick="shareProduct('<%= product.name.replace(/'/g, "\\'") %>')" title="Share this crop lot">
+          <i class="fa-solid fa-share-nodes me-1 text-success"></i> Share Lot
+        </button>
+      </div>
 
       <!-- 2. HIGH-TRUST CROP QUALITY & FRESHNESS BADGES -->
       <div class="quality-badges-row mb-3">
@@ -231,7 +236,9 @@
             <% if (actualAvailable <= 0) { %>
               <span class="badge bg-danger ms-1">Out of Stock</span>
             <% } else if (actualAvailable <= 5) { %>
-              <span class="badge bg-warning text-dark ms-1">Low Stock</span>
+              <span class="badge bg-warning text-dark pulse-badge ms-1">
+                <i class="fa-solid fa-fire text-danger"></i> Low Stock (<%= actualAvailable %> Qtl)
+              </span>
             <% } %>
           </div>
         </div>
@@ -243,6 +250,7 @@
             <strong>
               <%= product.deliveryTime ? product.deliveryTime.minDays : 2 %>-<%= product.deliveryTime ? product.deliveryTime.maxDays : 7 %> Business Days
             </strong>
+            <div id="dynamicDeliveryEstimate" data-min-days="<%= product.deliveryTime ? product.deliveryTime.minDays : 2 %>" data-max-days="<%= product.deliveryTime ? product.deliveryTime.maxDays : 5 %>" class="small mt-1"></div>
           </div>
         </div>
       </div>
@@ -341,7 +349,7 @@
         <div class="jd-actions d-flex gap-2 mt-3">
           <form action="/cart/add/<%= product._id %>" method="POST" class="flex-grow-1" id="cartForm">
             <input type="hidden" name="quantity" id="cartQty" value="<%= product.moq || 1 %>">
-            <button class="btn btn-3d btn-3d-secondary w-100 py-2.5 fw-semibold" type="submit">
+            <button class="btn btn-3d btn-3d-secondary w-100 py-2.5 fw-semibold" type="submit" onclick="animateCartIcon()">
               <i class="fa-solid fa-cart-plus me-1 text-success"></i> Add to Cart
             </button>
           </form>
