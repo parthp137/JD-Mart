@@ -21,8 +21,9 @@
     <!-- NAVBAR CONTENT -->
     <div class="collapse navbar-collapse" id="navbarContent">
       <!-- SEARCH BAR -->
-      <div class="navbar-search ms-lg-3 my-2 my-lg-0">
+      <div class="navbar-search ms-lg-3 my-2 my-lg-0 position-relative">
         <input type="text" id="productSearch" value="<%= typeof search !== 'undefined' ? search : '' %>" placeholder="Search for crops, grains, spices..." class="form-control" />
+        <kbd class="search-kbd d-none d-lg-inline-block" title="Press / to search">/</kbd>
       </div>
 
       <!-- RIGHT ICONS -->
@@ -55,7 +56,7 @@
         </a>
 
         <!-- CART DRAWER TRIGGER -->
-        <a href="javascript:void(0)" onclick="openCartDrawer()" class="cart-icon-link" title="View Quick Cart Drawer">
+        <a href="javascript:void(0)" onclick="openCartDrawer()" class="cart-icon-link" id="navCartLink" title="View Quick Cart Drawer">
           <i class="fa-solid fa-cart-shopping"></i>
           <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
             <span class="cart-badge" id="navCartBadge"><%= cartCount %></span>
