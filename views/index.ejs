@@ -348,8 +348,8 @@
                 <i class="fa-solid fa-exclamation-circle"></i> Out of Stock
               </span>
             <% } else if (actualAvailable <= 5) { %>
-              <span class="badge bg-warning text-dark">
-                <i class="fa-solid fa-triangle-exclamation"></i> <%= actualAvailable %> left
+              <span class="badge bg-warning text-dark pulse-badge">
+                <i class="fa-solid fa-fire text-danger"></i> Only <%= actualAvailable %> left
               </span>
             <% } %>
           </div>

@@ -967,6 +967,8 @@ window.openInvoicePreview = function(orderId, cropName, qty, total, address, dat
 document.addEventListener("DOMContentLoaded", () => {
   updateCompareUI();
   initBackToTop();
+  initKeyboardShortcuts();
+  initDeliveryEstimate();
 });
 
 /* ==========================================================================
@@ -989,7 +991,7 @@ window.copyToClipboard = function(text, btnElement, event) {
       }, 2000);
     }
     if (window.showToast) {
-      window.showToast(`📋 Copied "${text}" to clipboard!`, "success");
+      window.showToast(`📋 Copied to clipboard!`, "success");
     }
   }).catch(() => {
     // Fallback for non-https/unsupported browsers
@@ -1000,7 +1002,7 @@ window.copyToClipboard = function(text, btnElement, event) {
     try {
       document.execCommand("copy");
       if (window.showToast) {
-        window.showToast(`📋 Copied "${text}" to clipboard!`, "success");
+        window.showToast(`📋 Copied to clipboard!`, "success");
       }
     } catch (e) {
       console.error("Clipboard copy failed", e);
@@ -1051,3 +1053,89 @@ window.stepCartQty = function(btn, delta) {
 
   input.value = val;
 };
+
+/* ==========================================================================
+   12. KEYBOARD SHORTCUTS (/ FOR SEARCH, ESC TO CLOSE)
+   ========================================================================== */
+function initKeyboardShortcuts() {
+  document.addEventListener("keydown", (e) => {
+    const activeEl = document.activeElement;
+    const isEditing = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.isContentEditable);
+
+    if (e.key === "/" && !isEditing) {
+      e.preventDefault();
+      const searchInput = document.getElementById("productSearch");
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.select();
+      }
+    } else if (e.key === "Escape") {
+      if (isEditing) {
+        activeEl.blur();
+      }
+      if (typeof closeCartDrawer === "function") closeCartDrawer();
+      if (typeof closeRfqDrawer === "function") closeRfqDrawer();
+    }
+  });
+}
+
+/* ==========================================================================
+   13. 1-CLICK SHARE CROP (WEB SHARE API WITH CLIPBOARD FALLBACK)
+   ========================================================================== */
+window.shareProduct = function(cropName) {
+  const title = cropName ? `${cropName} | JD Mart Mandi` : "JD Mart Agricultural Lot";
+  const url = window.location.href;
+
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      text: `Check out ${cropName || 'this quality lot'} on JD Mart B2B Marketplace!`,
+      url: url
+    }).catch((err) => {
+      if (err.name !== "AbortError") {
+        window.copyToClipboard(url);
+      }
+    });
+  } else {
+    window.copyToClipboard(url);
+    if (window.showToast) {
+      window.showToast(`🔗 Link for "${cropName || 'Lot'}" copied!`, "info");
+    }
+  }
+};
+
+/* ==========================================================================
+   14. NAVBAR CART MICRO-BOUNCE ANIMATION
+   ========================================================================== */
+window.animateCartIcon = function() {
+  const cartLink = document.getElementById("navCartLink") || document.querySelector(".cart-icon-link");
+  if (!cartLink) return;
+
+  cartLink.classList.remove("cart-bounce");
+  // Force reflow
+  void cartLink.offsetWidth;
+  cartLink.classList.add("cart-bounce");
+  setTimeout(() => {
+    cartLink.classList.remove("cart-bounce");
+  }, 650);
+};
+
+/* ==========================================================================
+   15. DYNAMIC ESTIMATED DELIVERY DATE CALCULATION
+   ========================================================================== */
+function initDeliveryEstimate() {
+  const estimateElem = document.getElementById("dynamicDeliveryEstimate");
+  if (!estimateElem) return;
+
+  const minDays = parseInt(estimateElem.getAttribute("data-min-days")) || 2;
+  const maxDays = parseInt(estimateElem.getAttribute("data-max-days")) || 5;
+
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + maxDays);
+
+  const options = { weekday: "short", month: "short", day: "numeric" };
+  const formattedDate = targetDate.toLocaleDateString("en-IN", options);
+
+  estimateElem.innerHTML = `<i class="fa-solid fa-calendar-check text-success me-1"></i> Est. Delivery by <strong>${formattedDate}</strong> (${minDays}-${maxDays} Days)`;
+}
+
