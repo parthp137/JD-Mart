@@ -18,7 +18,8 @@ const demoUsers = [
     businessType: "Trader",
     password: "demo123",
     defaultAddress: "Demo Street, Mumbai, India",
-    role: "admin"
+    role: "admin",
+    isEmailVerified: true
   },
   {
     fullName: "Sample Retailer",
@@ -27,7 +28,9 @@ const demoUsers = [
     business: "Retail Hub",
     businessType: "Retailer",
     password: "demo123",
-    defaultAddress: "Main Road, Pune, India"
+    defaultAddress: "Main Road, Pune, India",
+    role: "user",
+    isEmailVerified: true
   }
 ];
 
