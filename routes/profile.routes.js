@@ -6,7 +6,12 @@ const router = express.Router();
 const Users = require("../models/user");
 const { isLoggedIn } = require("../middleware/auth");
 const { buildErrorQuery } = require("../utils/filters");
-const { sanitizeInput } = require("../utils/validation");
+const {
+  sanitizeInput,
+  validateEmail,
+  validatePhone,
+  validatePasswordStrength
+} = require("../utils/validation");
 
 // GET /profile
 router.get("/profile", isLoggedIn, async (req, res) => {
@@ -39,6 +44,16 @@ router.post("/profile/edit", isLoggedIn, async (req, res) => {
       return res.redirect(`/profile/edit${buildErrorQuery("Please complete all required fields.")}`);
     }
 
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      return res.redirect(`/profile/edit${buildErrorQuery(emailErr)}`);
+    }
+
+    const phoneErr = validatePhone(phone);
+    if (phoneErr) {
+      return res.redirect(`/profile/edit${buildErrorQuery(phoneErr)}`);
+    }
+
     const user = await Users.findById(req.session.userId);
     if (!user) {
       return res.redirect(`/login${buildErrorQuery("Session expired. Please sign in again.")}`);
@@ -53,6 +68,11 @@ router.post("/profile/edit", isLoggedIn, async (req, res) => {
       return res.redirect(`/profile/edit${buildErrorQuery("Email or phone is already in use.")}`);
     }
 
+    // Check if email changed; if so, reset verification
+    if (user.email !== email) {
+      user.isEmailVerified = false;
+    }
+
     user.fullName = fullName;
     user.phone = phone;
     user.email = email;
@@ -61,15 +81,16 @@ router.post("/profile/edit", isLoggedIn, async (req, res) => {
     user.defaultAddress = defaultAddress;
 
     if (password) {
-      if (password.length < 6) {
-        return res.redirect(`/profile/edit${buildErrorQuery("Password must be at least 6 characters.")}`);
+      const passErr = validatePasswordStrength(password);
+      if (passErr) {
+        return res.redirect(`/profile/edit${buildErrorQuery(passErr)}`);
       }
       user.password = password;
     }
 
     await user.save();
     req.session.userId = user._id;
-    return res.redirect(`/profile/edit${buildErrorQuery("Profile updated successfully.")}`);
+    return res.redirect(`/profile/edit?message=${encodeURIComponent("Profile updated successfully.")}`);
   } catch (err) {
     console.error("Profile edit error:", err);
     return res.redirect(`/profile/edit${buildErrorQuery("Unable to update profile right now.")}`);

@@ -24,11 +24,13 @@ async function setupLocals(req, res, next) {
   res.locals.normalizeMoney = normalizeMoney;
   res.locals.error = req.query.error || null;
   res.locals.message = req.query.message || null;
+  res.locals.isEmailVerified = true;
 
   if (req.session && req.session.userId) {
     try {
-      req.user = await Users.findById(req.session.userId);
+      req.user = await Users.findById(req.session.userId).select("-password -otp -resetToken -emailVerificationToken");
       res.locals.user = req.user;
+      res.locals.isEmailVerified = req.user ? Boolean(req.user.isEmailVerified) : false;
 
       if (req.user) {
         // Fetch user's cart count
