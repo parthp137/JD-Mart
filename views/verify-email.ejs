@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JD Mart | Email Verification</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/forgot-password.css">
+  <style>
+    .verification-card {
+      text-align: center;
+      padding: 24px 0;
+    }
+    .status-icon {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+    }
+    .status-icon.success {
+      color: #16a34a;
+    }
+    .status-icon.danger {
+      color: #dc2626;
+    }
+    .action-group {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand">
+      <div class="logo">🍃</div>
+      <div>
+        <h3>JD Mart</h3>
+        <span>Buyer Portal</span>
+      </div>
+    </div>
+
+    <h1>
+      Trusted & Verified<br>
+      B2B Agriculture Network
+    </h1>
+
+    <p>
+      Email verification protects your wholesale account, confirms trading authenticity, and guarantees secure procurement directly from farmers.
+    </p>
+
+    <ul class="features">
+      <li>✔ Verified buyer credentials</li>
+      <li>✔ Protection against fraud & unauthorized access</li>
+      <li>✔ Direct APMC mandi supplier connections</li>
+      <li>✔ Priority wholesale RFQ responses</li>
+    </ul>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <div class="top-bar">
+      <a href="/products">← Back to Marketplace</a>
+    </div>
+
+    <div class="verification-card">
+      <% if (success) { %>
+        <div class="status-icon success">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <h2>Email Verified Successfully!</h2>
+        <p class="subtitle" style="color: #475569; margin-top: 8px;">
+          <%= message %>
+        </p>
+
+        <div class="action-group">
+          <a href="/products" class="btn" style="text-decoration:none; display:block; text-align:center;">
+            Explore Mandi Marketplace →
+          </a>
+          <a href="/profile" class="btn-secondary">
+            View My Profile
+          </a>
+        </div>
+      <% } else { %>
+        <div class="status-icon danger">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+        <h2>Verification Failed</h2>
+        <p class="subtitle" style="color: #475569; margin-top: 8px;">
+          <%= message %>
+        </p>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="alert alert-danger" style="margin-top:16px;">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <div class="action-group">
+          <form action="/resend-verification" method="POST" style="margin: 0;">
+            <button type="submit" class="btn" style="width: 100%;">
+              Resend Verification Link →
+            </button>
+          </form>
+          <a href="/login" class="btn-secondary">
+            Return to Login
+          </a>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="helper-box" style="margin-top: 24px;">
+      <strong>Why Email Verification?</strong>
+      <p>
+        Verified accounts receive enhanced security, real-time APMC price alerts, and instant order confirmations.
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>
