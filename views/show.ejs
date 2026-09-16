@@ -319,10 +319,15 @@
           <small class="text-muted d-block mt-1" style="font-size: 0.72rem;" id="truckCapacityAdvice">Orders above 50 Qtl maximize freight economics per quintal.</small>
         </div>
 
-        <div class="jd-stepper mb-3">
-          <button type="button" class="jd-step btn btn-outline-secondary" id="minusBtn">−</button>
-          <input type="number" id="qtyInput" value="<%= product.moq || 1 %>" min="<%= product.moq || 1 %>" max="<%= Math.max(1, actualAvailable) %>" class="form-control text-center fw-bold" style="max-width: 120px;" />
-          <button type="button" class="jd-step btn btn-outline-secondary" id="plusBtn">+</button>
+        <!-- Tactile Quantity Micro-Stepper -->
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <label class="form-label fw-bold small text-dark mb-0">Order Quantity:</label>
+          <div class="cart-stepper-group">
+            <button type="button" class="cart-step-btn" id="minusBtn" title="Decrease quintals">−</button>
+            <input type="number" id="qtyInput" value="<%= product.moq || 1 %>" min="<%= product.moq || 1 %>" max="<%= Math.max(1, actualAvailable) %>" class="qty-input fw-bold" style="width: 70px;" />
+            <button type="button" class="cart-step-btn" id="plusBtn" title="Increase quintals">+</button>
+          </div>
+          <span class="small text-muted fw-semibold">Quintals (Qtl)</span>
         </div>
 
         <!-- Live Calculation Breakdown Box -->
