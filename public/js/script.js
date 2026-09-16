@@ -969,6 +969,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initBackToTop();
   initKeyboardShortcuts();
   initDeliveryEstimate();
+  initBottomNavActiveState();
 });
 
 /* ==========================================================================
@@ -1137,5 +1138,34 @@ function initDeliveryEstimate() {
   const formattedDate = targetDate.toLocaleDateString("en-IN", options);
 
   estimateElem.innerHTML = `<i class="fa-solid fa-calendar-check text-success me-1"></i> Est. Delivery by <strong>${formattedDate}</strong> (${minDays}-${maxDays} Days)`;
+}
+
+/* ==========================================================================
+   16. MOBILE BOTTOM NAV ACTIVE STATE
+   ========================================================================== */
+function initBottomNavActiveState() {
+  const currentPath = window.location.pathname;
+  const navMap = {
+    "/products": "navCatalog",
+    "/rfqs": "navRfqs",
+    "/orders": "navOrders",
+    "/cart": "navCart",
+    "/profile": "navProfile"
+  };
+
+  // Remove existing active classes
+  document.querySelectorAll(".jd-bottom-nav-link").forEach((link) => {
+    link.classList.remove("active");
+  });
+
+  for (const [route, elemId] of Object.entries(navMap)) {
+    if (currentPath === route || (route !== "/products" && currentPath.startsWith(route)) || (route === "/products" && (currentPath === "/" || currentPath.startsWith("/products")))) {
+      const el = document.getElementById(elemId);
+      if (el) {
+        el.classList.add("active");
+        break;
+      }
+    }
+  }
 }
 

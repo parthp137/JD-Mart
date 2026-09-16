@@ -73,10 +73,6 @@
 <!-- 5. MOBILE BOTTOM NAVIGATION BAR -->
 <div class="jd-bottom-nav">
   <div class="jd-bottom-nav-items">
-    <a href="/products" class="jd-bottom-nav-link" id="navHome">
-      <i class="fa-solid fa-house"></i>
-      <span>Home</span>
-    </a>
     <a href="/products" class="jd-bottom-nav-link" id="navCatalog">
       <i class="fa-solid fa-wheat-awn"></i>
       <span>Catalog</span>
@@ -89,12 +85,16 @@
       <i class="fa-solid fa-box"></i>
       <span>Orders</span>
     </a>
-    <a href="/cart" class="jd-bottom-nav-link" id="navCart">
+    <a href="javascript:void(0)" onclick="openCartDrawer()" class="jd-bottom-nav-link position-relative" id="navCart">
       <i class="fa-solid fa-cart-shopping"></i>
       <span>Cart</span>
       <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
         <span class="jd-bottom-nav-badge"><%= cartCount %></span>
       <% } %>
+    </a>
+    <a href="/profile" class="jd-bottom-nav-link" id="navProfile">
+      <i class="fa-regular fa-user"></i>
+      <span>Account</span>
     </a>
   </div>
 </div>
