@@ -329,7 +329,7 @@
 
           <!-- BADGES -->
           <div class="jd-badges">
-            <span class="jd-grade quality-chip quality-chip-grade" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')" title="Click to view lab certificate">
+            <span class="jd-grade <%= product.grade === 'A' ? 'grade-a' : (product.grade === 'B' ? 'grade-b' : '') %> quality-chip quality-chip-grade" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')" title="Click to view lab certificate">
               <i class="fa-solid fa-certificate"></i> Grade <%= product.grade %>
             </span>
 
