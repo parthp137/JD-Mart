@@ -212,6 +212,23 @@ body {
   cursor: pointer;
 }
 
+.eye-toggle-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.eye-toggle-btn:hover {
+  color: #1c8f4a;
+}
+
 /* ================= BUTTON ================= */
 .btn {
   width: 100%;

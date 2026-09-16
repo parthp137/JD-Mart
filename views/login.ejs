@@ -5,6 +5,7 @@
   <title>JD Mart | Login</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
   <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
@@ -73,10 +74,10 @@
       <div class="input-group">
         <label for="login">Email or Phone</label>
         <div class="input-icon">
-          <span>✉</span>
+          <span><i class="fa-regular fa-envelope text-muted"></i></span>
           <input 
             type="text" 
-            id="login"
+            id="login" 
             name="login" 
             placeholder="demo@jdmart.com" 
             required
@@ -92,15 +93,17 @@
         </div>
 
         <div class="input-icon">
-          <span>🔒</span>
+          <span><i class="fa-solid fa-lock text-muted"></i></span>
           <input 
             type="password" 
-            id="password"
+            id="password" 
             name="password" 
             placeholder="demo123" 
             required
           >
-          <span class="eye">👁</span>
+          <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility('password', this)" title="Toggle password visibility" aria-label="Toggle password visibility">
+            <i class="fa-regular fa-eye"></i>
+          </button>
         </div>
         <small class="invalid-feedback"></small>
       </div>
@@ -136,6 +139,23 @@
       tab.classList.remove("active");
     }
   });
+
+  function togglePasswordVisibility(fieldId, toggleBtn) {
+    const input = document.getElementById(fieldId);
+    if (!input) return;
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+    const icon = toggleBtn.querySelector('i');
+    if (icon) {
+      if (isPassword) {
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+  }
 </script>
 
 <script src="/js/validation.js"></script>

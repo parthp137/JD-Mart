@@ -155,6 +155,36 @@ body {
   box-shadow: 0 0 0 2px rgba(28, 143, 74, 0.1);
 }
 
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  padding-right: 40px;
+}
+
+.password-input-wrapper .eye-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.password-input-wrapper .eye-toggle-btn:hover {
+  color: #1c8f4a;
+}
+
 /* ================= BUTTON ================= */
 .btn {
   width: 100%;
