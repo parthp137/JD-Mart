@@ -19,7 +19,7 @@ const orderItemSchema = new mongoose.Schema({
 const timelineSchema = new mongoose.Schema({
   status: {
     type: String,
-    enum: ["Placed", "Confirmed", "Processing", "Shipped", "In Transit", "Delivered"],
+    enum: ["Pending", "Placed", "Confirmed", "Processing", "Shipped", "In Transit", "Delivered"],
     required: true
   },
   date: {
@@ -42,9 +42,29 @@ const orderSchema = new mongoose.Schema({
 
   items: [orderItemSchema],
 
+  subtotal: {
+    type: Number,
+    default: 0
+  },
+
+  taxAmount: {
+    type: Number,
+    default: 0
+  },
+
+  shippingFee: {
+    type: Number,
+    default: 0
+  },
+
   totalAmount: {
     type: Number,
     required: true
+  },
+
+  paymentMethod: {
+    type: String,
+    default: "Cash on Mandi Delivery / APMC Escrow"
   },
 
   status: {
