@@ -167,33 +167,53 @@ router.post("/admin/products/:id/update", async (req, res) => {
       pricePerQuintal,
       oldPrice,
       belowMarketPercent,
+      moq,
       available,
       demandLevel,
       deliveryTimeMin,
-      deliveryTimeMax
+      deliveryTimeMax,
+      supplierName,
+      supplierLocation,
+      mandiLicense,
+      fssaiNumber,
+      organicCertified
     } = req.body;
 
     if (!name || !category || !pricePerQuintal) {
       return res.redirect(`/admin/products/${req.params.id}/edit${buildErrorQuery("Missing required fields")}`);
     }
 
+    const updateDoc = {
+      name,
+      category,
+      grade: grade || "A",
+      description,
+      pricePerQuintal: parseInt(pricePerQuintal, 10),
+      oldPrice: parseInt(oldPrice, 10) || 0,
+      belowMarketPercent: parseFloat(belowMarketPercent) || 0,
+      moq: parseInt(moq, 10) || 1,
+      available: parseInt(available, 10),
+      demandLevel: demandLevel || "Medium",
+      deliveryTime: {
+        minDays: parseInt(deliveryTimeMin, 10) || 1,
+        maxDays: parseInt(deliveryTimeMax, 10) || 7
+      }
+    };
+
+    if (supplierName || supplierLocation || mandiLicense || fssaiNumber || organicCertified !== undefined) {
+      updateDoc.supplier = {
+        name: supplierName || "JD Certified Mandi Farmer",
+        location: supplierLocation || "APMC Mandi Hub",
+        mandiLicense: mandiLicense || "APMC-GJ-2024-8841",
+        fssaiNumber: fssaiNumber || "10020021000142",
+        isVerified: true,
+        organicCertified: organicCertified === "true" || organicCertified === true
+      };
+    }
+
     await Products.findByIdAndUpdate(
       req.params.id,
-      {
-        name,
-        category,
-        grade: grade || "A",
-        description,
-        pricePerQuintal: parseInt(pricePerQuintal, 10),
-        oldPrice: parseInt(oldPrice, 10) || 0,
-        belowMarketPercent: parseFloat(belowMarketPercent) || 0,
-        available: parseInt(available, 10),
-        demandLevel: demandLevel || "Medium",
-        deliveryTime: {
-          minDays: parseInt(deliveryTimeMin, 10) || 1,
-          maxDays: parseInt(deliveryTimeMax, 10) || 7
-        }
-      },
+      updateDoc,
       { new: true }
     );
 

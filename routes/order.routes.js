@@ -59,8 +59,13 @@ router.post("/orders/buy-now/:id", isLoggedIn, async (req, res) => {
     const product = await Products.findById(req.params.id);
     const qty = parseInt(req.body.quantity, 10);
 
-    if (!product || qty < 1 || qty > product.available) {
-      return res.redirect(`/products/${req.params.id}`);
+    if (!product) {
+      return res.redirect(`/products${buildErrorQuery("Product not found.")}`);
+    }
+
+    const actualAvailable = product.getActualAvailable();
+    if (qty < 1 || qty > actualAvailable) {
+      return res.redirect(`/products/${req.params.id}${buildErrorQuery(`Invalid quantity. Only ${actualAvailable} quintals available.`)}`);
     }
 
     req.session.buyNowItem = {
@@ -77,7 +82,7 @@ router.post("/orders/buy-now/:id", isLoggedIn, async (req, res) => {
     res.redirect("/checkout-buy-now");
   } catch (err) {
     console.error("BUY NOW ERROR:", err);
-    res.redirect("/products");
+    res.redirect(`/products${buildErrorQuery("Unable to process Buy Now request.")}`);
   }
 });
 
@@ -85,21 +90,29 @@ router.post("/orders/buy-now/:id", isLoggedIn, async (req, res) => {
 router.get("/checkout-buy-now", isLoggedIn, async (req, res) => {
   try {
     if (!req.session.buyNowItem) {
-      return res.redirect("/products");
+      return res.redirect(`/products${buildErrorQuery("No active Buy Now session.")}`);
     }
 
     const user = await Users.findById(req.user._id);
     const item = req.session.buyNowItem;
-    const totalAmount = item.quantity * item.price;
+    const subtotal = item.quantity * item.price;
+    const taxAmount = Math.round(subtotal * 0.05); // 5% GST
+    const shippingFee = 45000; // ₹450 Mandi Logistics fee in paise
+    const totalAmount = subtotal + taxAmount + shippingFee;
 
     res.render("checkout-buy-now", {
       item,
       user,
-      totalAmount
+      subtotal,
+      taxAmount,
+      shippingFee,
+      totalAmount,
+      error: req.query.error,
+      message: req.query.message
     });
   } catch (err) {
     console.error("Checkout buy now error:", err);
-    res.redirect("/products");
+    res.redirect(`/products${buildErrorQuery("Failed to load checkout.")}`);
   }
 });
 
@@ -107,23 +120,27 @@ router.get("/checkout-buy-now", isLoggedIn, async (req, res) => {
 router.post("/orders/buy-now-place", isLoggedIn, async (req, res) => {
   try {
     if (!req.session.buyNowItem) {
-      return res.redirect("/products");
+      return res.redirect(`/products${buildErrorQuery("No active Buy Now item.")}`);
     }
 
-    const { deliveryAddress } = req.body;
+    const { deliveryAddress, paymentMethod } = req.body;
     const item = req.session.buyNowItem;
     const product = await Products.findById(item.productId);
 
     if (!product) {
-      return res.redirect("/products");
+      delete req.session.buyNowItem;
+      return res.redirect(`/products${buildErrorQuery("Product is no longer available.")}`);
     }
 
     const actualAvailable = product.getActualAvailable();
     if (item.quantity > actualAvailable) {
-      return res.redirect("/checkout-buy-now");
+      return res.redirect(`/checkout-buy-now${buildErrorQuery(`Insufficient stock. Only ${actualAvailable} units available.`)}`);
     }
 
-    const totalAmount = item.quantity * item.price;
+    const subtotal = item.quantity * item.price;
+    const taxAmount = Math.round(subtotal * 0.05);
+    const shippingFee = 45000;
+    const totalAmount = subtotal + taxAmount + shippingFee;
 
     const order = new Order({
       user: req.user._id,
@@ -134,19 +151,22 @@ router.post("/orders/buy-now-place", isLoggedIn, async (req, res) => {
           priceAtOrder: item.price
         }
       ],
+      subtotal: subtotal,
+      taxAmount: taxAmount,
+      shippingFee: shippingFee,
       totalAmount: totalAmount,
+      paymentMethod: paymentMethod || "Cash on Mandi Delivery / APMC Escrow",
       status: "Pending",
       deliveryAddress: deliveryAddress || req.user.defaultAddress || "Please update your delivery address",
       expectedDelivery: new Date(Date.now() + 7 * 86400000),
-      timeline: getOrderTimeline("Confirmed")
+      timeline: getOrderTimeline("Placed")
     });
 
-    // Atomically reduce stock
+    // Atomically reduce available stock without resetting other buyers' reservations
     await Products.updateOne(
       { _id: product._id },
       {
-        $inc: { available: -item.quantity },
-        $set: { reserved: 0 }
+        $inc: { available: -item.quantity }
       }
     );
 
@@ -163,10 +183,10 @@ router.post("/orders/buy-now-place", isLoggedIn, async (req, res) => {
     });
 
     delete req.session.buyNowItem;
-    res.redirect("/orders");
+    res.redirect("/orders?message=Order+placed+successfully");
   } catch (err) {
     console.error("Buy now place error:", err);
-    res.redirect("/checkout-buy-now");
+    res.redirect(`/checkout-buy-now${buildErrorQuery("Unable to place order. Please try again.")}`);
   }
 });
 
@@ -180,32 +200,39 @@ router.get("/checkout", isLoggedIn, async (req, res) => {
     }
 
     for (const item of cart.items) {
+      if (!item.product) continue;
       const actualAvailable = item.product.getActualAvailable();
       if (item.quantity > actualAvailable) {
         return res.redirect(`/cart${buildErrorQuery(`${item.product.name}: Only ${actualAvailable} units available.`)}`);
       }
     }
 
-    const totalAmount = cart.getTotalAmount();
+    const subtotal = cart.getTotalAmount();
+    const taxAmount = Math.round(subtotal * 0.05);
+    const shippingFee = 45000;
+    const totalAmount = subtotal + taxAmount + shippingFee;
     const user = await Users.findById(req.user._id);
 
     res.render("checkout", {
       cart,
       user,
+      subtotal,
+      taxAmount,
+      shippingFee,
       totalAmount,
       error: req.query.error,
       message: req.query.message
     });
   } catch (err) {
     console.error("Checkout page error:", err);
-    res.redirect("/cart");
+    res.redirect(`/cart${buildErrorQuery("Failed to load checkout.")}`);
   }
 });
 
 // POST /orders/place
 router.post("/orders/place", isLoggedIn, async (req, res) => {
   try {
-    const { deliveryAddress } = req.body;
+    const { deliveryAddress, paymentMethod } = req.body;
     const cart = await Cart.findOne({ user: req.user._id }).populate("items.product");
 
     if (!cart || cart.items.length === 0) {
@@ -213,13 +240,17 @@ router.post("/orders/place", isLoggedIn, async (req, res) => {
     }
 
     for (const item of cart.items) {
+      if (!item.product) continue;
       const actualAvailable = item.product.getActualAvailable();
       if (item.quantity > actualAvailable) {
         return res.redirect(`/checkout${buildErrorQuery(`${item.product.name}: Only ${actualAvailable} units available.`)}`);
       }
     }
 
-    const totalAmount = cart.getTotalAmount();
+    const subtotal = cart.getTotalAmount();
+    const taxAmount = Math.round(subtotal * 0.05);
+    const shippingFee = 45000;
+    const totalAmount = subtotal + taxAmount + shippingFee;
 
     const order = new Order({
       user: req.user._id,
@@ -228,22 +259,31 @@ router.post("/orders/place", isLoggedIn, async (req, res) => {
         quantity: item.quantity,
         priceAtOrder: item.priceAtAdd
       })),
+      subtotal: subtotal,
+      taxAmount: taxAmount,
+      shippingFee: shippingFee,
       totalAmount: totalAmount,
+      paymentMethod: paymentMethod || "Cash on Mandi Delivery / APMC Escrow",
       status: "Pending",
       deliveryAddress: deliveryAddress || req.user.defaultAddress || "Please update your delivery address",
       expectedDelivery: new Date(Date.now() + 7 * 86400000),
-      timeline: getOrderTimeline("Confirmed")
+      timeline: getOrderTimeline("Placed")
     });
 
-    // Atomically reduce stock for all items
+    // Atomically reduce stock and release reserve for all cart items
     for (const item of cart.items) {
       const product = item.product;
+      if (!product) continue;
       await Products.updateOne(
         { _id: product._id },
         {
-          $inc: { available: -item.quantity },
-          $set: { reserved: Math.max(0, (product.reserved || 0) - item.quantity) }
+          $inc: { available: -item.quantity, reserved: -item.quantity }
         }
+      );
+      // Ensure reserved stock does not drop below 0
+      await Products.updateOne(
+        { _id: product._id, reserved: { $lt: 0 } },
+        { $set: { reserved: 0 } }
       );
     }
 
@@ -259,7 +299,7 @@ router.post("/orders/place", isLoggedIn, async (req, res) => {
     });
 
     await Cart.findOneAndDelete({ user: req.user._id });
-    res.redirect("/orders");
+    res.redirect("/orders?message=Order+placed+successfully");
   } catch (err) {
     console.error("Place order error:", err);
     res.redirect(`/checkout${buildErrorQuery("Unable to place order right now.")}`);

@@ -184,10 +184,10 @@ router.post("/cart/clear", isLoggedIn, async (req, res) => {
       }
     }
     await Cart.findOneAndDelete({ user: req.user._id });
-    res.redirect("/cart");
+    res.redirect("/cart?message=Cart+cleared+successfully");
   } catch (err) {
     console.error("Clear cart error:", err);
-    res.redirect("/cart");
+    res.redirect(`/cart${buildErrorQuery("Unable to clear cart.")}`);
   }
 });
 
