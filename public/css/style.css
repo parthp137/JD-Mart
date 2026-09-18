@@ -3422,3 +3422,33 @@ body[data-theme="dark"] {
     border-color: #0f172a;
   }
 }
+
+/* ==========================================================================
+   UI ENHANCEMENT: INTERACTIVE CARD ELEVATION & HOVER LIFT EFFECT
+   ========================================================================== */
+.jd-card,
+.stat-card,
+.supplier-card,
+.product-card-col .card {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.2s ease !important;
+  will-change: transform, box-shadow;
+}
+
+.jd-card:hover,
+.stat-card:hover,
+.supplier-card:hover,
+.product-card-col .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 28px -8px rgba(0, 0, 0, 0.12),
+              0 6px 12px -4px rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme="dark"] .jd-card:hover,
+[data-theme="dark"] .stat-card:hover,
+[data-theme="dark"] .supplier-card:hover {
+  box-shadow: 0 14px 28px -8px rgba(0, 0, 0, 0.5),
+              0 0 0 1px rgba(74, 222, 128, 0.2) !important;
+}
+
