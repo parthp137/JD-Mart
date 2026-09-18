@@ -3555,4 +3555,106 @@ textarea:focus {
   outline: none !important;
 }
 
+/* ==========================================================================
+   UI ENHANCEMENT: STICKY CART / "BUY NOW" MOBILE ACTION BAR
+   ========================================================================== */
+.jd-mobile-action-bar,
+.product-sticky-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(229, 231, 235, 0.8);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  padding: 10px 16px;
+  z-index: 1040;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+@media (min-width: 992px) {
+  .jd-mobile-action-bar,
+  .product-sticky-bottom {
+    display: none !important;
+  }
+}
+
+[data-theme="dark"] .jd-mobile-action-bar,
+[data-theme="dark"] .product-sticky-bottom {
+  background: rgba(15, 23, 42, 0.94);
+  border-top-color: #334155;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   UI ENHANCEMENT: SKELETON SHIMMER LOADING PLACEHOLDERS
+   ========================================================================== */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f1f5f9 0%,
+    #e2e8f0 50%,
+    #f1f5f9 100%
+  );
+  background-size: 200% 100%;
+  animation: jd-skeleton-shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.skeleton-text {
+  height: 14px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.skeleton-title {
+  height: 22px;
+  margin-bottom: 12px;
+  width: 60%;
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 180px;
+  border-radius: 10px;
+}
+
+.skeleton-btn {
+  height: 38px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.skeleton-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+@keyframes jd-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+[data-theme="dark"] .skeleton {
+  background: linear-gradient(
+    90deg,
+    #1e293b 0%,
+    #334155 50%,
+    #1e293b 100%
+  );
+  background-size: 200% 100%;
+}
+
+
 
