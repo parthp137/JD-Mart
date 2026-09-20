@@ -31,21 +31,30 @@
   <div class="title-row">
     <div>
       <h1>Order History</h1>
-      <div class="subtitle">Track and manage your orders</div>
+      <div class="subtitle">Track and manage your agricultural commodity orders</div>
     </div>
 
-    <select class="filter">
-      <option>All Orders</option>
-      <option>Delivered</option>
-      <option>In Transit</option>
-      <option>Pending</option>
-    </select>
+    <!-- MODERN STATUS FILTER PILLS -->
+    <div class="order-filter-pills">
+      <button type="button" class="order-filter-btn active" data-status="all" onclick="filterOrdersByStatus('all')">
+        <i class="fa-solid fa-list me-1"></i> All Orders <span class="badge bg-secondary-subtle text-secondary ms-1"><%= stats.total %></span>
+      </button>
+      <button type="button" class="order-filter-btn" data-status="Delivered" onclick="filterOrdersByStatus('Delivered')">
+        <i class="fa-solid fa-circle-check text-success me-1"></i> Delivered <span class="badge bg-success-subtle text-success ms-1"><%= stats.delivered %></span>
+      </button>
+      <button type="button" class="order-filter-btn" data-status="In Transit" onclick="filterOrdersByStatus('In Transit')">
+        <i class="fa-solid fa-truck-fast text-primary me-1"></i> In Transit <span class="badge bg-primary-subtle text-primary ms-1"><%= stats.transit %></span>
+      </button>
+      <button type="button" class="order-filter-btn" data-status="Pending" onclick="filterOrdersByStatus('Pending')">
+        <i class="fa-solid fa-clock text-warning me-1"></i> Pending <span class="badge bg-warning-subtle text-warning ms-1"><%= stats.pending %></span>
+      </button>
+    </div>
   </div>
 
   <!-- STATS -->
   <div class="stats">
     <div class="stat-card">
-      <div class="icon-box green"><i class="ri-box-3-line"></i></div>
+      <div class="icon-box green"><i class="fa-solid fa-boxes-stacked"></i></div>
       <div>
         <div class="stat-number"><%= stats.total %></div>
         <div class="stat-label">Total Orders</div>
@@ -53,7 +62,7 @@
     </div>
 
     <div class="stat-card">
-      <div class="icon-box blue"><i class="ri-truck-line"></i></div>
+      <div class="icon-box blue"><i class="fa-solid fa-truck-fast"></i></div>
       <div>
         <div class="stat-number"><%= stats.transit %></div>
         <div class="stat-label">In Transit</div>
@@ -61,7 +70,7 @@
     </div>
 
     <div class="stat-card">
-      <div class="icon-box green"><i class="ri-check-line"></i></div>
+      <div class="icon-box green"><i class="fa-solid fa-circle-check"></i></div>
       <div>
         <div class="stat-number"><%= stats.delivered %></div>
         <div class="stat-label">Delivered</div>
@@ -69,22 +78,29 @@
     </div>
 
     <div class="stat-card">
-      <div class="icon-box yellow"><i class="ri-time-line"></i></div>
+      <div class="icon-box yellow"><i class="fa-solid fa-clock"></i></div>
       <div>
         <div class="stat-number"><%= stats.pending %></div>
-        <div class="stat-label">Pending</div>
+        <div class="stat-label">Pending / Processing</div>
       </div>
     </div>
   </div>
 
+  <!-- NOTICE WHEN NO ORDERS MATCH FILTER -->
+  <div id="noOrdersFilterNotice" class="no-orders-filter my-4">
+    <i class="fa-solid fa-filter-circle-xmark text-muted fs-1 mb-2"></i>
+    <h5 class="fw-bold text-secondary">No orders match this status</h5>
+    <p class="text-muted small mb-0">Try selecting another filter or browse your complete order history.</p>
+  </div>
+
   <!-- ORDERS -->
   <% orders.forEach(order => { %>
-  <div class="order-card">
+  <div class="order-card" id="order-card-<%= order._id %>" data-status="<%= order.status %>">
 
     <div class="order-header" onclick="toggleOrder('<%= order._id %>')">
       <div class="order-left">
         <div class="product-icon">
-          <i class="ri-archive-line"></i>
+          <i class="fa-solid fa-wheat-awn"></i>
         </div>
 
         <div>
@@ -94,24 +110,24 @@
               <i class="fa-regular fa-copy"></i>
             </button>
           </div>
-          <span class="badge <%= order.status === 'Delivered' ? 'badge-green' : 'badge-blue' %>">
+          <span class="badge <%= order.status === 'Delivered' ? 'badge-green' : (order.status === 'In Transit' ? 'badge-blue' : 'badge-yellow') %>">
             <%= order.status %>
           </span>
-          <h3><%= order.items[0].product.name %></h3>
-          <small>
-            <%= order.items[0].quantity %> units • ₹<%= order.totalAmount.toLocaleString() %>
+          <h3 class="fs-5 mb-0"><%= order.items[0]?.product?.name || 'Agricultural Produce' %></h3>
+          <small class="text-muted">
+            <%= order.items[0]?.quantity || 1 %> units • ₹<%= (order.totalAmount / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 }) %>
           </small>
         </div>
       </div>
 
-      <div>
-        <i class="ri-arrow-down-s-line"></i>
-        <div>
-          <small><%= order.createdAt.toDateString() %></small><br>
-          <span style="color:#16a34a">
-            Delivery: <%= order.expectedDelivery?.toDateString() %>
+      <div class="d-flex align-items-center gap-3">
+        <div class="text-end d-none d-sm-block">
+          <small class="text-muted"><%= new Date(order.createdAt).toDateString() %></small><br>
+          <span style="color:#16a34a; font-size: 0.85rem; font-weight: 600;">
+            <i class="fa-regular fa-calendar-check me-1"></i> Delivery: <%= order.expectedDelivery ? new Date(order.expectedDelivery).toDateString() : '3-5 Days' %>
           </span>
         </div>
+        <i class="fa-solid fa-chevron-down order-chevron"></i>
       </div>
     </div>    <!-- DETAILS -->
     <div class="order-details" id="order-<%= order._id %>">
@@ -140,43 +156,62 @@
             <div class="tracking-label">E-Waybill</div>
           </div>
           <div class="tracking-step <%= activeIndex >= 3 ? (activeIndex === 3 ? 'active' : 'completed') : '' %>">
-            <div class="tracking-node"><i class="fa-solid fa-truck"></i></div>
-            <div class="tracking-label">In-Transit</div>
+            <div class="tracking-node"><i class="fa-solid fa-truck-moving"></i></div>
+            <div class="tracking-label">In Transit</div>
           </div>
           <div class="tracking-step <%= activeIndex >= 4 ? 'completed' : '' %>">
-            <div class="tracking-node"><i class="fa-solid fa-house-chimney"></i></div>
+            <div class="tracking-node"><i class="fa-solid fa-house-chimney-check"></i></div>
             <div class="tracking-label">Delivered</div>
           </div>
         </div>
       </div>
 
-      <!-- DELIVERY INFO & INVOICE ACTIONS -->
-      <div class="row g-3">
-        <div class="col-md-7">
+      <div class="row g-4">
+        <!-- ORDER BREAKDOWN -->
+        <div class="col-md-6">
           <div class="delivery-box h-100">
-            <h6 class="fw-bold mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i> Delivery Logistics</h6>
-            <p class="mb-1 text-muted small"><strong>Destination:</strong> <%= order.deliveryAddress %></p>
-            <p class="mb-0 text-muted small"><strong>Target Delivery Window:</strong> <%= order.expectedDelivery?.toDateString() %></p>
+            <h6 class="fw-bold mb-3"><i class="fa-solid fa-list-check text-success me-2"></i> Commodity Lot Breakdown</h6>
+            <% order.items.forEach(item => { %>
+              <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                <div>
+                  <strong><%= item.product?.name || 'Produce' %></strong>
+                  <div class="small text-muted"><%= item.quantity %> Quintals @ ₹<%= ((item.price || 0) / 100).toFixed(2) %>/kg</div>
+                </div>
+                <strong class="text-success">₹<%= (((item.quantity || 1) * (item.price || 0)) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 }) %></strong>
+              </div>
+            <% }) %>
+            <div class="d-flex justify-content-between pt-2">
+              <strong>Order Total:</strong>
+              <strong class="fs-5 text-success">₹<%= (order.totalAmount / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 }) %></strong>
+            </div>
           </div>
         </div>
-        <div class="col-md-5">
+
+        <!-- SHIPPING & INVOICE -->
+        <div class="col-md-6">
           <div class="delivery-box h-100 d-flex flex-column justify-content-between">
             <div>
-              <h6 class="fw-bold mb-2"><i class="fa-solid fa-file-invoice text-success me-1"></i> Documentation & Billing</h6>
-              <small class="text-muted d-block mb-2">GST Tax Invoice & Mandi Cess Pass</small>
+              <h6 class="fw-bold mb-3"><i class="fa-solid fa-location-dot text-success me-2"></i> Delivery Destination</h6>
+              <p class="small text-muted mb-2">
+                <%= order.shippingAddress?.street || 'APMC Delivery Yard' %><br>
+                <%= order.shippingAddress?.city ? `${order.shippingAddress.city}, ` : '' %><%= order.shippingAddress?.state || '' %> <%= order.shippingAddress?.zipCode || '' %>
+              </p>
+              <div class="small text-muted">
+                <strong>Payment Status:</strong> 
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                  <i class="fa-solid fa-shield-halved me-1"></i> <%= order.paymentStatus || 'Escrow Verified' %>
+                </span>
+              </div>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
+
+            <div class="d-flex gap-2 mt-3 pt-3 border-top">
+              <a href="/orders/<%= order._id %>/invoice" class="btn btn-sm btn-outline-success flex-grow-1" target="_blank">
+                <i class="fa-solid fa-file-invoice me-1"></i> Tax Invoice
+              </a>
               <button 
                 type="button" 
-                class="btn btn-sm btn-outline-success flex-grow-1 fw-bold"
-                onclick="openInvoicePreview('<%= order.orderId %>', '<%= order.items[0]?.product?.name.replace(/'/g, "\\'") %>', <%= order.items[0]?.quantity %>, <%= order.totalAmount %>, '<%= order.deliveryAddress.replace(/'/g, "\\'") %>', '<%= order.createdAt.toDateString() %>', '<%= order.status %>')"
-              >
-                <i class="fa-solid fa-file-invoice me-1"></i> View Tax Invoice
-              </button>
-              <button 
-                type="button" 
-                class="btn btn-sm btn-outline-secondary fw-semibold"
-                onclick="openInvoicePreview('<%= order.orderId %>', '<%= order.items[0]?.product?.name.replace(/'/g, "\\'") %>', <%= order.items[0]?.quantity %>, <%= order.totalAmount %>, '<%= order.deliveryAddress.replace(/'/g, "\\'") %>', '<%= order.createdAt.toDateString() %>', '<%= order.status %>'); setTimeout(() => window.print(), 350);"
+                class="btn btn-sm btn-outline-secondary"
+                onclick="window.print()"
                 title="Print this invoice"
               >
                 <i class="fa-solid fa-print"></i>
@@ -212,9 +247,42 @@
 
 <script>
   function toggleOrder(id) {
-    const el = document.getElementById("order-" + id);
-    if (!el) return;
-    el.style.display = el.style.display === "block" ? "none" : "block";
+    const card = document.getElementById("order-card-" + id);
+    if (!card) return;
+    card.classList.toggle("open");
+  }
+
+  function filterOrdersByStatus(status) {
+    const buttons = document.querySelectorAll('.order-filter-btn');
+    buttons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.status === status);
+    });
+
+    const cards = document.querySelectorAll('.order-card');
+    let visibleCount = 0;
+    cards.forEach(card => {
+      const orderStatus = card.dataset.status;
+      if (status === 'all' || orderStatus === status || (status === 'Pending' && orderStatus === 'Processing')) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    const notice = document.getElementById('noOrdersFilterNotice');
+    if (notice) {
+      notice.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+  }
+
+  function copyToClipboard(text, btn, e) {
+    if (e) e.stopPropagation();
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check text-success"></i>';
+      setTimeout(() => { btn.innerHTML = orig; }, 1500);
+    });
   }
 </script>
 
