@@ -1169,3 +1169,19 @@ function initBottomNavActiveState() {
   }
 }
 
+// Global bootstrap for shortcuts, mobile bottom nav, and estimates
+if (typeof window !== "undefined") {
+  const initJDApp = () => {
+    if (typeof initKeyboardShortcuts === "function") initKeyboardShortcuts();
+    if (typeof initBottomNavActiveState === "function") initBottomNavActiveState();
+    if (typeof initDeliveryEstimate === "function") initDeliveryEstimate();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initJDApp);
+  } else {
+    initJDApp();
+  }
+}
+
+

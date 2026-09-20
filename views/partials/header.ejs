@@ -23,6 +23,9 @@
       <!-- SEARCH BAR -->
       <div class="navbar-search ms-lg-3 my-2 my-lg-0 position-relative">
         <input type="text" id="productSearch" value="<%= typeof search !== 'undefined' ? search : '' %>" placeholder="Search for crops, grains, spices..." class="form-control" />
+        <% if (typeof search !== 'undefined' && search) { %>
+          <a href="/products" class="search-clear-btn" title="Clear search">✕</a>
+        <% } %>
         <kbd class="search-kbd d-none d-lg-inline-block" title="Press / to search">/</kbd>
       </div>
 
