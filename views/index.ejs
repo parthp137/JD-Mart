@@ -128,49 +128,75 @@
   <form id="filterForm" method="GET" action="/products">
     <div class="row g-3">
       <!-- Category Filters -->
-      <div class="col-lg-3">
+      <div class="col-lg-4">
         <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
-          <i class="fa-solid fa-tag"></i> Category
+          <i class="fa-solid fa-layer-group text-success me-1"></i> Commodity Category
         </h6>
-        <div class="category-filters" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-          <button type="button" class="cat-btn <%= !category || category === 'all' ? 'active' : '' %>" data-category="all" onclick="filterByCategory('all')">All</button>
-          <button type="button" class="cat-btn <%= category === 'Grains' ? 'active' : '' %>" data-category="Grains" onclick="filterByCategory('Grains')">Grains</button>
-          <button type="button" class="cat-btn <%= category === 'Pulses' ? 'active' : '' %>" data-category="Pulses" onclick="filterByCategory('Pulses')">Pulses</button>
-          <button type="button" class="cat-btn <%= category === 'Oilseeds' ? 'active' : '' %>" data-category="Oilseeds" onclick="filterByCategory('Oilseeds')">Oilseeds</button>
-          <button type="button" class="cat-btn <%= category === 'Spices' ? 'active' : '' %>" data-category="Spices" onclick="filterByCategory('Spices')">Spices</button>
+        <div class="category-filters" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+          <button type="button" class="cat-btn <%= !category || category === 'all' ? 'active' : '' %>" data-category="all" onclick="filterByCategory('all')">
+            <i class="fa-solid fa-border-all me-1"></i> All
+          </button>
+          <button type="button" class="cat-btn <%= category === 'Grains' ? 'active' : '' %>" data-category="Grains" onclick="filterByCategory('Grains')">
+            <i class="fa-solid fa-wheat-awn me-1"></i> Grains
+          </button>
+          <button type="button" class="cat-btn <%= category === 'Pulses' ? 'active' : '' %>" data-category="Pulses" onclick="filterByCategory('Pulses')">
+            <i class="fa-solid fa-seedling me-1"></i> Pulses
+          </button>
+          <button type="button" class="cat-btn <%= category === 'Oilseeds' ? 'active' : '' %>" data-category="Oilseeds" onclick="filterByCategory('Oilseeds')">
+            <i class="fa-solid fa-sun me-1"></i> Oilseeds
+          </button>
+          <button type="button" class="cat-btn <%= category === 'Spices' ? 'active' : '' %>" data-category="Spices" onclick="filterByCategory('Spices')">
+            <i class="fa-solid fa-pepper-hot me-1"></i> Spices
+          </button>
         </div>
       </div>
 
-      <!-- Price Range -->
-      <div class="col-lg-2">
+      <!-- Price Range & Presets -->
+      <div class="col-lg-3">
         <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
-          <i class="fa-solid fa-indian-rupee-sign"></i> Price Range
+          <i class="fa-solid fa-indian-rupee-sign text-success me-1"></i> Price Range (₹/kg)
         </h6>
-        <div>
-          <label style="font-size: 0.875rem; margin-bottom: 0.5rem;">Min (₹/kg)</label>
-          <input type="number" name="priceMin" id="priceMin" class="form-control form-control-sm" value="<%= priceMin || '' %>" placeholder="Min">
-          <label style="font-size: 0.875rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">Max (₹/kg)</label>
-          <input type="number" name="priceMax" id="priceMax" class="form-control form-control-sm" value="<%= priceMax || '' %>" placeholder="Max">
+        <div class="d-flex align-items-center gap-2">
+          <input type="number" name="priceMin" id="priceMin" class="form-control form-control-sm" value="<%= priceMin || '' %>" placeholder="Min ₹">
+          <span class="text-muted">-</span>
+          <input type="number" name="priceMax" id="priceMax" class="form-control form-control-sm" value="<%= priceMax || '' %>" placeholder="Max ₹">
+        </div>
+        <!-- Quick Presets -->
+        <div class="d-flex gap-1 flex-wrap mt-2">
+          <button type="button" class="btn btn-xs btn-outline-secondary <%= (priceMin == '0' && priceMax == '30') ? 'active bg-success text-white border-success' : '' %>" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 4px;" onclick="applyPricePreset(0, 30)">
+            &lt; ₹30
+          </button>
+          <button type="button" class="btn btn-xs btn-outline-secondary <%= (priceMin == '30' && priceMax == '70') ? 'active bg-success text-white border-success' : '' %>" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 4px;" onclick="applyPricePreset(30, 70)">
+            ₹30 - ₹70
+          </button>
+          <button type="button" class="btn btn-xs btn-outline-secondary <%= (priceMin == '70' && !priceMax) ? 'active bg-success text-white border-success' : '' %>" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 4px;" onclick="applyPricePreset(70, '')">
+            &gt; ₹70
+          </button>
+          <% if (priceMin || priceMax) { %>
+            <button type="button" class="btn btn-xs btn-link text-danger p-0 ms-1 text-decoration-none" style="font-size: 0.72rem;" onclick="applyPricePreset('', '')" title="Reset price">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          <% } %>
         </div>
       </div>
 
       <!-- Grade -->
       <div class="col-lg-2">
         <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
-          <i class="fa-solid fa-star"></i> Grade
+          <i class="fa-solid fa-certificate text-warning me-1"></i> Quality Grade
         </h6>
         <select name="grade" id="gradeFilter" class="form-select form-select-sm">
           <option value="">All Grades</option>
-          <option value="A" <%= grade === 'A' ? 'selected' : '' %>>Grade A</option>
-          <option value="B" <%= grade === 'B' ? 'selected' : '' %>>Grade B</option>
-          <option value="C" <%= grade === 'C' ? 'selected' : '' %>>Grade C</option>
+          <option value="A" <%= grade === 'A' ? 'selected' : '' %>>Grade A (Premium)</option>
+          <option value="B" <%= grade === 'B' ? 'selected' : '' %>>Grade B (Standard)</option>
+          <option value="C" <%= grade === 'C' ? 'selected' : '' %>>Grade C (Fair)</option>
         </select>
       </div>
 
       <!-- Availability -->
-      <div class="col-lg-2">
+      <div class="col-lg-1">
         <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
-          <i class="fa-solid fa-box"></i> Stock
+          <i class="fa-solid fa-boxes-stacked text-primary me-1"></i> Stock
         </h6>
         <select name="availability" id="availabilityFilter" class="form-select form-select-sm">
           <option value="">All</option>
@@ -180,11 +206,11 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="col-lg-3 d-flex align-items-end gap-2">
-        <button type="submit" class="btn btn-sm btn-3d btn-3d-success" style="flex: 1;">
-          <i class="fa-solid fa-filter me-1"></i> Apply Filters
+      <div class="col-lg-2 d-flex align-items-end gap-2">
+        <button type="submit" class="btn btn-sm btn-success fw-bold py-1.5" style="flex: 1;">
+          <i class="fa-solid fa-filter me-1"></i> Apply
         </button>
-        <a href="/products" class="btn btn-sm btn-3d btn-3d-secondary" style="flex: 1;">
+        <a href="/products" class="btn btn-sm btn-outline-secondary py-1.5" style="flex: 1;">
           <i class="fa-solid fa-redo me-1"></i> Reset
         </a>
       </div>
@@ -247,6 +273,12 @@
     document.getElementById('filterForm').submit();
   }
 
+  function applyPricePreset(min, max) {
+    document.getElementById('priceMin').value = min !== null ? min : '';
+    document.getElementById('priceMax').value = max !== null ? max : '';
+    document.getElementById('filterForm').submit();
+  }
+
   function clearFilter(filterType) {
     const url = new URL(window.location.href);
     if (filterType === 'price') {
@@ -289,13 +321,15 @@
     <% } else { %>
 
     <!-- Product Cards -->
- <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1 gx-4 px-4 mb-6" id="productGrid">
+ <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1 gx-4 px-4 mb-5" id="productGrid">
 
-    <% for(let product of allProducts){ %>
+    <% for(let product of allProducts){ 
+      const actualAvailable = Math.max(0, product.available - (product.reserved || 0));
+    %>
     <div class="col mb-4 product-card-col">
-      <div class="jd-card h-100 d-flex flex-column">
+      <div class="jd-card h-100 d-flex flex-column border-0 shadow-sm rounded-4 overflow-hidden">
 
-        <!-- IMAGE -->
+        <!-- IMAGE & OVERLAY BADGES -->
         <div class="jd-image position-relative">
           <!-- COMPARE CHECKBOX TRIGGER -->
           <label class="compare-checkbox-wrapper" onclick="event.stopPropagation();" title="Add to side-by-side comparison matrix">
@@ -318,115 +352,113 @@
             <span>Compare</span>
           </label>
 
-          <a href="/products/<%= product._id %>" class="d-block">
+          <a href="/products/<%= product._id %>" class="d-block h-100">
             <img
               src="<%= getImageUrl(product.images) %>"
               alt="<%= product.name %>"
-              class="jd-image-tag"
+              class="jd-image-tag w-100 h-100"
+              style="object-fit: cover;"
               onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
             >
           </a>
 
-          <!-- BADGES -->
+          <!-- TOP BADGES -->
           <div class="jd-badges">
-            <span class="jd-grade <%= product.grade === 'A' ? 'grade-a' : (product.grade === 'B' ? 'grade-b' : '') %> quality-chip quality-chip-grade" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')" title="Click to view lab certificate">
+            <span class="jd-grade <%= product.grade === 'A' ? 'grade-a' : (product.grade === 'B' ? 'grade-b' : '') %> quality-chip quality-chip-grade shadow-sm" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')" title="Click to view lab certificate">
               <i class="fa-solid fa-certificate"></i> Grade <%= product.grade %>
             </span>
 
-            <% if (product.belowMarketPercent > 0) { %>
-              <span class="jd-market">
-                <i class="fa-solid fa-arrow-trend-down"></i>
-                <%= product.belowMarketPercent %>% below market
-              </span>
-            <% } %>
+            <div class="d-flex flex-column align-items-end gap-1">
+              <% if (product.belowMarketPercent > 0) { %>
+                <span class="jd-market shadow-sm">
+                  <i class="fa-solid fa-arrow-trend-down"></i>
+                  <%= product.belowMarketPercent %>% below mandi
+                </span>
+              <% } %>
 
-            <% 
-              const actualAvailable = (product.available - (product.reserved || 0));
-              if (actualAvailable <= 0) {
-            %>
-              <span class="badge bg-danger">
-                <i class="fa-solid fa-exclamation-circle"></i> Out of Stock
-              </span>
-            <% } else if (actualAvailable <= 5) { %>
-              <span class="badge bg-warning text-dark pulse-badge">
-                <i class="fa-solid fa-fire text-danger"></i> Only <%= actualAvailable %> left
-              </span>
-            <% } %>
+              <% if (actualAvailable <= 0) { %>
+                <span class="badge bg-danger shadow-sm">
+                  <i class="fa-solid fa-exclamation-circle"></i> Out of Stock
+                </span>
+              <% } else if (actualAvailable <= 5) { %>
+                <span class="badge bg-warning text-dark pulse-badge shadow-sm">
+                  <i class="fa-solid fa-fire text-danger"></i> Only <%= actualAvailable %> left
+                </span>
+              <% } %>
+            </div>
           </div>
         </div>
 
         <!-- BODY -->
-        <div class="jd-body d-flex flex-column flex-grow-1">
+        <div class="jd-body d-flex flex-column flex-grow-1 p-3">
 
-          <div class="jd-meta">
-            <span class="jd-category"><%= product.category.toUpperCase() %></span>
-            <span class="jd-demand <%= product.demandLevel.toLowerCase() %>">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small fw-semibold">
+              <%= product.category %>
+            </span>
+            <span class="jd-demand <%= product.demandLevel.toLowerCase() %> small">
               <%= product.demandLevel %> Demand
             </span>
           </div>
 
-          <h5 class="jd-product-name mb-1">
-            <a href="/products/<%= product._id %>" class="text-decoration-none text-dark"><%= product.name %></a>
+          <h5 class="jd-product-name mb-2 text-truncate" title="<%= product.name %>">
+            <a href="/products/<%= product._id %>" class="text-decoration-none text-dark fw-bold hover-success"><%= product.name %></a>
           </h5>
 
-          <!-- MANDI BENCHMARK & QUALITY CHIPS -->
-          <div class="quality-badges-row my-1 d-flex flex-wrap gap-1">
-            <span class="quality-chip quality-chip-fresh" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')">
-              <i class="fa-solid fa-bolt text-warning"></i> Fresh
+          <!-- STREAMLINED COMMODITY SPECS ROW -->
+          <div class="d-flex align-items-center justify-content-between p-2 rounded-2 bg-light border mb-2" style="font-size: 0.78rem;">
+            <span class="text-muted d-inline-flex align-items-center" title="Lab Tested Moisture Content">
+              <i class="fa-solid fa-droplet text-info me-1"></i> 11.8% Moist
             </span>
-            <span class="quality-chip quality-chip-moisture" onclick="event.stopPropagation(); openCropInspection('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '11.8%', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'APMC Mandi Farmer' %>')">
-              <i class="fa-solid fa-droplet text-info"></i> 12% Moisture
+            <span class="text-success fw-semibold d-inline-flex align-items-center" style="cursor: pointer;" onclick="event.stopPropagation(); openTraceabilityPassport('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'Patel Organic Farms' %>', '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'Unjha APMC Yard, Gujarat' %>')" title="View Origin Passport">
+              <i class="fa-solid fa-seedling me-1"></i> Origin
             </span>
-            <span class="traceability-badge" onclick="event.stopPropagation(); openTraceabilityPassport('<%= product.name.replace(/'/g, "\\'") %>', '<%= product.grade %>', '<%= product.category %>', '<%= (product.supplier && product.supplier.name) ? product.supplier.name.replace(/'/g, "\\'") : 'Patel Organic Farms' %>', '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'Unjha APMC Yard, Gujarat' %>')" title="View Farm Traceability & QR Passport">
-              <i class="fa-solid fa-seedling"></i> Origin
-            </span>
-          </div>
-
-          <!-- 7-DAY APMC PRICE TREND SPARKLINES -->
-          <div class="d-flex align-items-center justify-content-between my-2">
-            <div class="sparkline-container" data-sparkline-target="true" data-grade="<%= product.grade %>" title="7-day APMC Mandi price trajectory">
-              <svg class="sparkline-svg" viewBox="0 0 58 18">
-                <path d="M 2 14 L 11 11 L 20 13 L 30 8 L 40 10 L 49 5 L 56 4" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="56" cy="4" r="2.5" fill="#16a34a"/>
+            <div class="sparkline-container" data-sparkline-target="true" data-grade="<%= product.grade %>" title="7-day APMC Mandi Price Trend">
+              <svg class="sparkline-svg" viewBox="0 0 45 16" style="width: 38px; height: 14px;">
+                <path d="M 2 12 L 10 9 L 18 11 L 26 6 L 34 8 L 42 3" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="42" cy="3" r="2" fill="#16a34a"/>
               </svg>
-              <span style="font-size: 0.72rem; font-weight: 700; color: #16a34a;">7D Trend</span>
             </div>
-            <span class="small text-muted" style="font-size: 0.75rem;">APMC Verified</span>
           </div>
 
-          <div class="jd-price mt-auto">
-            <span class="jd-current">
-              ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
-            </span>
-            <span class="jd-unit">/kg (₹<%= ((product.pricePerQuintal * 100) / 100).toFixed(0) %>/Qtl)</span>
-            <% if (product.oldPrice > product.pricePerQuintal) { %>
-              <span class="jd-old">
-                ₹<%= (product.oldPrice / 100).toFixed(2) %>
+          <!-- PRICE HIGHLIGHT -->
+          <div class="jd-price mt-auto mb-2">
+            <div class="d-flex align-items-baseline gap-1">
+              <span class="fs-4 fw-bold text-success">
+                ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
               </span>
-            <% } %>
+              <span class="text-muted small">/kg</span>
+              <% if (product.oldPrice > product.pricePerQuintal) { %>
+                <span class="text-muted text-decoration-line-through small ms-1">
+                  ₹<%= (product.oldPrice / 100).toFixed(2) %>
+                </span>
+              <% } %>
+            </div>
+            <small class="text-muted d-block" style="font-size: 0.78rem;">
+              ₹<%= ((product.pricePerQuintal * 100) / 100).toFixed(0) %> / Quintal (100 kg)
+            </small>
           </div>
 
-          <!-- Quick Action Buttons -->
-          <div class="d-flex align-items-center gap-1.5 mt-2 pt-2 border-top">
-            <a href="/products/<%= product._id %>" class="btn btn-sm btn-outline-success flex-grow-1 fw-semibold">
+          <!-- UNIFIED ACTION BUTTON GROUP -->
+          <div class="d-flex align-items-center gap-1.5 pt-2 border-top">
+            <a href="/products/<%= product._id %>" class="btn btn-sm btn-outline-success flex-grow-1 fw-semibold py-1.5">
               <i class="fa-regular fa-eye me-1"></i> Details
             </a>
-            <button type="button" class="btn btn-sm btn-light border flex-grow-1 fw-semibold text-secondary" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')" title="Submit instant wholesale offer">
-              <i class="fa-solid fa-handshake text-success me-1"></i> RFQ
+            <button type="button" class="btn btn-sm btn-success flex-grow-1 fw-semibold py-1.5" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')" title="Submit instant wholesale offer">
+              <i class="fa-solid fa-handshake me-1"></i> RFQ
             </button>
-            <button type="button" class="price-alert-btn" onclick="openPriceAlertModal('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>)" title="Set Mandi Target Price Alert">
+            <button type="button" class="btn btn-sm btn-light border text-secondary px-2.5 py-1.5" onclick="openPriceAlertModal('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>)" title="Set Mandi Target Price Alert">
               <i class="fa-solid fa-bell"></i>
             </button>
           </div>
 
-
-          <div class="jd-footer mt-2 pt-1 border-top">
+          <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top text-muted small" style="font-size: 0.75rem;">
             <span>
-              <i class="fa-solid fa-boxes-stacked text-success"></i>
+              <i class="fa-solid fa-boxes-stacked text-success me-1"></i>
               <%= product.available * 100 %> kg
             </span>
             <span>
-              <i class="fa-regular fa-clock text-muted"></i>
+              <i class="fa-regular fa-clock me-1"></i>
               <%= product.deliveryTime ? product.deliveryTime.minDays : 1 %>-<%= product.deliveryTime ? product.deliveryTime.maxDays : 4 %> days
             </span>
           </div>
