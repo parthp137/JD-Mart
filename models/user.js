@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const {
   BCRYPT_SALT_ROUNDS,

@@ -11,6 +11,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo").default;
 const helmet = require("helmet");
 const morgan = require("morgan");
+const flash = require("connect-flash");
 
 // Database & Config
 const { connectDB, MONGO_URL } = require("./config/db");
@@ -32,7 +33,6 @@ const { normalizeMoney, formatMoney } = require("./utils/money");
 const { getOrderTimeline } = require("./utils/timeline");
 const {
   buildProductFilter,
-  buildErrorQuery,
   parsePageValue
 } = require("./utils/filters");
 const { getImageUrl, getCropPlaceholder } = require("./utils/image");
@@ -95,6 +95,8 @@ app.use(
 
 if (DEBUG_MODE) {
   app.use(morgan("dev"));
+} else {
+  app.use(morgan("combined"));
 }
 
 // ===========================
@@ -131,6 +133,7 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 app.use(session(sessionConfig));
+app.use(flash());
 
 // App helpers mounted to app.locals
 app.locals.formatMoney = formatMoney;
@@ -175,7 +178,6 @@ app.__utils = {
   formatMoney,
   getOrderTimeline,
   buildProductFilter,
-  buildErrorQuery,
   parsePageValue,
   isAdmin,
   isLoggedIn

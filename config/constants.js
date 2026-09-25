@@ -2,10 +2,15 @@
  * App Constants and Global Configuration Settings
  */
 
+const sessionSecret = process.env.SESSION_SECRET;
+if (process.env.NODE_ENV === "production" && !sessionSecret) {
+  throw new Error("SESSION_SECRET environment variable must be set in production");
+}
+
 module.exports = {
   PORT: process.env.PORT || 8080,
   MONGO_URL: process.env.MONGODB_URL || "mongodb://127.0.0.1:27017/jdmart1",
-  SESSION_SECRET: process.env.SESSION_SECRET || "supersecretkey-change-in-production",
+  SESSION_SECRET: sessionSecret || "supersecretkey-change-in-production",
   DEBUG_MODE: process.env.DEBUG_MODE === "true" || process.env.NODE_ENV !== "production",
   IS_PRODUCTION: process.env.NODE_ENV === "production",
   DEFAULT_PAGE_SIZE: 12,
