@@ -41,22 +41,26 @@ router.post("/profile/edit", isLoggedIn, async (req, res) => {
     const password = req.body.password || "";
 
     if (!fullName || !phone || !email || !business || !businessType || !defaultAddress) {
-      return res.redirect(`/profile/edit${buildErrorQuery("Please complete all required fields.")}`);
+      req.flash("error", "Please complete all required fields.");
+      return res.redirect(`/profile/edit`);
     }
 
     const emailErr = validateEmail(email);
     if (emailErr) {
-      return res.redirect(`/profile/edit${buildErrorQuery(emailErr)}`);
+      req.flash("error", emailErr);
+      return res.redirect(`/profile/edit`);
     }
 
     const phoneErr = validatePhone(phone);
     if (phoneErr) {
-      return res.redirect(`/profile/edit${buildErrorQuery(phoneErr)}`);
+      req.flash("error", phoneErr);
+      return res.redirect(`/profile/edit`);
     }
 
     const user = await Users.findById(req.session.userId);
     if (!user) {
-      return res.redirect(`/login${buildErrorQuery("Session expired. Please sign in again.")}`);
+      req.flash("error", "Session expired. Please sign in again.");
+      return res.redirect(`/login`);
     }
 
     const duplicate = await Users.findOne({
@@ -65,7 +69,8 @@ router.post("/profile/edit", isLoggedIn, async (req, res) => {
     });
 
     if (duplicate) {
-      return res.redirect(`/profile/edit${buildErrorQuery("Email or phone is already in use.")}`);
+      req.flash("error", "Email or phone is already in use.");
+      return res.redirect(`/profile/edit`);
     }
 
     // Check if email changed; if so, reset verification
@@ -83,7 +88,8 @@ router.post("/profile/edit", isLoggedIn, async (req, res) => {
     if (password) {
       const passErr = validatePasswordStrength(password);
       if (passErr) {
-        return res.redirect(`/profile/edit${buildErrorQuery(passErr)}`);
+        req.flash("error", passErr);
+      return res.redirect(`/profile/edit`);
       }
       user.password = password;
     }
@@ -93,7 +99,8 @@ router.post("/profile/edit", isLoggedIn, async (req, res) => {
     return res.redirect(`/profile/edit?message=${encodeURIComponent("Profile updated successfully.")}`);
   } catch (err) {
     console.error("Profile edit error:", err);
-    return res.redirect(`/profile/edit${buildErrorQuery("Unable to update profile right now.")}`);
+    req.flash("error", "Unable to update profile right now.");
+      return res.redirect(`/profile/edit`);
   }
 });
 
@@ -104,12 +111,14 @@ router.post("/profile/address/add", isLoggedIn, async (req, res) => {
     const address = sanitizeInput(req.body.address || "");
 
     if (!label || !address) {
-      return res.redirect(`/profile/edit${buildErrorQuery("Please provide label and address.")}`);
+      req.flash("error", "Please provide label and address.");
+      return res.redirect(`/profile/edit`);
     }
 
     const user = await Users.findById(req.session.userId);
     if (!user) {
-      return res.redirect(`/login${buildErrorQuery("Session expired.")}`);
+      req.flash("error", "Session expired.");
+      return res.redirect(`/login`);
     }
 
     user.addresses = user.addresses || [];
@@ -120,10 +129,12 @@ router.post("/profile/address/add", isLoggedIn, async (req, res) => {
     }
 
     await user.save();
-    return res.redirect(`/profile/edit${buildErrorQuery("Address added successfully.")}`);
+    req.flash("error", "Address added successfully.");
+      return res.redirect(`/profile/edit`);
   } catch (err) {
     console.error("Add address error:", err);
-    return res.redirect(`/profile/edit${buildErrorQuery("Unable to add address.")}`);
+    req.flash("error", "Unable to add address.");
+      return res.redirect(`/profile/edit`);
   }
 });
 
@@ -132,7 +143,8 @@ router.post("/profile/address/set-default/:addressId", isLoggedIn, async (req, r
   try {
     const user = await Users.findById(req.session.userId);
     if (!user) {
-      return res.redirect(`/login${buildErrorQuery("Session expired.")}`);
+      req.flash("error", "Session expired.");
+      return res.redirect(`/login`);
     }
 
     user.addresses.forEach(addr => {
@@ -146,10 +158,12 @@ router.post("/profile/address/set-default/:addressId", isLoggedIn, async (req, r
     }
 
     await user.save();
-    return res.redirect(`/profile/edit${buildErrorQuery("Default address updated.")}`);
+    req.flash("error", "Default address updated.");
+      return res.redirect(`/profile/edit`);
   } catch (err) {
     console.error("Set default address error:", err);
-    return res.redirect(`/profile/edit${buildErrorQuery("Unable to update default address.")}`);
+    req.flash("error", "Unable to update default address.");
+      return res.redirect(`/profile/edit`);
   }
 });
 
@@ -158,7 +172,8 @@ router.post("/profile/address/remove/:addressId", isLoggedIn, async (req, res) =
   try {
     const user = await Users.findById(req.session.userId);
     if (!user) {
-      return res.redirect(`/login${buildErrorQuery("Session expired.")}`);
+      req.flash("error", "Session expired.");
+      return res.redirect(`/login`);
     }
 
     const address = user.addresses.id(req.params.addressId);
@@ -173,10 +188,12 @@ router.post("/profile/address/remove/:addressId", isLoggedIn, async (req, res) =
     }
 
     await user.save();
-    return res.redirect(`/profile/edit${buildErrorQuery("Address removed.")}`);
+    req.flash("error", "Address removed.");
+      return res.redirect(`/profile/edit`);
   } catch (err) {
     console.error("Remove address error:", err);
-    return res.redirect(`/profile/edit${buildErrorQuery("Unable to remove address.")}`);
+    req.flash("error", "Unable to remove address.");
+      return res.redirect(`/profile/edit`);
   }
 });
 

@@ -22,8 +22,15 @@ async function setupLocals(req, res, next) {
   res.locals.getCropPlaceholder = getCropPlaceholder;
   res.locals.formatMoney = formatMoney;
   res.locals.normalizeMoney = normalizeMoney;
-  res.locals.error = req.query.error || null;
-  res.locals.message = req.query.message || null;
+  
+  // Get flash messages
+  const errorFlash = req.flash("error");
+  const successFlash = req.flash("success");
+  
+  // Support both flash messages and query params for smooth transition
+  res.locals.error = errorFlash.length > 0 ? errorFlash[0] : (req.query.error || null);
+  res.locals.message = successFlash.length > 0 ? successFlash[0] : (req.query.message || null);
+  
   res.locals.isEmailVerified = true;
 
   if (req.session && req.session.userId) {

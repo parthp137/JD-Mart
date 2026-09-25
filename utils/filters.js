@@ -59,13 +59,8 @@ function parsePageValue(value, fallback) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-function buildErrorQuery(message) {
-  return `?error=${encodeURIComponent(message)}`;
-}
-
 module.exports = {
   escapeRegExp,
   buildProductFilter,
-  parsePageValue,
-  buildErrorQuery
+  parsePageValue
 };

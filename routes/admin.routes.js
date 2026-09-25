@@ -12,7 +12,7 @@ const Notification = require("../models/notification");
 const { isLoggedIn, isAdmin } = require("../middleware/auth");
 const { upload, uploadDir } = require("../config/multer");
 const { getImageUrl, getCropPlaceholder } = require("../utils/image");
-const { parsePageValue, buildErrorQuery } = require("../utils/filters");
+const { parsePageValue } = require("../utils/filters");
 const { ADMIN_ORDER_PAGE_SIZE } = require("../config/constants");
 
 // Apply admin guard to all admin routes
@@ -61,7 +61,8 @@ router.get("/admin/products", async (req, res) => {
     });
   } catch (err) {
     console.error("Admin products error:", err);
-    res.redirect(`/admin${buildErrorQuery("Unable to fetch products")}`);
+    req.flash("error", "Unable to fetch products");
+      res.redirect(`/admin`);
   }
 });
 
@@ -97,7 +98,8 @@ router.post("/admin/products/create", async (req, res) => {
     } = req.body;
 
     if (!name || !category || !pricePerQuintal || !available) {
-      return res.redirect(`/admin/products/create${buildErrorQuery("Missing required fields")}`);
+      req.flash("error", "Missing required fields");
+      return res.redirect(`/admin/products/create`);
     }
 
     const product = new Products({
@@ -133,7 +135,8 @@ router.post("/admin/products/create", async (req, res) => {
     res.redirect(`/admin/products?message=${encodeURIComponent("Product created successfully")}`);
   } catch (err) {
     console.error("Create product error:", err);
-    res.redirect(`/admin/products/create${buildErrorQuery("Unable to create product")}`);
+    req.flash("error", "Unable to create product");
+      res.redirect(`/admin/products/create`);
   }
 });
 
@@ -142,7 +145,8 @@ router.get("/admin/products/:id/edit", async (req, res) => {
   try {
     const product = await Products.findById(req.params.id);
     if (!product) {
-      return res.redirect(`/admin/products${buildErrorQuery("Product not found")}`);
+      req.flash("error", "Product not found");
+      return res.redirect(`/admin/products`);
     }
 
     res.render("admin-product-form", {
@@ -152,7 +156,8 @@ router.get("/admin/products/:id/edit", async (req, res) => {
     });
   } catch (err) {
     console.error("Edit product form error:", err);
-    res.redirect(`/admin/products${buildErrorQuery("Unable to load product")}`);
+    req.flash("error", "Unable to load product");
+      res.redirect(`/admin/products`);
   }
 });
 
@@ -229,13 +234,15 @@ router.post("/admin/products/:id/delete", async (req, res) => {
   try {
     const product = await Products.findByIdAndDelete(req.params.id);
     if (!product) {
-      return res.redirect(`/admin/products${buildErrorQuery("Product not found")}`);
+      req.flash("error", "Product not found");
+      return res.redirect(`/admin/products`);
     }
 
     res.redirect(`/admin/products?message=${encodeURIComponent("Product deleted successfully")}`);
   } catch (err) {
     console.error("Delete product error:", err);
-    res.redirect(`/admin/products${buildErrorQuery("Unable to delete product")}`);
+    req.flash("error", "Unable to delete product");
+      res.redirect(`/admin/products`);
   }
 });
 

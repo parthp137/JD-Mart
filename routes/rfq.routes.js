@@ -40,7 +40,8 @@ router.post("/rfq/submit", isLoggedIn, async (req, res) => {
 
     const product = await Products.findById(productId);
     if (!product) {
-      return res.redirect(`/products${buildErrorQuery("Product not found.")}`);
+      req.flash("error", "Product not found.");
+      return res.redirect(`/products`);
     }
 
     const qty = parseInt(requestedQuantity, 10);
@@ -74,7 +75,8 @@ router.post("/rfq/submit", isLoggedIn, async (req, res) => {
     res.redirect(`/rfqs?message=${encodeURIComponent("Quote request submitted successfully!")}`);
   } catch (err) {
     console.error("Submit RFQ error:", err);
-    res.redirect(`/products${buildErrorQuery("Unable to submit quote request.")}`);
+    req.flash("error", "Unable to submit quote request.");
+      res.redirect(`/products`);
   }
 });
 
@@ -83,11 +85,13 @@ router.post("/rfqs/:id/accept-counter", isLoggedIn, async (req, res) => {
   try {
     const rfq = await RFQ.findOne({ _id: req.params.id, buyer: req.user._id }).populate("product");
     if (!rfq) {
-      return res.redirect(`/rfqs${buildErrorQuery("Quote request not found.")}`);
+      req.flash("error", "Quote request not found.");
+      return res.redirect(`/rfqs`);
     }
 
     if (rfq.status !== "Counter Offer") {
-      return res.redirect(`/rfqs${buildErrorQuery("No active counter offer to accept.")}`);
+      req.flash("error", "No active counter offer to accept.");
+      return res.redirect(`/rfqs`);
     }
 
     rfq.status = "Accepted";
@@ -113,7 +117,8 @@ router.post("/rfqs/:id/accept-counter", isLoggedIn, async (req, res) => {
     res.redirect("/checkout-buy-now");
   } catch (err) {
     console.error("Accept counter error:", err);
-    res.redirect(`/rfqs${buildErrorQuery("Unable to process quote acceptance.")}`);
+    req.flash("error", "Unable to process quote acceptance.");
+      res.redirect(`/rfqs`);
   }
 });
 
@@ -124,7 +129,8 @@ router.post("/admin/rfqs/:id/respond", isLoggedIn, isAdmin, async (req, res) => 
     const rfq = await RFQ.findById(req.params.id).populate("buyer").populate("product");
 
     if (!rfq) {
-      return res.redirect(`/admin${buildErrorQuery("RFQ not found.")}`);
+      req.flash("error", "RFQ not found.");
+      return res.redirect(`/admin`);
     }
 
     if (action === "accept") {
@@ -168,7 +174,8 @@ router.post("/admin/rfqs/:id/respond", isLoggedIn, isAdmin, async (req, res) => 
     res.redirect(`/rfqs?message=${encodeURIComponent("RFQ responded successfully.")}`);
   } catch (err) {
     console.error("Admin RFQ respond error:", err);
-    res.redirect(`/rfqs${buildErrorQuery("Unable to respond to RFQ.")}`);
+    req.flash("error", "Unable to respond to RFQ.");
+      res.redirect(`/rfqs`);
   }
 });
 

@@ -10,7 +10,7 @@ const Users = require("../models/user");
 const Notification = require("../models/notification");
 const { isLoggedIn, isAdmin } = require("../middleware/auth");
 const { getOrderTimeline } = require("../utils/timeline");
-const { parsePageValue, buildErrorQuery } = require("../utils/filters");
+const { parsePageValue } = require("../utils/filters");
 const { ORDER_PAGE_SIZE } = require("../config/constants");
 
 // GET /orders
@@ -60,7 +60,8 @@ router.post("/orders/buy-now/:id", isLoggedIn, async (req, res) => {
     const qty = parseInt(req.body.quantity, 10);
 
     if (!product) {
-      return res.redirect(`/products${buildErrorQuery("Product not found.")}`);
+      req.flash("error", "Product not found.");
+      return res.redirect(`/products`);
     }
 
     const actualAvailable = product.getActualAvailable();
@@ -82,7 +83,8 @@ router.post("/orders/buy-now/:id", isLoggedIn, async (req, res) => {
     res.redirect("/checkout-buy-now");
   } catch (err) {
     console.error("BUY NOW ERROR:", err);
-    res.redirect(`/products${buildErrorQuery("Unable to process Buy Now request.")}`);
+    req.flash("error", "Unable to process Buy Now request.");
+      res.redirect(`/products`);
   }
 });
 
@@ -90,7 +92,8 @@ router.post("/orders/buy-now/:id", isLoggedIn, async (req, res) => {
 router.get("/checkout-buy-now", isLoggedIn, async (req, res) => {
   try {
     if (!req.session.buyNowItem) {
-      return res.redirect(`/products${buildErrorQuery("No active Buy Now session.")}`);
+      req.flash("error", "No active Buy Now session.");
+      return res.redirect(`/products`);
     }
 
     const user = await Users.findById(req.user._id);
@@ -112,7 +115,8 @@ router.get("/checkout-buy-now", isLoggedIn, async (req, res) => {
     });
   } catch (err) {
     console.error("Checkout buy now error:", err);
-    res.redirect(`/products${buildErrorQuery("Failed to load checkout.")}`);
+    req.flash("error", "Failed to load checkout.");
+      res.redirect(`/products`);
   }
 });
 
@@ -120,7 +124,8 @@ router.get("/checkout-buy-now", isLoggedIn, async (req, res) => {
 router.post("/orders/buy-now-place", isLoggedIn, async (req, res) => {
   try {
     if (!req.session.buyNowItem) {
-      return res.redirect(`/products${buildErrorQuery("No active Buy Now item.")}`);
+      req.flash("error", "No active Buy Now item.");
+      return res.redirect(`/products`);
     }
 
     const { deliveryAddress, paymentMethod } = req.body;
@@ -129,12 +134,14 @@ router.post("/orders/buy-now-place", isLoggedIn, async (req, res) => {
 
     if (!product) {
       delete req.session.buyNowItem;
-      return res.redirect(`/products${buildErrorQuery("Product is no longer available.")}`);
+      req.flash("error", "Product is no longer available.");
+      return res.redirect(`/products`);
     }
 
     const actualAvailable = product.getActualAvailable();
     if (item.quantity > actualAvailable) {
-      return res.redirect(`/checkout-buy-now${buildErrorQuery(`Insufficient stock. Only ${actualAvailable} units available.`)}`);
+      req.flash("error", `Insufficient stock. Only ${actualAvailable} units available.`);
+      return res.redirect(`/checkout-buy-now`);
     }
 
     const subtotal = item.quantity * item.price;
@@ -186,7 +193,8 @@ router.post("/orders/buy-now-place", isLoggedIn, async (req, res) => {
     res.redirect("/orders?message=Order+placed+successfully");
   } catch (err) {
     console.error("Buy now place error:", err);
-    res.redirect(`/checkout-buy-now${buildErrorQuery("Unable to place order. Please try again.")}`);
+    req.flash("error", "Unable to place order. Please try again.");
+      res.redirect(`/checkout-buy-now`);
   }
 });
 
@@ -196,14 +204,16 @@ router.get("/checkout", isLoggedIn, async (req, res) => {
     const cart = await Cart.findOne({ user: req.user._id }).populate("items.product");
 
     if (!cart || cart.items.length === 0) {
-      return res.redirect(`/cart${buildErrorQuery("Your cart is empty.")}`);
+      req.flash("error", "Your cart is empty.");
+      return res.redirect(`/cart`);
     }
 
     for (const item of cart.items) {
       if (!item.product) continue;
       const actualAvailable = item.product.getActualAvailable();
       if (item.quantity > actualAvailable) {
-        return res.redirect(`/cart${buildErrorQuery(`${item.product.name}: Only ${actualAvailable} units available.`)}`);
+        req.flash("error", `${item.product.name}: Only ${actualAvailable} units available.`);
+      return res.redirect(`/cart`);
       }
     }
 
@@ -225,7 +235,8 @@ router.get("/checkout", isLoggedIn, async (req, res) => {
     });
   } catch (err) {
     console.error("Checkout page error:", err);
-    res.redirect(`/cart${buildErrorQuery("Failed to load checkout.")}`);
+    req.flash("error", "Failed to load checkout.");
+      res.redirect(`/cart`);
   }
 });
 
@@ -236,14 +247,16 @@ router.post("/orders/place", isLoggedIn, async (req, res) => {
     const cart = await Cart.findOne({ user: req.user._id }).populate("items.product");
 
     if (!cart || cart.items.length === 0) {
-      return res.redirect(`/cart${buildErrorQuery("Your cart is empty.")}`);
+      req.flash("error", "Your cart is empty.");
+      return res.redirect(`/cart`);
     }
 
     for (const item of cart.items) {
       if (!item.product) continue;
       const actualAvailable = item.product.getActualAvailable();
       if (item.quantity > actualAvailable) {
-        return res.redirect(`/checkout${buildErrorQuery(`${item.product.name}: Only ${actualAvailable} units available.`)}`);
+        req.flash("error", `${item.product.name}: Only ${actualAvailable} units available.`);
+      return res.redirect(`/checkout`);
       }
     }
 
@@ -302,7 +315,8 @@ router.post("/orders/place", isLoggedIn, async (req, res) => {
     res.redirect("/orders?message=Order+placed+successfully");
   } catch (err) {
     console.error("Place order error:", err);
-    res.redirect(`/checkout${buildErrorQuery("Unable to place order right now.")}`);
+    req.flash("error", "Unable to place order right now.");
+      res.redirect(`/checkout`);
   }
 });
 
@@ -313,12 +327,14 @@ router.post("/orders/:id/status", isLoggedIn, isAdmin, async (req, res) => {
     const allowedStatuses = ["Pending", "Processing", "In Transit", "Delivered"];
 
     if (!allowedStatuses.includes(status)) {
-      return res.redirect(`/orders${buildErrorQuery("Invalid order status.")}`);
+      req.flash("error", "Invalid order status.");
+      return res.redirect(`/orders`);
     }
 
     const order = await Order.findById(req.params.id).populate("user");
     if (!order) {
-      return res.redirect(`/orders${buildErrorQuery("Order not found.")}`);
+      req.flash("error", "Order not found.");
+      return res.redirect(`/orders`);
     }
 
     order.status = status;
@@ -334,10 +350,12 @@ router.post("/orders/:id/status", isLoggedIn, isAdmin, async (req, res) => {
       icon: status === "Delivered" ? "fa-check-circle" : "fa-box"
     });
 
-    return res.redirect(`/orders${buildErrorQuery("Order status updated.")}`);
+    req.flash("error", "Order status updated.");
+      return res.redirect(`/orders`);
   } catch (err) {
     console.error("Update order status error:", err);
-    return res.redirect(`/orders${buildErrorQuery("Unable to update order status.")}`);
+    req.flash("error", "Unable to update order status.");
+      return res.redirect(`/orders`);
   }
 });
 

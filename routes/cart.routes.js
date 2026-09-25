@@ -32,7 +32,8 @@ router.post("/cart/add/:id", isLoggedIn, async (req, res) => {
     const quantity = parseInt(req.body.quantity, 10) || 1;
 
     if (!product) {
-      return res.redirect(`/products${buildErrorQuery("Product not found.")}`);
+      req.flash("error", "Product not found.");
+      return res.redirect(`/products`);
     }
 
     if (quantity < 1) {
@@ -79,7 +80,8 @@ router.post("/cart/add/:id", isLoggedIn, async (req, res) => {
     res.redirect("/cart");
   } catch (err) {
     console.error("Add to cart error:", err);
-    res.redirect(`/products${buildErrorQuery("Unable to add item to cart.")}`);
+    req.flash("error", "Unable to add item to cart.");
+      res.redirect(`/products`);
   }
 });
 
@@ -136,7 +138,8 @@ router.post("/cart/update/:productId", isLoggedIn, async (req, res) => {
     res.redirect("/cart");
   } catch (err) {
     console.error("Update cart error:", err);
-    res.redirect(`/cart${buildErrorQuery("Unable to update cart item.")}`);
+    req.flash("error", "Unable to update cart item.");
+      res.redirect(`/cart`);
   }
 });
 
@@ -167,7 +170,8 @@ router.post("/cart/remove/:productId", isLoggedIn, async (req, res) => {
     res.redirect("/cart");
   } catch (err) {
     console.error("Remove from cart error:", err);
-    res.redirect(`/cart${buildErrorQuery("Unable to remove item from cart.")}`);
+    req.flash("error", "Unable to remove item from cart.");
+      res.redirect(`/cart`);
   }
 });
 
@@ -187,7 +191,8 @@ router.post("/cart/clear", isLoggedIn, async (req, res) => {
     res.redirect("/cart?message=Cart+cleared+successfully");
   } catch (err) {
     console.error("Clear cart error:", err);
-    res.redirect(`/cart${buildErrorQuery("Unable to clear cart.")}`);
+    req.flash("error", "Unable to clear cart.");
+      res.redirect(`/cart`);
   }
 });
 

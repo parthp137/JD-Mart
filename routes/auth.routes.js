@@ -6,7 +6,7 @@
 const express = require("express");
 const router = express.Router();
 const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const Users = require("../models/user");
 const Notification = require("../models/notification");
 const {
@@ -64,7 +64,8 @@ router.post("/login", authLimiter, async (req, res) => {
     const password = req.body.password || "";
 
     if (!rawLogin || !password) {
-      return res.redirect(`/login${buildErrorQuery("Enter both email/phone and password.")}`);
+      req.flash("error", "Enter both email/phone and password.");
+      return res.redirect(`/login`);
     }
 
     const normalizedPhone = rawLogin.replace(/\D/g, "");
@@ -82,12 +83,14 @@ router.post("/login", authLimiter, async (req, res) => {
     if (!user) {
       // Execute dummy compare to equalize response time and prevent timing attacks
       await bcrypt.compare(password, DUMMY_HASH);
-      return res.redirect(`/login${buildErrorQuery("Invalid email/phone or password.")}`);
+      req.flash("error", "Invalid email/phone or password.");
+      return res.redirect(`/login`);
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.redirect(`/login${buildErrorQuery("Invalid email/phone or password.")}`);
+      req.flash("error", "Invalid email/phone or password.");
+      return res.redirect(`/login`);
     }
 
     // Regenerate session to prevent session fixation attacks
@@ -97,13 +100,15 @@ router.post("/login", authLimiter, async (req, res) => {
     req.session.save((err) => {
       if (err) {
         console.error("Session save error:", err);
-        return res.redirect(`/login${buildErrorQuery("Unable to complete sign in.")}`);
+        req.flash("error", "Unable to complete sign in.");
+      return res.redirect(`/login`);
       }
       res.redirect("/products");
     });
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-    res.redirect(`/login${buildErrorQuery("Unable to sign in right now.")}`);
+    req.flash("error", "Unable to sign in right now.");
+      res.redirect(`/login`);
   }
 });
 
@@ -130,7 +135,8 @@ router.post("/send-otp", otpLimiter, async (req, res) => {
     const normalizedPhone = phone.replace(/\D/g, "");
 
     if (!phone) {
-      return res.redirect(`/otp-login${buildErrorQuery("Enter a phone number.")}`);
+      req.flash("error", "Enter a phone number.");
+      return res.redirect(`/otp-login`);
     }
 
     const user = await Users.findOne({
@@ -141,7 +147,8 @@ router.post("/send-otp", otpLimiter, async (req, res) => {
     });
 
     if (!user) {
-      return res.redirect(`/otp-login${buildErrorQuery("No account found for this phone number.")}`);
+      req.flash("error", "No account found for this phone number.");
+      return res.redirect(`/otp-login`);
     }
 
     // Cryptographically secure 6-digit OTP
@@ -169,7 +176,8 @@ router.post("/send-otp", otpLimiter, async (req, res) => {
     });
   } catch (err) {
     console.error("SEND OTP ERROR:", err);
-    res.redirect(`/otp-login${buildErrorQuery("Unable to send OTP.")}`);
+    req.flash("error", "Unable to send OTP.");
+      res.redirect(`/otp-login`);
   }
 });
 
@@ -182,7 +190,8 @@ router.post("/verify-otp", authLimiter, async (req, res) => {
       req.session.otpHash = null;
       req.session.otpPhone = null;
       req.session.otpExpiry = null;
-      return res.redirect(`/otp-login${buildErrorQuery("OTP has expired. Please request a new code.")}`);
+      req.flash("error", "OTP has expired. Please request a new code.");
+      return res.redirect(`/otp-login`);
     }
 
     const enteredHash = crypto.createHash("sha256").update(String(enteredOtp)).digest("hex");
@@ -192,7 +201,8 @@ router.post("/verify-otp", authLimiter, async (req, res) => {
     );
 
     if (!isMatch) {
-      return res.redirect(`/otp-login${buildErrorQuery("Invalid OTP code. Please try again.")}`);
+      req.flash("error", "Invalid OTP code. Please try again.");
+      return res.redirect(`/otp-login`);
     }
 
     const user = await Users.findOne({ phone: req.session.otpPhone });
@@ -212,13 +222,15 @@ router.post("/verify-otp", authLimiter, async (req, res) => {
     req.session.save((err) => {
       if (err) {
         console.error("Session save error after OTP:", err);
-        return res.redirect(`/otp-login${buildErrorQuery("Unable to complete sign in.")}`);
+        req.flash("error", "Unable to complete sign in.");
+      return res.redirect(`/otp-login`);
       }
       res.redirect("/products");
     });
   } catch (err) {
     console.error("VERIFY OTP ERROR:", err);
-    res.redirect(`/otp-login${buildErrorQuery("Unable to verify OTP.")}`);
+    req.flash("error", "Unable to verify OTP.");
+      res.redirect(`/otp-login`);
   }
 });
 
@@ -247,26 +259,31 @@ router.post("/register", registerLimiter, async (req, res) => {
     const defaultAddress = sanitizeInput(req.body.defaultAddress || "");
 
     if (!fullName || !phone || !email || !business || !businessType || !password || !confirm || !defaultAddress) {
-      return res.redirect(`/register${buildErrorQuery("Please fill out every required field.")}`);
+      req.flash("error", "Please fill out every required field.");
+      return res.redirect(`/register`);
     }
 
     const emailErr = validateEmail(email);
     if (emailErr) {
-      return res.redirect(`/register${buildErrorQuery(emailErr)}`);
+      req.flash("error", emailErr);
+      return res.redirect(`/register`);
     }
 
     const phoneErr = validatePhone(phone);
     if (phoneErr) {
-      return res.redirect(`/register${buildErrorQuery(phoneErr)}`);
+      req.flash("error", phoneErr);
+      return res.redirect(`/register`);
     }
 
     const passErr = validatePasswordStrength(password);
     if (passErr) {
-      return res.redirect(`/register${buildErrorQuery(passErr)}`);
+      req.flash("error", passErr);
+      return res.redirect(`/register`);
     }
 
     if (password !== confirm) {
-      return res.redirect(`/register${buildErrorQuery("Passwords do not match.")}`);
+      req.flash("error", "Passwords do not match.");
+      return res.redirect(`/register`);
     }
 
     const userExists = await Users.findOne({
@@ -274,7 +291,8 @@ router.post("/register", registerLimiter, async (req, res) => {
     });
 
     if (userExists) {
-      return res.redirect(`/register${buildErrorQuery("An account already exists with that email or phone.")}`);
+      req.flash("error", "An account already exists with that email or phone.");
+      return res.redirect(`/register`);
     }
 
     const newUser = new Users({
@@ -322,7 +340,8 @@ router.post("/register", registerLimiter, async (req, res) => {
     });
   } catch (err) {
     console.error("REGISTER ERROR:", err);
-    res.redirect(`/register${buildErrorQuery("Unable to create account right now.")}`);
+    req.flash("error", "Unable to create account right now.");
+      res.redirect(`/register`);
   }
 });
 
@@ -408,7 +427,8 @@ router.post("/resend-verification", emailVerifyLimiter, async (req, res) => {
     res.redirect(`${redirectTarget}?message=${encodeURIComponent("If an unverified account exists, a new verification link has been sent.")}`);
   } catch (err) {
     console.error("Resend verification error:", err);
-    res.redirect(`/products${buildErrorQuery("Unable to resend verification link.")}`);
+    req.flash("error", "Unable to resend verification link.");
+      res.redirect(`/products`);
   }
 });
 
@@ -431,7 +451,8 @@ router.post("/forgot-password", passwordResetLimiter, async (req, res) => {
     const rawLogin = sanitizeInput(req.body.login || "");
 
     if (!rawLogin) {
-      return res.redirect(`/forgot-password${buildErrorQuery("Enter your email or phone number.")}`);
+      req.flash("error", "Enter your email or phone number.");
+      return res.redirect(`/forgot-password`);
     }
 
     const normalizedPhone = rawLogin.replace(/\D/g, "");
@@ -466,7 +487,8 @@ router.post("/forgot-password", passwordResetLimiter, async (req, res) => {
     });
   } catch (err) {
     console.error("Forgot password error:", err);
-    return res.redirect(`/forgot-password${buildErrorQuery("Unable to start password reset right now.")}`);
+    req.flash("error", "Unable to start password reset right now.");
+      return res.redirect(`/forgot-password`);
   }
 });
 
@@ -475,7 +497,8 @@ router.get("/reset-password/:token", async (req, res) => {
   try {
     const rawToken = req.params.token;
     if (!rawToken || typeof rawToken !== "string") {
-      return res.redirect(`/forgot-password${buildErrorQuery("Reset link is invalid or expired.")}`);
+      req.flash("error", "Reset link is invalid or expired.");
+      return res.redirect(`/forgot-password`);
     }
 
     const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
@@ -486,7 +509,8 @@ router.get("/reset-password/:token", async (req, res) => {
     });
 
     if (!user) {
-      return res.redirect(`/forgot-password${buildErrorQuery("Reset link is invalid or has expired.")}`);
+      req.flash("error", "Reset link is invalid or has expired.");
+      return res.redirect(`/forgot-password`);
     }
 
     res.render("forgot-password.ejs", {
@@ -497,7 +521,8 @@ router.get("/reset-password/:token", async (req, res) => {
     });
   } catch (err) {
     console.error("Reset password page error:", err);
-    res.redirect(`/forgot-password${buildErrorQuery("Unable to load reset page.")}`);
+    req.flash("error", "Unable to load reset page.");
+      res.redirect(`/forgot-password`);
   }
 });
 
@@ -525,7 +550,8 @@ router.post("/reset-password/:token", passwordResetLimiter, async (req, res) => 
     });
 
     if (!user) {
-      return res.redirect(`/forgot-password${buildErrorQuery("Reset link is invalid or has expired.")}`);
+      req.flash("error", "Reset link is invalid or has expired.");
+      return res.redirect(`/forgot-password`);
     }
 
     // Set new password (triggers pre-save bcrypt hash with 12 rounds)
@@ -542,7 +568,8 @@ router.post("/reset-password/:token", passwordResetLimiter, async (req, res) => 
     return res.redirect(`/login?message=${encodeURIComponent("Password reset successfully! Please log in with your new password.")}`);
   } catch (err) {
     console.error("Reset password error:", err);
-    return res.redirect(`/forgot-password${buildErrorQuery("Unable to reset password right now.")}`);
+    req.flash("error", "Unable to reset password right now.");
+      return res.redirect(`/forgot-password`);
   }
 });
 
