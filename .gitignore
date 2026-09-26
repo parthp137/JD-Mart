@@ -57,3 +57,6 @@ coverage/
 # Misc
 .cache/
 cookies.txt
+
+# Agent Workspaces
+.kilo/
