@@ -39,7 +39,7 @@ A modern, high-performance Express.js B2B agricultural commodity trading platfor
 - **Database & ODM**: MongoDB with Mongoose 9.1.3
 - **Templating Engine**: EJS with `ejs-mate` layouts
 - **Security & Headers**: Helmet 8.3.0 (Strict Content Security Policy) & express-rate-limit 7.1.5
-- **Authentication**: bcryptjs (12 salt rounds) & express-session with `connect-mongo` session persistence
+- **Authentication**: bcrypt (12 salt rounds) & express-session with `connect-mongo` session persistence
 - **File Uploads**: Multer 1.4.5
 - **Styling & UI**: Bootstrap 5, Font Awesome 7 Icons, and custom CSS design system
 - **Testing**: Node.js Native Test Runner (`node:test` + `node:assert/strict`)
@@ -53,7 +53,9 @@ Group_7_Buyer_System/
 ├── app.js                          # Express application entry point & middleware configuration
 ├── seed.js                         # Database initialization with realistic agricultural demo data
 ├── package.json                    # Project metadata, dependencies, and test scripts
+├── package-lock.json               # Exact dependency versions lockfile
 ├── .env.example                    # Environment variable templates
+├── .gitignore                      # Git ignored files and directories
 │
 ├── config/                         # Configuration modules
 │   ├── constants.js                # App constants, timeouts, salt rounds, and pagination limits
@@ -118,7 +120,8 @@ Group_7_Buyer_System/
 ├── public/                         # Static assets
 │   ├── css/                        # Stylesheets (style.css, login.css, register.css)
 │   ├── js/                         # Client scripts (script.js, validation.js, 3D viewers)
-│   └── images/                     # SVG icons and uploaded product photos
+│   ├── images/                     # SVG icons and static asset photos
+│   └── uploads/                    # User-uploaded product photos
 │
 └── tests/                          # Test suites
     ├── app-utils.test.js           # Unit tests for security, token hashing, and utilities
