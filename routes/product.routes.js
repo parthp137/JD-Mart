@@ -34,6 +34,16 @@ router.get("/products", isLoggedIn, async (req, res) => {
     const priceMax = req.query.priceMax || "";
     const grade = req.query.grade || "";
     const availability = req.query.availability || "";
+    const sortBy = ["newest", "price-low", "price-high", "demand"].includes(req.query.sort)
+      ? req.query.sort
+      : "newest";
+
+    const sort = {
+      newest: { createdAt: -1 },
+      "price-low": { pricePerQuintal: 1 },
+      "price-high": { pricePerQuintal: -1 },
+      demand: { demandLevel: -1, createdAt: -1 }
+    }[sortBy];
 
     const filter = buildProductFilter({ search, category, priceMin, priceMax, grade, availability });
     const totalProducts = await Products.countDocuments(filter);
@@ -42,7 +52,7 @@ router.get("/products", isLoggedIn, async (req, res) => {
     const skip = (currentPage - 1) * limit;
 
     const allProducts = await Products.find(filter)
-      .sort({ createdAt: -1 })
+      .sort(sort)
       .skip(skip)
       .limit(limit);
 
@@ -57,6 +67,7 @@ router.get("/products", isLoggedIn, async (req, res) => {
       priceMax,
       grade,
       availability,
+      sortBy,
       page: currentPage,
       totalPages,
       totalProducts,
