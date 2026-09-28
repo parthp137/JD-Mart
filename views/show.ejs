@@ -400,6 +400,20 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/product-3d-viewer.js"></script>
 <script>
+  (() => {
+    const storageKey = "jdMartRecentlyViewed";
+    const viewedProduct = {
+      id: "<%= product._id %>",
+      name: "<%= product.name.replace(/\\/g, "\\\\").replace(/"/g, '\\"') %>",
+      url: "/products/<%= product._id %>",
+      image: "<%= getImageUrl(product.images).replace(/\\/g, "\\\\").replace(/"/g, '\\"') %>",
+      price: "<%= (product.pricePerQuintal / 100).toFixed(2) %>"
+    };
+    const recentItems = JSON.parse(localStorage.getItem(storageKey) || "[]")
+      .filter((item) => item.id !== viewedProduct.id);
+    localStorage.setItem(storageKey, JSON.stringify([viewedProduct, ...recentItems].slice(0, 6)));
+  })();
+
   const basePricePerQuintal = <%= product.pricePerQuintal %> / 100; // in Rupees
   const moq = <%= product.moq || 1 %>;
   const maxAvailable = <%= Math.max(1, actualAvailable) %>;

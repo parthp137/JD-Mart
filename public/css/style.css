@@ -591,6 +591,7 @@ h3{
 .jd-image {
   height: 230px;
   position: relative;
+  background: #f3f4f6;
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
   overflow: hidden;
@@ -606,6 +607,44 @@ h3{
 
 .jd-card:hover .jd-image img {
   transform: scale(1.08);
+}
+
+.recent-product-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  height: 100%;
+  padding: 0.6rem;
+  color: #1f2933;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.recent-product-card:hover {
+  border-color: #16a34a;
+  transform: translateY(-2px);
+}
+
+.recent-product-card img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 7px;
+  background: #f3f4f6;
+}
+
+.recent-product-card strong {
+  overflow: hidden;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-product-card small {
+  color: #16a34a;
+  font-weight: 600;
 }
 
 /* ===========================
