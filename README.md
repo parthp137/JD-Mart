@@ -277,10 +277,4 @@ npm test
 
 ---
 
-## 📄 License
-
-This project is licensed under the ISC License.
-
----
-
-**Made with ❤️ by Group 7 - JD Solutions Team**
+**Made by Group 7 - JD Solutions Team**
