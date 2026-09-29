@@ -33,7 +33,8 @@ const { normalizeMoney, formatMoney } = require("./utils/money");
 const { getOrderTimeline } = require("./utils/timeline");
 const {
   buildProductFilter,
-  parsePageValue
+  parsePageValue,
+  buildErrorQuery
 } = require("./utils/filters");
 const { getImageUrl, getCropPlaceholder } = require("./utils/image");
 
@@ -179,6 +180,7 @@ app.__utils = {
   getOrderTimeline,
   buildProductFilter,
   parsePageValue,
+  buildErrorQuery,
   isAdmin,
   isLoggedIn
 };

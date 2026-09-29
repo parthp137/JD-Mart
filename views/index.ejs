@@ -18,121 +18,78 @@
 
 <%- include("partials/header") %>
     
-<!-- Premium Buyer Section with 3D Canvas -->
-<div class="premium-section container-fluid my-4 p-4 shadow-sm" data-tilt-3d="true">
-  <div class="row align-items-center">
-    
-    <!-- Left + Stats -->
-    <div class="col-12">
-
-      <!-- 3D Mandi Badge & Text Info -->
-      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-        <span class="fw-bold d-inline-flex align-items-center gap-1 text-success">
-          <i class="fa-regular fa-star"></i> Premium Buyer
-        </span>
-        <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill small">
-          <i class="fa-solid fa-cube me-1"></i> Interactive 3D Mandi Floor
-        </span>
+<!-- COMPACT MANDI HERO & LIVE METRICS TICKER -->
+<div class="container-fluid px-4 pt-3 pb-1">
+  <div class="jd-mandi-compact-hero d-flex flex-wrap align-items-center justify-content-between p-3 rounded-4 mb-3 shadow-sm">
+    <div class="d-flex align-items-center gap-3">
+      <div class="mandi-hero-icon d-none d-sm-flex align-items-center justify-content-center rounded-3 bg-white text-success shadow-sm">
+        <i class="fa-solid fa-wheat-awn fs-4"></i>
       </div>
-
-      <h3 class="mb-1 fw-bold text-dark">Fresh Crops, Direct from APMC Farms</h3>
-      <p class="text-muted mb-0">Browse our selection of quality-verified crops with 3D lot inspection at competitive mandi rates.</p>
-
-      <!-- Stats Below -->
-      <div class="d-flex flex-wrap gap-4 mt-3">
-
-        <div class="d-flex align-items-center gap-2 premium-stat">
-          <i class="fa-solid fa-box"></i>
-          <span><%= typeof allProducts !== 'undefined' ? allProducts.length : 7 %> Verified Products</span>
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+          <span class="badge bg-success text-white px-2 py-0.5 rounded-pill small fw-semibold">
+            <i class="fa-regular fa-star me-1"></i> APMC Verified
+          </span>
+          <span class="badge bg-white text-success border px-2 py-0.5 rounded-pill small fw-semibold d-none d-md-inline-flex align-items-center">
+            <i class="fa-solid fa-cube me-1"></i> 3D Lot Inspection
+          </span>
         </div>
-
-        <div class="d-flex align-items-center gap-2 premium-stat">
-          <i class="fa-regular fa-truck"></i>
-          <span>1-4 Days Doorstep Delivery</span>
-        </div>
-
-        <div class="d-flex align-items-center gap-2 premium-stat">
-          <i class="fa-solid fa-shield-halved"></i>
-          <span>100% Escrow Protected</span>
-        </div>
-
+        <h4 class="mb-0 fw-bold text-white">Direct Farm & Mandi Commodities</h4>
       </div>
     </div>
 
-  </div>
-</div>
-
-
-<!-- DASHBOARD STATISTICS -->
-
-  <div class="row row-cols-lg-4 row-cols-md-3 row-cols-sm-1 gx-4 px-4">
-
-    <!-- Categories -->
-    <div class="col-md-3 col-sm-6">
-      <div class="stat-card d-flex align-items-center p-3">
-        <div class="stat-icon me-3">
-          <i class="fa-solid fa-leaf"></i>
-        </div>
-        <div>
-          <h4 class="mb-1"><%= dashboardStats.totalCategories?.[0]?.count || 0 %></h4>
-          <p class="mb-0 text-muted">Categories</p>
-        </div>
-      </div>
+    <!-- Right Trust Signals -->
+    <div class="d-none d-lg-flex align-items-center gap-3 text-white small mt-2 mt-lg-0">
+      <span class="d-inline-flex align-items-center gap-1.5 opacity-90">
+        <i class="fa-regular fa-truck"></i> 1-4 Days Doorstep Delivery
+      </span>
+      <span class="d-inline-flex align-items-center gap-1.5 opacity-90">
+        <i class="fa-solid fa-shield-halved"></i> 100% Escrow Protected
+      </span>
     </div>
-
-    <!-- Products In Stock -->
-    <div class="col-md-3 col-sm-6">
-      <div class="stat-card d-flex align-items-center p-3">
-        <div class="stat-icon me-3" style="background-color: rgba(245,158,11,0.1);">
-          <i class="fa-solid fa-cube" style="color: #f59e0b;"></i>
-        </div>
-        <div>
-          <h4 class="mb-1"><%= dashboardStats.inStock?.[0]?.count || 0 %></h4>
-          <p class="mb-0 text-muted">Products In Stock</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Below Market -->
-    <div class="col-md-3 col-sm-6">
-      <div class="stat-card d-flex align-items-center p-3">
-        <div class="stat-icon me-3" style="background-color: rgba(239,68,68,0.1);">
-          <i class="fa-solid fa-arrow-trend-down" style="color: #ef4444;"></i>
-        </div>
-        <div>
-          <h4 class="mb-1"><%= dashboardStats.belowMarket?.[0]?.count || 0 %></h4>
-          <p class="mb-0 text-muted">Below Market</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Grade A Products -->
-    <div class="col-md-3 col-sm-6">
-      <div class="stat-card d-flex align-items-center p-3">
-        <div class="stat-icon me-3" style="background-color: rgba(59,130,246,0.1);">
-          <i class="fa-regular fa-star" style="color: #3b82f6;"></i>
-        </div>
-        <div>
-          <h4 class="mb-1"><%= dashboardStats.gradeA?.[0]?.count || 0 %></h4>
-          <p class="mb-0 text-muted">Grade A Products</p>
-        </div>
-      </div>
-    </div>
-
   </div>
 
+  <!-- COMPACT 4-METRIC STRIP (Above-the-Fold KPI Ticker) -->
+  <div class="mandi-metrics-strip d-flex flex-wrap gap-2 mb-3">
+    <div class="metric-pill flex-grow-1">
+      <div class="metric-icon leaf"><i class="fa-solid fa-leaf"></i></div>
+      <div class="metric-body">
+        <strong class="metric-val"><%= dashboardStats.totalCategories?.[0]?.count || 0 %></strong>
+        <span class="metric-lbl">Commodities</span>
+      </div>
+    </div>
 
+    <div class="metric-pill flex-grow-1">
+      <div class="metric-icon box"><i class="fa-solid fa-cube"></i></div>
+      <div class="metric-body">
+        <strong class="metric-val"><%= dashboardStats.inStock?.[0]?.count || 0 %></strong>
+        <span class="metric-lbl">Lots In Stock</span>
+      </div>
+    </div>
 
-<!-- Advanced Filters -->
-<div class="mb-3 mt-4 m-4" style="background: var(--jd-bg-surface); padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--jd-border-color);">
-  <form id="filterForm" method="GET" action="/products">
-    <div class="row g-3">
-      <!-- Category Filters -->
-      <div class="col-lg-4">
-        <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
-          <i class="fa-solid fa-layer-group text-success me-1"></i> Commodity Category
-        </h6>
-        <div class="category-filters" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+    <div class="metric-pill flex-grow-1">
+      <div class="metric-icon trend"><i class="fa-solid fa-arrow-trend-down"></i></div>
+      <div class="metric-body">
+        <strong class="metric-val"><%= dashboardStats.belowMarket?.[0]?.count || 0 %></strong>
+        <span class="metric-lbl">Below Mandi</span>
+      </div>
+    </div>
+
+    <div class="metric-pill flex-grow-1">
+      <div class="metric-icon star"><i class="fa-regular fa-star"></i></div>
+      <div class="metric-body">
+        <strong class="metric-val"><%= dashboardStats.gradeA?.[0]?.count || 0 %></strong>
+        <span class="metric-lbl">Grade A Certified</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STREAMLINED COMPACT FILTER TOOLBAR -->
+  <div class="jd-compact-filter-bar p-3 rounded-3 shadow-sm mb-3">
+    <form id="filterForm" method="GET" action="/products">
+      <!-- ROW 1: CATEGORY PILLS -->
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-2.5 border-bottom mb-2.5">
+        <div class="category-filters m-0 d-flex gap-1.5 flex-wrap">
           <button type="button" class="cat-btn <%= !category || category === 'all' ? 'active' : '' %>" data-category="all" onclick="filterByCategory('all')">
             <i class="fa-solid fa-border-all me-1"></i> All
           </button>
@@ -149,77 +106,74 @@
             <i class="fa-solid fa-pepper-hot me-1"></i> Spices
           </button>
         </div>
+
+        <div class="d-flex align-items-center gap-2 ms-auto">
+          <button type="submit" class="btn btn-sm btn-success fw-bold px-3 py-1.5 shadow-sm">
+            <i class="fa-solid fa-filter me-1"></i> Filter
+          </button>
+          <a href="/products" class="btn btn-sm btn-outline-secondary py-1.5 px-2.5" title="Reset all filters">
+            <i class="fa-solid fa-rotate-left"></i>
+          </a>
+        </div>
       </div>
 
-      <!-- Price Range & Presets -->
-      <div class="col-lg-3">
-        <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
-          <i class="fa-solid fa-indian-rupee-sign text-success me-1"></i> Price Range (₹/kg)
-        </h6>
-        <div class="d-flex align-items-center gap-2">
-          <input type="number" name="priceMin" id="priceMin" class="form-control form-control-sm" value="<%= priceMin || '' %>" placeholder="Min ₹">
-          <span class="text-muted">-</span>
-          <input type="number" name="priceMax" id="priceMax" class="form-control form-control-sm" value="<%= priceMax || '' %>" placeholder="Max ₹">
-        </div>
-        <!-- Quick Presets -->
-        <div class="d-flex gap-1 flex-wrap mt-2">
-          <button type="button" class="btn btn-xs btn-outline-secondary <%= (priceMin == '0' && priceMax == '30') ? 'active bg-success text-white border-success' : '' %>" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 4px;" onclick="applyPricePreset(0, 30)">
-            &lt; ₹30
-          </button>
-          <button type="button" class="btn btn-xs btn-outline-secondary <%= (priceMin == '30' && priceMax == '70') ? 'active bg-success text-white border-success' : '' %>" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 4px;" onclick="applyPricePreset(30, 70)">
-            ₹30 - ₹70
-          </button>
-          <button type="button" class="btn btn-xs btn-outline-secondary <%= (priceMin == '70' && !priceMax) ? 'active bg-success text-white border-success' : '' %>" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 4px;" onclick="applyPricePreset(70, '')">
-            &gt; ₹70
-          </button>
-          <% if (priceMin || priceMax) { %>
-            <button type="button" class="btn btn-xs btn-link text-danger p-0 ms-1 text-decoration-none" style="font-size: 0.72rem;" onclick="applyPricePreset('', '')" title="Reset price">
-              <i class="fa-solid fa-xmark"></i>
+      <!-- ROW 2: INLINE QUICK REFINEMENTS -->
+      <div class="d-flex align-items-center flex-wrap gap-3">
+        <!-- Quick Price Presets & Range -->
+        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+          <span class="small fw-semibold text-muted d-flex align-items-center me-1">
+            <i class="fa-solid fa-indian-rupee-sign text-success me-1"></i> Rate (₹/kg):
+          </span>
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary <%= (priceMin == '0' && priceMax == '30') ? 'active bg-success text-white border-success' : '' %>" style="font-size: 0.75rem;" onclick="applyPricePreset(0, 30)">
+              &lt; ₹30
             </button>
-          <% } %>
+            <button type="button" class="btn btn-outline-secondary <%= (priceMin == '30' && priceMax == '70') ? 'active bg-success text-white border-success' : '' %>" style="font-size: 0.75rem;" onclick="applyPricePreset(30, 70)">
+              ₹30 - ₹70
+            </button>
+            <button type="button" class="btn btn-outline-secondary <%= (priceMin == '70' && !priceMax) ? 'active bg-success text-white border-success' : '' %>" style="font-size: 0.75rem;" onclick="applyPricePreset(70, '')">
+              &gt; ₹70
+            </button>
+          </div>
+          <div class="d-inline-flex align-items-center gap-1 ms-1">
+            <input type="number" name="priceMin" id="priceMin" class="form-control form-control-sm" style="width: 70px; height: 28px; font-size: 0.75rem;" value="<%= priceMin || '' %>" placeholder="Min">
+            <span class="text-muted small">-</span>
+            <input type="number" name="priceMax" id="priceMax" class="form-control form-control-sm" style="width: 70px; height: 28px; font-size: 0.75rem;" value="<%= priceMax || '' %>" placeholder="Max">
+            <% if (priceMin || priceMax) { %>
+              <button type="button" class="btn btn-link text-danger p-0 ms-0.5 text-decoration-none" onclick="applyPricePreset('', '')" title="Reset price">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Grade Selector -->
+        <div class="d-flex align-items-center gap-1.5">
+          <label for="gradeFilter" class="small fw-semibold text-muted mb-0"><i class="fa-solid fa-certificate text-warning me-1"></i> Grade:</label>
+          <select name="grade" id="gradeFilter" class="form-select form-select-sm" style="height: 28px; font-size: 0.75rem; width: auto;" onchange="this.form.submit()">
+            <option value="">All</option>
+            <option value="A" <%= grade === 'A' ? 'selected' : '' %>>Grade A (Premium)</option>
+            <option value="B" <%= grade === 'B' ? 'selected' : '' %>>Grade B (Standard)</option>
+            <option value="C" <%= grade === 'C' ? 'selected' : '' %>>Grade C (Fair)</option>
+          </select>
+        </div>
+
+        <!-- Stock Selector -->
+        <div class="d-flex align-items-center gap-1.5">
+          <label for="availabilityFilter" class="small fw-semibold text-muted mb-0"><i class="fa-solid fa-boxes-stacked text-primary me-1"></i> Stock:</label>
+          <select name="availability" id="availabilityFilter" class="form-select form-select-sm" style="height: 28px; font-size: 0.75rem; width: auto;" onchange="this.form.submit()">
+            <option value="">All</option>
+            <option value="in-stock" <%= availability === 'in-stock' ? 'selected' : '' %>>In Stock</option>
+            <option value="low-stock" <%= availability === 'low-stock' ? 'selected' : '' %>>Low Stock (&le;5)</option>
+          </select>
         </div>
       </div>
 
-      <!-- Grade -->
-      <div class="col-lg-2">
-        <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
-          <i class="fa-solid fa-certificate text-warning me-1"></i> Quality Grade
-        </h6>
-        <select name="grade" id="gradeFilter" class="form-select form-select-sm">
-          <option value="">All Grades</option>
-          <option value="A" <%= grade === 'A' ? 'selected' : '' %>>Grade A (Premium)</option>
-          <option value="B" <%= grade === 'B' ? 'selected' : '' %>>Grade B (Standard)</option>
-          <option value="C" <%= grade === 'C' ? 'selected' : '' %>>Grade C (Fair)</option>
-        </select>
-      </div>
-
-      <!-- Availability -->
-      <div class="col-lg-1">
-        <h6 style="font-weight: 600; margin-bottom: 0.75rem;">
-          <i class="fa-solid fa-boxes-stacked text-primary me-1"></i> Stock
-        </h6>
-        <select name="availability" id="availabilityFilter" class="form-select form-select-sm">
-          <option value="">All</option>
-          <option value="in-stock" <%= availability === 'in-stock' ? 'selected' : '' %>>In Stock</option>
-          <option value="low-stock" <%= availability === 'low-stock' ? 'selected' : '' %>>Low Stock</option>
-        </select>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="col-lg-2 d-flex align-items-end gap-2">
-        <button type="submit" class="btn btn-sm btn-success fw-bold py-1.5" style="flex: 1;">
-          <i class="fa-solid fa-filter me-1"></i> Apply
-        </button>
-        <a href="/products" class="btn btn-sm btn-outline-secondary py-1.5" style="flex: 1;">
-          <i class="fa-solid fa-redo me-1"></i> Reset
-        </a>
-      </div>
-    </div>
-
-    <!-- Hidden inputs for search -->
-    <input type="hidden" name="search" value="<%= search || '' %>">
-    <input type="hidden" id="categoryInput" name="category" value="<%= category || '' %>">
-  </form>
+      <!-- Hidden inputs for search -->
+      <input type="hidden" name="search" value="<%= search || '' %>">
+      <input type="hidden" id="categoryInput" name="category" value="<%= category || '' %>">
+    </form>
+  </div>
 </div>
 
 <!-- ACTIVE FILTER PILLS (Dynamic) -->
@@ -466,17 +420,39 @@
             </small>
           </div>
 
-          <!-- UNIFIED ACTION BUTTON GROUP -->
-          <div class="d-flex align-items-center gap-1.5 pt-2 border-top">
-            <a href="/products/<%= product._id %>" class="btn btn-sm btn-outline-success flex-grow-1 fw-semibold py-1.5">
-              <i class="fa-regular fa-eye me-1"></i> Details
-            </a>
-            <button type="button" class="btn btn-sm btn-success flex-grow-1 fw-semibold py-1.5" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')" title="Submit instant wholesale offer">
-              <i class="fa-solid fa-handshake me-1"></i> RFQ
-            </button>
-            <button type="button" class="btn btn-sm btn-light border text-secondary px-2.5 py-1.5" onclick="openPriceAlertModal('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>)" title="Set Mandi Target Price Alert">
-              <i class="fa-solid fa-bell"></i>
-            </button>
+          <!-- STREAMLINED ACTION BUTTON HIERARCHY -->
+          <div class="jd-card-actions pt-2 border-top mt-auto">
+            <div class="d-flex align-items-center gap-1.5">
+              <% if (actualAvailable > 0) { %>
+                <form action="/cart/add/<%= product._id %>" method="POST" class="flex-grow-1 m-0">
+                  <input type="hidden" name="quantity" value="<%= product.moq || 1 %>">
+                  <button type="submit" class="btn btn-sm btn-success w-100 fw-semibold py-1.5 d-flex align-items-center justify-content-center gap-1.5 shadow-sm btn-add-cart">
+                    <i class="fa-solid fa-cart-plus"></i>
+                    <span>Add to Cart</span>
+                  </button>
+                </form>
+              <% } else { %>
+                <button type="button" class="btn btn-sm btn-light border text-muted w-100 py-1.5" disabled>
+                  <i class="fa-solid fa-ban me-1"></i> Out of Stock
+                </button>
+              <% } %>
+
+              <!-- Secondary: Instant RFQ wholesale negotiate -->
+              <button type="button" class="btn btn-sm btn-outline-dark px-2.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')" title="Submit wholesale counter-offer (RFQ)">
+                <i class="fa-solid fa-handshake text-success"></i>
+                <span class="small">RFQ</span>
+              </button>
+
+              <!-- Lot details eye -->
+              <a href="/products/<%= product._id %>" class="btn btn-sm btn-light border text-secondary px-2 py-1.5" title="Inspect Lot Details & Lab Certificate">
+                <i class="fa-regular fa-eye"></i>
+              </a>
+
+              <!-- Mandi Target Price Alert -->
+              <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1.5" onclick="openPriceAlertModal('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>)" title="Set Mandi Target Price Alert">
+                <i class="fa-regular fa-bell"></i>
+              </button>
+            </div>
           </div>
 
           <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top text-muted small" style="font-size: 0.75rem;">
