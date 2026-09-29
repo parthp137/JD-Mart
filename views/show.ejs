@@ -381,18 +381,54 @@
   </div>
 </div>
 
-<!-- 5. MOBILE STICKY PRODUCT ACTION BAR -->
-<div class="jd-mobile-action-bar">
-  <div>
-    <small class="text-muted d-block" style="font-size: 0.72rem;">Total Price</small>
-    <strong class="text-success fs-6" id="mobileStickyTotal">₹<%= (product.pricePerQuintal / 100).toFixed(2) %></strong>
+<!-- 5. UNIVERSAL RESPONSIVE STICKY BOTTOM ACTION DOCK -->
+<div class="jd-sticky-action-dock" id="stickyActionDock">
+  <div class="container d-flex align-items-center justify-content-between gap-3 flex-wrap flex-md-nowrap py-1.5">
+    <!-- LEFT: Mini Thumbnail & Commodity Meta -->
+    <div class="d-flex align-items-center gap-2.5">
+      <img
+        src="<%= getImageUrl(product.images) %>"
+        alt="<%= product.name %>"
+        class="sticky-dock-thumb rounded-2 border"
+        style="width: 42px; height: 42px; object-fit: cover;"
+        onerror="this.onerror=null;this.src='<%= getCropPlaceholder(product.category || product.name) %>'"
+      >
+      <div class="sticky-dock-info">
+        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+          <strong class="text-dark text-truncate sticky-dock-title" style="max-width: 220px;"><%= product.name %></strong>
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small" style="font-size: 0.7rem;">Grade <%= product.grade %></span>
+        </div>
+        <div class="d-flex align-items-center gap-2 text-muted small" style="font-size: 0.78rem;">
+          <span class="text-success fw-bold">₹<%= (product.pricePerQuintal / 100).toFixed(2) %>/kg</span>
+          <span class="d-none d-sm-inline">(₹<%= ((product.pricePerQuintal * 100) / 100).toFixed(0) %>/Qtl)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER: Synced Live Order Value -->
+    <div class="sticky-dock-pricing text-center px-3 border-start border-end d-none d-sm-block">
+      <small class="text-muted d-block" style="font-size: 0.72rem;">Order Total (<span id="stickyQtyDisplay"><%= product.moq || 1 %></span> Qtl)</small>
+      <strong class="text-success fs-5 fw-bold" id="mobileStickyTotal">₹<%= (product.pricePerQuintal / 100).toFixed(2) %></strong>
+    </div>
+
+    <!-- RIGHT: Direct Action CTAs -->
+    <div class="sticky-dock-actions d-flex align-items-center gap-2 ms-auto">
+      <button type="button" class="btn btn-sm btn-outline-dark fw-semibold d-none d-md-inline-flex align-items-center gap-1 py-2 px-3" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')" title="Submit wholesale counter-offer">
+        <i class="fa-solid fa-handshake text-success"></i>
+        <span>RFQ</span>
+      </button>
+
+      <button type="button" class="btn btn-sm btn-outline-success fw-semibold py-2 px-3 d-flex align-items-center gap-1.5" onclick="document.getElementById('cartForm').submit(); if (typeof animateCartIcon === 'function') animateCartIcon();" title="Add current quantity to cart">
+        <i class="fa-solid fa-cart-plus"></i>
+        <span class="d-none d-sm-inline">Add to Cart</span>
+      </button>
+
+      <button type="button" class="btn btn-sm btn-success fw-bold py-2 px-3.5 d-flex align-items-center gap-1.5 shadow-sm" onclick="document.getElementById('buyForm').submit()" title="Direct wholesale checkout">
+        <i class="fa-solid fa-bolt"></i>
+        <span>Buy Now</span>
+      </button>
+    </div>
   </div>
-  <button type="button" class="btn btn-sm btn-outline-dark fw-semibold" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')">
-    <i class="fa-solid fa-handshake me-1"></i> RFQ
-  </button>
-  <button type="button" class="btn btn-sm btn-success flex-grow-1 fw-bold" onclick="document.getElementById('buyForm').submit()">
-    <i class="fa-solid fa-bolt me-1"></i> Buy Now
-  </button>
 </div>
 
 <%- include("partials/footer") %>
@@ -537,6 +573,8 @@
     if (displayGst) displayGst.textContent = '₹' + gst.toFixed(2);
     if (displayTotal) displayTotal.textContent = '₹' + total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     if (mobileStickyTotal) mobileStickyTotal.textContent = '₹' + total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const stickyQty = document.getElementById('stickyQtyDisplay');
+    if (stickyQty) stickyQty.textContent = qty;
 
     if (discountPercent > 0) {
       if (tierBadge) {
@@ -581,7 +619,30 @@
       qtyInput.addEventListener('input', updatePricing);
     }
 
+    // Initialize pricing calculation
     updatePricing();
+
+    // Sticky Action Dock Scroll Revealer for Desktop
+    const dock = document.getElementById('stickyActionDock');
+    const anchor = document.getElementById('cartForm');
+    if (dock && anchor) {
+      const handleDockReveal = () => {
+        if (window.innerWidth <= 768) {
+          dock.classList.add('visible');
+          return;
+        }
+        const rect = anchor.getBoundingClientRect();
+        if (rect.bottom < 0) {
+          dock.classList.add('visible');
+        } else {
+          dock.classList.remove('visible');
+        }
+      };
+
+      window.addEventListener('scroll', handleDockReveal, { passive: true });
+      window.addEventListener('resize', handleDockReveal);
+      handleDockReveal();
+    }
   });
 </script>
 </body>

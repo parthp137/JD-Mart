@@ -3797,6 +3797,216 @@ textarea:focus {
   color: #94a3b8;
 }
 
+/* ==========================================================================
+   ENHANCED UI STYLES: COMPACT HERO, METRICS STRIP, FILTER BAR & STICKY DOCK
+   ========================================================================== */
 
+/* 1. Compact Mandi Hero */
+.jd-mandi-compact-hero {
+  background: linear-gradient(135deg, #14532d 0%, #16a34a 65%, #15803d 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
 
+.mandi-hero-icon {
+  width: 44px;
+  height: 44px;
+}
 
+/* 2. Above-the-Fold KPI Metrics Strip */
+.mandi-metrics-strip {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.metric-pill {
+  background: var(--jd-bg-surface, #ffffff);
+  border: 1px solid var(--jd-border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 140px;
+}
+
+.metric-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.08);
+}
+
+.metric-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.metric-icon.leaf {
+  background: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+}
+
+.metric-icon.box {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+
+.metric-icon.trend {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.metric-icon.star {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+}
+
+.metric-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-val {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--jd-text-main, #1e293b);
+  line-height: 1.1;
+}
+
+.metric-lbl {
+  font-size: 0.75rem;
+  color: var(--jd-text-muted, #64748b);
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+/* 3. Compact Filter Toolbar */
+.jd-compact-filter-bar {
+  background: var(--jd-bg-surface, #ffffff);
+  border: 1px solid var(--jd-border-color, #e2e8f0);
+}
+
+.jd-compact-filter-bar .cat-btn {
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 20px;
+  border: 1px solid var(--jd-border-color, #e2e8f0);
+  background: var(--jd-bg-elevated, #f8fafc);
+  color: var(--jd-text-muted, #4b5563);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.jd-compact-filter-bar .cat-btn:hover {
+  background: #ecfdf5;
+  color: #15803d;
+  border-color: #86efac;
+}
+
+.jd-compact-filter-bar .cat-btn.active {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #16a34a;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.28);
+}
+
+/* 4. Streamlined Product Card Actions */
+.jd-card-actions .btn-add-cart {
+  transition: all 0.2s ease;
+}
+
+.jd-card-actions .btn-add-cart:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.jd-card-actions .btn-add-cart:active {
+  transform: translateY(0);
+}
+
+/* 5. Universal Responsive Sticky Bottom Action Dock */
+.jd-sticky-action-dock {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1045;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--jd-border-color, #e2e8f0);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(115%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+
+.jd-sticky-action-dock.visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sticky-dock-title {
+  font-size: 0.92rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .jd-sticky-action-dock {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  body {
+    padding-bottom: 74px;
+  }
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] .jd-compact-filter-bar,
+[data-theme="dark"] .metric-pill {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .metric-val {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .metric-lbl {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .jd-compact-filter-bar .cat-btn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .jd-compact-filter-bar .cat-btn:hover {
+  background: #14532d;
+  color: #86efac;
+  border-color: #22c55e;
+}
+
+[data-theme="dark"] .jd-sticky-action-dock {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: #334155;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .jd-sticky-action-dock .text-dark {
+  color: #f8fafc !important;
+}
