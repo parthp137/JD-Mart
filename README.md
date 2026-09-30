@@ -49,7 +49,7 @@ A modern, high-performance Express.js B2B agricultural commodity trading platfor
 ## 📦 Project Directory Structure
 
 ```
-Group_7_Buyer_System/
+JD_Mart_Buyer_System/
 ├── app.js                          # Express application entry point & middleware configuration
 ├── seed.js                         # Database initialization with realistic agricultural demo data
 ├── package.json                    # Project metadata, dependencies, and test scripts
