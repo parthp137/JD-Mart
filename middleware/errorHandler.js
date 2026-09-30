@@ -10,16 +10,24 @@ function notFoundHandler(req, res) {
 }
 
 function errorHandler(err, req, res, next) {
-  console.error("Unhandled Error:", err);
-  
+  if (!err.isOperational) {
+    console.error("Unhandled Application Error:", err);
+  }
+
   if (res.headersSent) {
     return next(err);
   }
 
   const statusCode = err.status || 500;
-  const message = DEBUG_MODE 
-    ? err.message || "An internal server error occurred."
-    : "Something went wrong. Please try again later.";
+  
+  let message;
+  if (err.isOperational) {
+    message = err.message;
+  } else {
+    message = DEBUG_MODE 
+      ? err.message || "An internal server error occurred."
+      : "Something went wrong. Please try again later.";
+  }
 
   res.status(statusCode).render("error", {
     message
