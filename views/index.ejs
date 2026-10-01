@@ -382,8 +382,8 @@
             </span>
           </div>
 
-          <h5 class="jd-product-name mb-2 text-truncate" title="<%= product.name %>">
-            <a href="/products/<%= product._id %>" class="text-decoration-none text-dark fw-bold hover-success"><%= product.name %></a>
+          <h5 class="jd-product-name mb-1 text-truncate" title="<%= product.name %>">
+            <a href="/products/<%= product._id %>" class="text-decoration-none text-dark fs-5 fw-bolder hover-success"><%= product.name %></a>
           </h5>
 
           <!-- STREAMLINED COMMODITY SPECS ROW -->
@@ -403,9 +403,9 @@
           </div>
 
           <!-- PRICE HIGHLIGHT -->
-          <div class="jd-price mt-auto mb-2">
+          <div class="jd-price mt-auto mb-3">
             <div class="d-flex align-items-baseline gap-1">
-              <span class="fs-4 fw-bold text-success">
+              <span class="fs-3 fw-bolder text-success">
                 ₹<%= (product.pricePerQuintal / 100).toFixed(2) %>
               </span>
               <span class="text-muted small">/kg</span>
@@ -421,35 +421,35 @@
           </div>
 
           <!-- STREAMLINED ACTION BUTTON HIERARCHY -->
-          <div class="jd-card-actions pt-2 border-top mt-auto">
-            <div class="d-flex align-items-center gap-1.5">
-              <% if (actualAvailable > 0) { %>
-                <form action="/cart/add/<%= product._id %>" method="POST" class="flex-grow-1 m-0">
-                  <input type="hidden" name="quantity" value="<%= product.moq || 1 %>">
-                  <button type="submit" class="btn btn-sm btn-success w-100 fw-semibold py-1.5 d-flex align-items-center justify-content-center gap-1.5 shadow-sm btn-add-cart">
-                    <i class="fa-solid fa-cart-plus"></i>
-                    <span>Add to Cart</span>
-                  </button>
-                </form>
-              <% } else { %>
-                <button type="button" class="btn btn-sm btn-light border text-muted w-100 py-1.5" disabled>
-                  <i class="fa-solid fa-ban me-1"></i> Out of Stock
+          <div class="jd-card-actions pt-3 border-top mt-auto d-flex flex-column gap-2">
+            <% if (actualAvailable > 0) { %>
+              <form action="/cart/add/<%= product._id %>" method="POST" class="m-0 w-100">
+                <input type="hidden" name="quantity" value="<%= product.moq || 1 %>">
+                <button type="submit" class="btn btn-success w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm btn-add-cart" style="border-radius: 10px; font-size: 1.05rem;">
+                  <i class="fa-solid fa-cart-plus"></i>
+                  <span>Add to Cart</span>
                 </button>
-              <% } %>
+              </form>
+            <% } else { %>
+              <button type="button" class="btn btn-light border text-muted w-100 py-2 fw-semibold" disabled style="border-radius: 10px;">
+                <i class="fa-solid fa-ban me-1"></i> Out of Stock
+              </button>
+            <% } %>
 
+            <div class="d-flex align-items-center gap-2 w-100">
               <!-- Secondary: Instant RFQ wholesale negotiate -->
-              <button type="button" class="btn btn-sm btn-outline-dark px-2.5 py-1.5 fw-semibold d-inline-flex align-items-center gap-1" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')" title="Submit wholesale counter-offer (RFQ)">
+              <button type="button" class="btn btn-outline-dark flex-grow-1 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1" style="border-radius: 8px;" onclick="openRfqDrawer('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>, '<%= (product.supplier && product.supplier.location) ? product.supplier.location.replace(/'/g, "\\'") : 'APMC Mandi' %>')" title="Submit wholesale counter-offer (RFQ)">
                 <i class="fa-solid fa-handshake text-success"></i>
                 <span class="small">RFQ</span>
               </button>
 
               <!-- Lot details eye -->
-              <a href="/products/<%= product._id %>" class="btn btn-sm btn-light border text-secondary px-2 py-1.5" title="Inspect Lot Details & Lab Certificate">
+              <a href="/products/<%= product._id %>" class="btn btn-light border text-secondary px-3 py-1.5" style="border-radius: 8px;" title="Inspect Lot Details & Lab Certificate">
                 <i class="fa-regular fa-eye"></i>
               </a>
 
               <!-- Mandi Target Price Alert -->
-              <button type="button" class="btn btn-sm btn-light border text-secondary px-2 py-1.5" onclick="openPriceAlertModal('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>)" title="Set Mandi Target Price Alert">
+              <button type="button" class="btn btn-light border text-secondary px-3 py-1.5" style="border-radius: 8px;" onclick="openPriceAlertModal('<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= (product.pricePerQuintal / 100) %>)" title="Set Mandi Target Price Alert">
                 <i class="fa-regular fa-bell"></i>
               </button>
             </div>
