@@ -589,7 +589,7 @@ h3{
    IMAGE
 =========================== */
 .jd-image {
-  height: 230px;
+  height: 200px;
   position: relative;
   background: #f3f4f6;
   border-top-left-radius: 18px;
@@ -720,7 +720,7 @@ h3{
    BODY
 =========================== */
 .jd-body {
-  padding: 1.2rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -770,10 +770,11 @@ h3{
    TITLE
 =========================== */
 .jd-product-name {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin: 6px 0 10px 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 8px 0 12px 0;
   color: #111827;
+  line-height: 1.3;
 }
 
 .jd-product-name:hover {
